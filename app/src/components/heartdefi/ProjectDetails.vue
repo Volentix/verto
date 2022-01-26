@@ -86,15 +86,27 @@
             </dl>
           </div>
           <div class="pane__section clearfix" v-if="projectData.website && projectData.website.length">
-          <a :href="projectData.website" target="_blank">
-            <span class="item-price"
-              >{{projectData.website.replace('https://','http://')}}</span
-            ></a><a class="button buy-button" :href="projectData.website" target="_blank">Visit Website</a>
+            <a :href="projectData.website" target="_blank">
+              <span class="item-price">
+                {{projectData.website.replace('https://','http://')}}
+              </span>
+            </a>
+            <a class="button buy-button" :href="projectData.website" target="_blank">
+              Visit Website
+            </a>
           </div>
 
-            <div  class="pane__section clearfix row q-col-gutter-md">
-            <div  class="col-md-5"><ExchangeForm :hideForm="true"/></div>
-           <iframe v-if="projectData.featuredVideo" height="400px"  class="col-md-7"  :src="'https://www.youtube.com/embed/'+projectData.featuredVideo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <div class="pane__section clearfix row q-col-gutter-md">
+            <div  class="col-md-5">
+              <ExchangeForm :hideForm="true"/>
+            </div>
+            <iframe v-if="projectData.featuredVideo" height="400px"  class="col-md-7"  :src="'https://www.youtube.com/embed/'+projectData.featuredVideo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen/>
+            <div class="col-12 text-h6 q-mt-lg">
+              Discussion
+            </div>
+            <div class="col-md-12 comment-section rounded-borders q-pa-md">
+              <CommentSection :feed="projectData"/>
+            </div>
 
           </div>
 
@@ -107,11 +119,13 @@
 <script>
 import Projects from './Projects'
 import ExchangeForm from './ExchangeForm.vue'
+import CommentSection from './Feed/CommentSection.vue'
 export default {
   props: ['data'],
   components: {
     Projects,
-    ExchangeForm
+    ExchangeForm,
+    CommentSection
   },
   created () {
     this.projectData = this.$store.state.settings.projects.find(o => o.id === this.$route.params.projectId)
@@ -130,6 +144,9 @@ export default {
 }
 </script>
 <style scoped>
+.comment-section{
+  border:1px solid rgb(207, 207, 207);
+}
 .projects {
     margin-top: -10px;
     }
