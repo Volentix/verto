@@ -190,9 +190,12 @@ export default {
         if (Moralis.User.current()) {
           let user = Moralis.User.current()
           this.setUser(user.get('ethAddress'))
-          Moralis.Web3.onAccountsChanged(async (accounts) => {
+          // await Moralis.enableWeb3()
+          //  let Web3 = require('web3')
+          //  let web3 = new Web3(Moralis.provider)
+          Moralis.onAccountChanged(async (accounts) => {
             this.setUser(accounts[0])
-            await Moralis.Web3.link(accounts[0])
+            await Moralis.link(accounts[0])
           })
         }
         this.connectLoading = false

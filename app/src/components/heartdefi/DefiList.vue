@@ -206,7 +206,6 @@ export default {
           this.$store.commit('currentwallet/setUserData', { pulsexSac: { points_total: 0, usd_total: 0 } })
         }
       }).catch((res) => {
-        console.log(res, 'res 2')
         this.$store.commit('currentwallet/setUserData', { pulsexSac: { points_total: 0, usd_total: 0 } })
       })
     }
@@ -219,18 +218,17 @@ export default {
           nodes.forEach(item => {
             let tx = item.innerText.split('\n')
             tx = tx.map(o => o.trim())
-            console.log(tx, 'tx')
+
             total += parseFloat(tx[5].replace('$', '').replace(/,/g, ''))
             points += parseFloat(tx[10].replace(/,/g, ''))
           })
           let data = { pulseSac: { usd_total: total, points_total: points } }
-          console.log(data, 'data')
+
           this.$store.commit('currentwallet/setUserData', data)
         } else {
           this.$store.commit('currentwallet/setUserData', { puleSac: { points_total: 0, usd_total: 0 } })
         }
       }).catch((res) => {
-        console.log(res, 'res 2')
         this.$store.commit('currentwallet/setUserData', { pulsexSac: { points_total: 0, usd_total: 0 } })
       })
     }

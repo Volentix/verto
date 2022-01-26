@@ -97,7 +97,7 @@ if (process.env.QMODE !== 'bex') {
       children: [
         { path: '', component: () => import('pages/Heartdefi/Intro.vue') }
       ]
-    } /*
+    }/*,
     {
       path: '/',
       component: () => import('layouts/staiderLayout.vue'),
@@ -121,9 +121,8 @@ if (process.env.QMODE !== 'bex') {
           component: () => import('components/Verto/Token/AssetsExplorer.vue')
         }
       ]
-    }, */
+    }
 
-    /*
     {
       path: '/blocktopusCreate',
       component: () => import('layouts/Default.vue'),

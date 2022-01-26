@@ -108,6 +108,9 @@ export default {
         return a.id === this.$route.params.id ? -1 : 1
       })
     }
+    this.$axios.get('https://youtube.xosoft.com.pk/').then(o => {
+
+    })
   },
   mounted () {
     let twitterScript = document.createElement('script')

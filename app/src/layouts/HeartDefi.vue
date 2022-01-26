@@ -46,7 +46,6 @@ export default {
   },
   watch: {
     '$store.state.currentwallet.user': function (val) {
-      console.log(val, 'val')
       if (val) {
         let wallet = {
           chain: 'eth',
@@ -54,12 +53,19 @@ export default {
           name: val.wallet + '...' + val.addressFriendly,
           type: 'eth'
         }
-        Lib.setWallets([wallet])
-        this.$store.commit(
-          'investment/setDefaultAccount',
-          wallet
-        )
-        if (this.$route.path !== '/account/' + val.address) { this.$router.push('/account/' + val.address) }
+        let init = true
+        if (this.$store.state.wallets.tokens && this.$store.state.wallets.tokens.find(o => o.key.toLowerCase() === val.address.toLowerCase())) {
+          init = false
+        }
+        console.log(init, 'init', this.$store.state.wallets.tokens)
+        if (init) {
+          Lib.setWallets([wallet])
+          this.$store.commit(
+            'investment/setDefaultAccount',
+            wallet
+          )
+          if (this.$route.path !== '/account/' + val.address) { this.$router.push('/account/' + val.address) }
+        }
       }
     }
   },

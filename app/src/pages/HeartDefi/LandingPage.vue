@@ -212,7 +212,11 @@ export default {
     },
     '$store.state.currentwallet.user': function (val) {
       if (val && val.address) {
-        this.loadingP = true
+        let init = true
+        if (this.$store.state.wallets.tokens && this.$store.state.wallets.tokens.find(o => o.key.toLowerCase() === val.address.toLowerCase())) {
+          init = false
+        }
+        this.loadingP = init
         this.getChainData()
         setTimeout(() => {
           this.loadingP = false
