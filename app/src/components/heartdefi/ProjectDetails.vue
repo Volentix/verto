@@ -105,7 +105,7 @@
               Discussion
             </div>
             <div class="col-md-10 comment-section rounded-borders q-pa-md">
-              <CommentSection :feed="projectData"/>
+              <CommentSection :feed="projectData" :type="'project'"/>
             </div>
 
           </div>
@@ -113,7 +113,7 @@
         </div>
       </article>
     </div>
-    <Projects :exclude="projectData.id" />
+    <Projects :exclude="projectData.id" :is_page="false"/>
   </div>
 </template>
 <script>

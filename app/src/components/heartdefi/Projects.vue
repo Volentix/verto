@@ -1,93 +1,130 @@
 <template>
-  <div class=" q-mx-lg">
-  <div class="full-width text-center q-mb-md" >
-  <div class="text-h6 text-bold ">Have a project ?</div>
-   <q-btn  label="Submit Project" />
-  </div>
+  <div class="q-mx-lg mncright justify-center">
+    <div class="mncright-left q-px-sm">
+      <div class="full-width text-center q-mb-md">
+        <div class="text-h6 text-bold ">Have a project ?</div>
+        <q-btn  label="Submit Project" />
+      </div>
 
-    <div
-      class="row q-mb-md shadows-2 project-item q-py-md cursor-pointer"
-      @click="$router.push('/project/'+project.id)"
-      v-for="(project, index) in $store.state.settings.projects"
-      :key="index"
-    >
-      <div class="col-md-2">
-        <q-img
-          contain
-          style="max-height: 100px"
-          class="full-width"
-          :src="project.icon"
-        />
-      </div>
-      <div class="col-md-9">
-        <div class="text-h6 text-bold q-pb-sm">
-          {{ project.title }}
+      <div
+        class="row q-mb-md shadows-2 project-item q-py-md cursor-pointer"
+        @click="$router.push('/project/'+project.id)"
+        v-for="(project, index) in projects"
+        :key="index"
+      >
+        <div class="col-md-2">
+          <q-img
+            contain
+            style="max-height: 100px"
+            class="full-width"
+            :src="project.icon"
+          />
         </div>
-        <q-item-label lines="2" class="text-body1">
-          {{project.description}}
-        </q-item-label>
-        <q-item-label class="q-pt-md text-caption">
-          <q-icon
-          color="grey"
-          name="mode_comment"
-          class="relative-position"
-          style="top:-2px;"/>
-          {{$store.getters['settings/feed_comments']('project', project.id).length}}
-        </q-item-label>
-      </div>
-      <div class="col-md-1 flex flex-center">
-        <q-btn
-          outline
-          :color="isUpvoted(project) ? 'red' : 'primary'"
-          size="md"
-          class="row"
-          @click.stop.prevent="user ? upvoteProject(project) : $q.notify({message:'Connect a wallet to upvote', position:'center'})">
-          <div class="col-12">
+        <div class="col-md-9">
+          <div class="text-h6 text-bold q-pb-sm">
+            {{ project.title }}
+          </div>
+          <q-item-label lines="2" class="text-body1">
+            {{project.description}}
+          </q-item-label>
+          <q-item-label class="q-pt-md text-caption">
             <q-icon
-              :color="isUpvoted(project) ? 'red' : 'grey'"
-              name="play_arrow"
-              style="transform: rotateZ(270deg)"/>
-          </div>
-          <div class="col-12">
-            {{getUpvotes(project).length}}
-          </div>
-        </q-btn>
-      </div>
-      <div class="col-md-9 offset-md-2 row">
-        <div class="col-12 q-mt-sm q-px-sm rounded-borders q-gutter-y-md comment-section" v-if="$store.getters['settings/feed_comments']('project', project.id).length > 0">
-          <div
-            class="q-px-md"
-            v-for="(item,index) in $store.getters['settings/feed_comments']('project', project.id)"
-            :key="project.id+'-'+item.comment_id">
-            <CommentItem
-              v-if="index < 2"
-              :feed="project"
-              :item="item"
-              :actions="false"
-              :reply_limit="0"/>
-          </div>
+            color="grey"
+            name="mode_comment"
+            class="relative-position"
+            style="top:-2px;"/>
+            {{$store.getters['settings/feed_comments']('project', project.id).length}}
+          </q-item-label>
+        </div>
+        <div class="col-md-1 flex flex-center">
+          <q-btn
+            outline
+            :color="isUpvoted(project) ? 'red' : 'primary'"
+            size="md"
+            class="row"
+            @click.stop.prevent="user ? upvoteProject(project) : $q.notify({message:'Connect a wallet to upvote', position:'center'})">
+            <div class="col-12">
+              <q-icon
+                :color="isUpvoted(project) ? 'red' : 'grey'"
+                name="play_arrow"
+                style="transform: rotateZ(270deg)"/>
+            </div>
+            <div class="col-12">
+              {{getUpvotes(project).length}}
+            </div>
+          </q-btn>
         </div>
       </div>
     </div>
-
+    <div class="mncright-right q-ml-md q-mt-sm q-px-md rounded-borders q-gutter-y-md comment-section" v-if="projects.length > 0 && is_page">
+      <div
+        class="q-px-md tpRecent-parta1 cursor-pointer"
+        v-for="(item,index) in discussions"
+        @click="$router.push('/project/'+item.project.id)"
+        :key="'disc-'+index">
+        <Component
+          :is="item.reply_id ? 'ReplyItem' : 'CommentItem'"
+          :feed="item.project"
+          :item="item"
+          :actions="false"
+          :reply_limit="0"/>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import { mapState } from 'vuex'
 import CommentItem from './Feed/CommentItem'
+import ReplyItem from './Feed/ReplyItem'
 export default {
+  props: {
+    is_page: {
+      type: Boolean,
+      default () {
+        return true
+      }
+    }
+  },
   components: {
-    CommentItem
+    CommentItem,
+    ReplyItem
   },
   data () {
     return {
-      projects: [],
       loading: false
     }
   },
   computed: {
-    ...mapState('settings', ['upvotes', 'comments', 'replies']),
-    ...mapState('currentwallet', ['user'])
+    ...mapState('settings', ['upvotes', 'comments', 'replies', 'projects']),
+    ...mapState('currentwallet', ['user']),
+    discussions () {
+      const comments = this.comments.filter((x) => {
+        const obj = x
+        if (obj.type === 'project') {
+          const project = this.$store.getters['settings/project'](obj.type_id)
+          if (project) {
+            obj.project = project
+            obj.custom_title = project.title
+            obj.image = project.icon
+            return obj
+          }
+        }
+      })
+      const replies = this.replies.filter((x) => {
+        const obj = x
+        if (obj.type === 'project') {
+          const project = this.$store.getters['settings/project'](obj.type_id)
+          if (project) {
+            obj.project = project
+            obj.custom_title = project.title
+            obj.image = project.icon
+            return obj
+          }
+        }
+      })
+      const arr = [...comments, ...replies]
+      return arr.sort((a, b) => parseInt(new Date(a.createdAt).getTime()) - parseInt(new Date(b.createdAt).getTime())).reverse()
+    }
   },
   watch: {
     upvotes: {
