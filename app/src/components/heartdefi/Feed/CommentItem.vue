@@ -78,7 +78,7 @@
             class="q-pt-sm row q-gutter-x-sm item-actions">
             <div
               class="cursor-pointer col col-shrink"
-              @click.stop.prevent="user ? upvoteItem(item) : ''">
+              @click.stop.prevent="user ? upvoteItem(item) : $q.notify({message:'Connect a wallet to upvote', position:'center'})">
               <q-icon
                 size="xs"
                 :color="upvoted ? 'red' : 'grey'"
@@ -92,7 +92,7 @@
             </div>
             <div
               class="cursor-pointer col col-shrink"
-              @click="user && actions ? reply_comment = !reply_comment : ''">
+              @click="user ? reply_comment = !reply_comment : $q.notify({message:'Connect a wallet to reply', position:'center'})">
               <q-icon
                 size="xs"
                 color="grey"
@@ -130,10 +130,10 @@
           </template>
         </div>
       </div>
-      <div class="row" v-if="reply_comment">
+      <div class="row" v-if="reply_comment && user">
         <form
           class="col-md-12"
-          @submit.prevent="!user ? '' : submitReply(item)"
+          @submit.prevent="user ? submitReply(item) : $q.notify({message:'Connect a wallet to reply', position:'center'})"
         >
           <q-item dense class="q-px-none q-ml-lg">
             <q-item-section side top @click.prevent="" class="q-pr-sm">
@@ -270,7 +270,7 @@ export default {
   },
 
   mounted () {
-    console.log(this.item_upvotes)
+
   },
 
   methods: {
@@ -310,7 +310,7 @@ export default {
         })
     },
     upvoteItem (item) {
-      if (this.loading_upvote) return
+      if (this.loading_upvote || !this.user) return
       this.loading_upvote = true
       if (this.upvoted) {
         this.upvoted.obj.destroy()

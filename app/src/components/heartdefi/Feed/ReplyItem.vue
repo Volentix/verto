@@ -79,7 +79,7 @@
             class="q-pt-sm row q-gutter-x-sm item-actions">
             <div
               class="cursor-pointer col col-shrink"
-              @click.stop.prevent="user ? upvoteItem(item) : ''">
+              @click.stop.prevent="user ? upvoteItem(item) : $q.notify({message:'Connect a wallet to reply', position:'center'})">
               <q-icon
                 size="xs"
                 :color="upvoted ? 'red' : 'grey'"
@@ -93,7 +93,7 @@
             </div>
             <div
               class="cursor-pointer col col-shrink"
-              @click="user ? $emit('mentionReply',item) : ''">
+              @click="user ? $emit('mentionReply',item) : $q.notify({message:'Connect a wallet to reply', position:'center'})">
               <q-icon
                 size="xs"
                 color="grey"
