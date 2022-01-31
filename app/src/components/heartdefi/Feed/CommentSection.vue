@@ -55,7 +55,7 @@
     </div>
     <div class="col-12 row justify-center" v-if="feed_comments.length == 0 && subscribed_comments">
       <div class="text-subtitle2">
-        Comment is empty
+        No comments
       </div>
     </div>
   </div>

@@ -11,7 +11,6 @@
     class="wrapper  full-width assets_explorer_container"
     :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'background: #f2f2f2 !important' : '' "
 >
-
   <q-dialog v-model="alertSecurity">
     <q-card
       style="width: 100%; max-width: 400px"
@@ -372,7 +371,7 @@
 
         <AssetGroup  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #3f50b512;" class="col-md-6" v-if=" (!entity || entity.includes('chains'))"  :card="{title:'Chains', view:'grid', description:'Portfolio value by chain', limit:6, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
          <AssetGroup  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #cbe5e15e;"   class="col-md-6" v-if="(!entity || entity.includes('assets'))"  :card="{title:'Assets' ,view:'grid',hideArrow:this.readOnly, description:'Liquid assets', limit:6, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
-          <AssetGroup  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #ab47bb21;" class="col-md-6" v-if="allInvestments && allInvestments.length && (!entity || entity.includes('investments'))" :card="{title:'Investments', view:'grid',hideArrow:this.readOnly, description:'Staked and locked assets', limit:6, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
+          <AssetGroup :key="'inv'+uniqueKey"  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #ab47bb21;" class="col-md-6" v-if="allInvestments && allInvestments.length && (!entity || entity.includes('investments'))" :card="{title:'Investments', view:'grid',hideArrow:this.readOnly, description:'Staked and locked assets', limit:6, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
           <AssetGroup v-if="!entity || entity.includes('nfts')" @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #00ffff1f;"   class="col-md-6"   :card="{title:'Nfts' , description:'NFTs on Ethereum',view:'grid',hideArrow:this.readOnly, limit:6, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
           </div>
     <!-- CHAIN LOOP START  -->
@@ -1555,7 +1554,7 @@ export default {
     setTimeout(() => {
       this.initTable()
       this.getVTXStakingInvestment()
-    }, 1000)
+    }, 0)
   },
   methods: {
     setItemAction (data) {
@@ -1650,9 +1649,8 @@ export default {
 
           this.$set(this, 'assetsOptions', this.assetsOptions)
           this.updateTotals()
+          this.uniqueKey++
         }
-
-        this.uniqueKey++
       })
     },
     getVTXStakingInvestment () {
@@ -1917,7 +1915,9 @@ export default {
           assets.push(data)
         })
       })
-      this.assetsOptions[1].data.eth = assets
+      this.assetsOptions[1].data.eth = this.assetsOptions[1].data.eth.concat(assets)
+      this.$set(this, 'assetsOptions', this.assetsOptions)
+      this.uniqueKey++
     },
     getInvestments (wallet) {
       const self = this

@@ -21,7 +21,7 @@
           </q-avatar>
         </q-item-section>
 
-        <q-item-section class="cursor-pointer" @click="!mini ? $router.push('/project/'+item.featuredVideo) : ''">
+        <q-item-section class="cursor-pointer" @click="!mini ? $router.push('/project/'+item.id) : ''">
           <q-item-label lines="1">{{item.title}}</q-item-label>
 
         </q-item-section>
@@ -60,7 +60,7 @@ export default {
     return {
       timeline: [],
       feed: [
-        {
+        /* {
           youtube: true,
           id: 'xuRaE4xWIKY'
         },
@@ -73,7 +73,7 @@ export default {
         }, {
           twitter: true,
           id: '807811447862468608'
-        }],
+        } */],
       loaded: true,
       max: {}
     }

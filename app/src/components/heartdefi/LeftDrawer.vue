@@ -30,16 +30,23 @@
             </li>
             <li @click="$router.push('/projects')" :class="{'active': $route.path.includes('project')}">
               <a href="javascript:void(0)"   >
-                <i class="fas fa-wallet"/>
+                  <q-icon name="rocket_launch" />
                 <p>Projects</p>
               </a>
             </li>
             <li  :class="{'active': $route.path.includes('community')}" @click="$router.push('/community')">
-              <a href="" @click.prevent=""  >
+              <a href="javascript:void(0)"  >
                 <i class="fas fa-chart-line"/>
                 <p>Community</p>
               </a>
             </li>
+ <li  :class="{'active': $route.path.includes('list')}" @click="$router.push('/list')">
+              <a href="" @click.prevent=""  >
+                <q-icon name="rocket" />
+                <p>List project</p>
+              </a>
+            </li>
+
             <li v-if="false">
               <a href="" @click.prevent=""  >
                 <i class="fas fa-user"/>

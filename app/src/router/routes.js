@@ -24,7 +24,7 @@ if (process.env.QMODE !== 'bex') {
     //     { path: '', component: () => import('components/createwallet/SaveToFile.vue') }
     //   ]
     // },
-    {
+    /*{
       name: 'HearDefiDashboard',
       path: '/account/:key?',
       component: () => import('layouts/HeartDefi.vue'),
@@ -105,7 +105,13 @@ if (process.env.QMODE !== 'bex') {
       children: [
         { path: '', component: () => import('pages/Heartdefi/Intro.vue') }
       ]
-    }/*,
+    }, {
+      path: '/list',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/ListProject.vue') }
+      ]
+    } *//*,
     {
       path: '/',
       component: () => import('layouts/staiderLayout.vue'),

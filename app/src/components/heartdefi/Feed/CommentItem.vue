@@ -9,16 +9,9 @@
 
       <q-item-section @click.prevent="">
         <q-item-label class="text-dark text-subtitle2">
-          <span class="cursor-pointer">
+          <span class="cursor-pointer text-bold">
             {{item.user_id.substring(0,6)}}...{{item.user_id.substring(item.user_id.length-5,item.user_id.length)}}
           </span>
-        </q-item-label>
-        <q-item-label lines="1" caption class="feed-country text-caption">
-          <q-img
-            class="feed-flag cursor-pointer"
-            :src="'https://flagpedia.net/data/flags/icon/36x27/'+ 'ph' + '.webp'"
-            style="height:11px;width:13px;margin-top:-5px;"/>
-            Philippines
         </q-item-label>
       </q-item-section>
       <q-item-section side top>

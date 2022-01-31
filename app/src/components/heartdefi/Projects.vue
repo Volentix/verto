@@ -1,6 +1,6 @@
 <template>
   <div class=" q-mx-lg">
-  <div class="full-width text-center q-mb-md" >
+  <div class="full-width text-center q-mb-md" v-if="false" >
   <div class="text-h6 text-bold ">Have a project ?</div>
    <q-btn  label="Submit Project" />
   </div>
@@ -53,7 +53,7 @@
           </div>
         </q-btn>
       </div>
-      <div class="col-md-9 offset-md-2 row">
+      <div class="col-md-9 offset-md-2 row" v-if="false">
         <div class="col-12 q-mt-sm q-px-sm rounded-borders q-gutter-y-md comment-section" v-if="$store.getters['settings/feed_comments']('project', project.id).length > 0">
           <div
             class="q-px-md"

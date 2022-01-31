@@ -99,12 +99,9 @@
           <div class="pane__section clearfix row q-col-gutter-md">
             <div  class="col-md-5">
               <ExchangeForm :hideForm="true"/>
+               <iframe v-if="projectData.featuredVideo" height="200px" width="100%" class="col-md-12"  :src="'https://www.youtube.com/embed/'+projectData.featuredVideo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen/>
             </div>
-            <iframe v-if="projectData.featuredVideo" height="400px"  class="col-md-7"  :src="'https://www.youtube.com/embed/'+projectData.featuredVideo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen/>
-            <div class="col-12 text-h6 q-mt-lg">
-              Discussion
-            </div>
-            <div class="col-md-10 comment-section rounded-borders q-pa-md">
+            <div class="col-md-7 rounded-borders q-pa-md">
               <CommentSection :feed="projectData"/>
             </div>
 
@@ -134,7 +131,6 @@ export default {
   watch: {
     '$route' (to, from) {
       this.projectData = this.$store.state.settings.projects.find(o => o.id === this.$route.params.projectId)
-      document.querySelector('.main-container-right').scrollTop = 0
     }
   },
   data () {

@@ -46,6 +46,10 @@ export default {
     }
   },
   watch: {
+    '$route' (to, from) {
+      this.projectData = this.$store.state.settings.projects.find(o => o.id === this.$route.params.projectId)
+      document.querySelector('.main-container-right').scrollTop = 0
+    },
     '$store.state.currentwallet.user': function (val) {
       if (val) {
         let wallet = {
