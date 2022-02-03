@@ -1,0 +1,36 @@
+@import "assets/styles/staider_theme/colors.scss";
+@import "assets/styles/staider_theme/fonts.scss";
+body {
+  font-family: $MainFont;
+  overflow: hidden !important;
+}
+.container{
+  // max-width: 1248px;
+  max-width: calc(100% - 180px);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  @media screen and (max-width: 768px) {
+    max-width: calc(100% - 40px);
+  }
+}
+.shadow1{
+  box-shadow: $shadow1;
+}
+.text-shadow1{
+  text-shadow: $textShadow1;
+}
+.backdrop{
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+.zindex9{
+  position: relative;
+  z-index: 9;
+}
+.red{
+  color: $MainRed;
+}
+.green{
+  color: $MainGreen;
+}
