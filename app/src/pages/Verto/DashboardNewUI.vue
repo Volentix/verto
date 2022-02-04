@@ -279,7 +279,7 @@ import CrosschainDex from '@/util/CrosschainDex'
 // import Bridge from '@/util/Bridge'
 import MultiTransaction from '../../components/Verto/Defi/MultiTransaction'
 // const eos = new EosWrapper()
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 // import TestnetPools from '../../components/Verto/Defi/TestnetPools'

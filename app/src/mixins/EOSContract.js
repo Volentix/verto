@@ -6,7 +6,7 @@ import {
   JsSignatureProvider
 } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   components: {},
   data () {

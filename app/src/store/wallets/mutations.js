@@ -10,6 +10,8 @@ const getWalletIndex = wallet => {
     (wallet.chain === 'eos' ? '-' + wallet.name : '')
   return index
 }
+let multitokens = ['terra', 'eos', 'dot', 'ksm', 'sol', 'avax']
+
 export const updateTokens = (state, updatedtokens) => {
   if (!updatedtokens) {
     updatedtokens = []
@@ -37,6 +39,9 @@ export const updateTokens = (state, updatedtokens) => {
     }
     if (Lib.evms.find(f => f.chain === o.chain)) {
       o.isEvm = true
+      o.multitoken = true
+    } else {
+      o.multitoken = multitokens.includes(o.chain)
     }
     if (o.type === 'eos') {
       // console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')

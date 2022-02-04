@@ -369,10 +369,10 @@
     >
      <div class="row q-col-gutter-md" v-show="!hideList">
 
-        <AssetGroup  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #3f50b512;" class="col-md-6" v-if=" (!entity || entity.includes('chains'))"  :card="{title:'Chains', view:'grid', description:'Portfolio value by chain', limit:6, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
-         <AssetGroup  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #cbe5e15e;"   class="col-md-6" v-if="(!entity || entity.includes('assets'))"  :card="{title:'Assets' ,view:'grid',hideArrow:this.readOnly, description:'Liquid assets', limit:6, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
-          <AssetGroup :key="'inv'+uniqueKey"  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #ab47bb21;" class="col-md-6" v-if="allInvestments && allInvestments.length && (!entity || entity.includes('investments'))" :card="{title:'Investments', view:'grid',hideArrow:this.readOnly, description:'Staked and locked assets', limit:6, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
-          <AssetGroup v-if="!entity || entity.includes('nfts')" @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #00ffff1f;"   class="col-md-6"   :card="{title:'Nfts' , description:'NFTs on Ethereum',view:'grid',hideArrow:this.readOnly, limit:6, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
+        <AssetGroup  @setItemAction="setItemAction" :getChainTotal="getChainTotal" @showAll="showAll"  :style=" groupLayout == 'grid' ? 'background: #3f50b512;' : ''" :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-if=" (!entity || entity.includes('chains'))"  :card="{title:'Chains', view:groupLayout, description:'Portfolio value by chain', limit:6, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
+         <AssetGroup  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #cbe5e15e;' : ''"   :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-if="(!entity || entity.includes('assets'))"  :card="{title:'Assets' ,view:groupLayout,hideArrow:this.readOnly, description:'Liquid assets', limit:6, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
+          <AssetGroup :key="'inv'+uniqueKey"  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #ab47bb21;' : ''" :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-if="allInvestments && allInvestments.length && (!entity || entity.includes('investments'))" :card="{title:'Investments', view:groupLayout,hideArrow:this.readOnly, description:'Staked and locked assets', limit:6, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
+          <AssetGroup v-if="!entity || entity.includes('nfts')" @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #00ffff1f;' : ''"  :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }"   :card="{title:'Nfts' , description:'NFTs on Ethereum',view:groupLayout,hideArrow:this.readOnly, limit:6, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
           </div>
     <!-- CHAIN LOOP START  -->
       <q-scroll-area v-if="hideList" :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
@@ -1177,7 +1177,7 @@ import PriceChart from '@/components/Verto/Token/PriceChart'
 import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 import configManager from '@/util/ConfigManager'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
-import EosWrapper from '@/util/EosWrapper'
+
 import Lib from '@/util/walletlib'
 import AssetGroup from '@/components/Verto/Token/AssetGroup'
 // MOOBILE TAB UI
@@ -1185,7 +1185,7 @@ import TabAssetsExplorer from '../MobileUI/TabAssetsExplorer.vue'
 
 import { QScrollArea } from 'quasar'
 import NftsExplorer from './NftsExplorer.vue'
-const eos = new EosWrapper()
+
 Vue.component(VueQrcode.name, VueQrcode)
 export default {
   components: {
@@ -1202,7 +1202,7 @@ export default {
     QScrollArea,
     NftsExplorer
   },
-  props: ['rowsPerPage', 'settings', 'entity', 'filterChains'],
+  props: ['rowsPerPage', 'settings', 'entity', 'filterChains', 'groupLayout'],
   data () {
     return {
       createPopup: {
@@ -1380,14 +1380,22 @@ export default {
       this.$store.state.wallets.tokens
         .filter((o) => o.chain === 'eth' && o.type === 'eth')
         .forEach((w) => {
-          this.getInvestments(w)
+          if (!this.$store.state.currentwallet.userData.ethInvestPools || !this.$store.state.currentwallet.userData.ethInvestPools[w.key.toLowerCase()]) { this.getInvestments(w) } else {
+            this.getInvestedTokens(this.$store.state.currentwallet.userData.ethInvestPools[w.key.toLowerCase()])
+          }
         })
     }, 2000)
+    let data = this.$store.state.investment.allEosWalletsInvestments
     let eosWallets = this.$store.state.wallets.tokens
-      .filter((o) => o.chain === 'eos' && o.type === 'eos')
+      .filter((o) => o.chain === 'eos' && o.type === 'eos' && (!data || !data.find(a => a.owner === o.name.toLowerCase())))
       .map((o) => o.name)
-    this.$store.state.investment.allEosWalletsInvestments = []
-    this.$store.dispatch('investment/getAllEOSInvestments', eosWallets)
+
+    if (eosWallets.length) {
+      this.$store.dispatch('investment/getAllEOSInvestments', eosWallets)
+    }
+    if (data && data.length) {
+      this.getInvestedEosTokens(data)
+    }
     /*
     this.$bus.$on('selectedChain', () => {
       let chain = localStorage.getItem('selectedChain')
@@ -1553,7 +1561,7 @@ export default {
     }
     setTimeout(() => {
       this.initTable()
-      this.getVTXStakingInvestment()
+      this.getHexStakes()
     }, 0)
   },
   methods: {
@@ -1563,6 +1571,7 @@ export default {
         this.chainAction(data.item)
       } else {
         this.hideList = true
+        this.setChainWalletData(this.chains.find(o => o.chain === data.chain), false)
         this.showTokenPage(data.item)
       }
     },
@@ -1606,25 +1615,26 @@ export default {
 
       let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex')
 
-      if (index >= 0) {
-        this.assetsOptions[1].data.eth[index] = a
-      } else {
+      if (index < 0 && !this.$store.state.currentwallet.userData.hexStakes) {
         this.assetsOptions[1].data.eth.push(a)
+        this.$set(this, 'assetsOptions', this.assetsOptions)
       }
-
-      this.$set(this, 'assetsOptions', this.assetsOptions)
     },
     async  getHexStakes () {
       let stakedAmounts = 0
       this.addPendingHexFetch()
       let ethChain = this.setChains().find(a => a.chain === 'eth')
-
+      let hexPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=hex&vs_currencies=usd')).data['hex'].usd
       if (!ethChain || !ethChain.accounts) return
       ethChain.accounts.forEach(async (f) => {
-        stakedAmounts = await Lib.getHexStake(f.key)
+        let stakes = this.$store.state.currentwallet.userData.hexStakes
+        if (!stakes || !stakes[f.key]) {
+          stakedAmounts = await Lib.getHexStake(f.key)
+        } else {
+          stakedAmounts = stakes[f.key].amount
+        }
 
         if (stakedAmounts) {
-          let hexPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=hex&vs_currencies=usd')).data['hex'].usd
           let a = {
             usd: hexPrice * stakedAmounts,
             rateUsd: hexPrice,
@@ -1640,6 +1650,10 @@ export default {
           }
           let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex')
 
+          let data = { hexStakes: { } }
+          data.hexStakes[f.key] = a
+          this.$store.commit('currentwallet/setUserData', data)
+
           if (index >= 0) {
             this.assetsOptions[1].data.eth.splice(index, 1)
             this.assetsOptions[1].data.eth.push(a)
@@ -1653,49 +1667,33 @@ export default {
         }
       })
     },
-    getVTXStakingInvestment () {
-      this.getHexStakes()
-
-      let stakedAmounts = 0
-
+    async getVTXStakingInvestment () {
       let eosChain = this.setChains().find(a => a.chain === 'eos')
 
       if (!eosChain || !eosChain.accounts) return
-      eosChain.accounts.forEach(async (f) => {
-        if (f.chain === 'eos') {
-          let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
-          if (stakes.length) {
-            stakes.forEach(s => {
-              s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
-              // s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-              stakedAmounts += +s.stake_amount
-            })
-          }
+      eosChain.accounts.filter(i => i.vtxStakes).forEach((f) => {
+        let a = {
+          usd: f.vtxStakesUsd,
+          rateUsd: f.vtxStakesUsd / f.vtxStakes,
+          type: 'vtx',
+          chain: 'eos',
+          poolsCount: false,
+          owner: f.name,
+          poolName: 'Staked',
+          isStaked: true,
+          amount: f.vtxStakes,
+          icon: 'https://www.api.bloks.io/image-proxy/display?w=100&h=100&url=https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png&op=resize'
         }
+        let index = this.assetsOptions[1].data.eos.findIndex(o => o.isStaked && o.type === 'vtx')
 
-        if (stakedAmounts) {
-          let vtxPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=usd')).data['volentix-vtx'].usd
-          let a = {
-            usd: vtxPrice * stakedAmounts,
-            rateUsd: vtxPrice,
-            type: 'vtx',
-            chain: 'eos',
-            poolsCount: false,
-            owner: f.name,
-            poolName: 'Staked',
-            isStaked: true,
-            amount: stakedAmounts,
-            icon: 'https://www.api.bloks.io/image-proxy/display?w=100&h=100&url=https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png&op=resize'
-          }
-          let index = this.assetsOptions[1].data.eos.findIndex(o => o.isStaked && o.type === 'vtx')
-
-          if (index >= 0) {
-            this.assetsOptions[1].data.eos[index] = a
-          } else {
-            this.assetsOptions[1].data.eos.push(a)
-          }
+        if (index >= 0) {
+          this.assetsOptions[1].data.eos.splice(index, 1)
+          this.assetsOptions[1].data.eos.push(a)
+        } else {
+          this.assetsOptions[1].data.eos.push(a)
         }
       })
+      this.$set(this, 'assetsOptions', this.assetsOptions)
       this.uniqueKey++
     },
     async verifyPassword () {
@@ -1762,7 +1760,7 @@ export default {
 
           if (chain.type === 'verto') {
             self.$router.push(self.getImportLink('eos'))
-          } else if (chain.isEvm || chain.chain === 'eos') {
+          } else if (chain.multitoken) {
             self.selectedChain = chain
             self.initTable(chain.chain)
             self.tab = 'assets'
@@ -1871,6 +1869,7 @@ export default {
       })
       this.$store.dispatch('tokens/getTokensMarketsData', assets)
       this.assetsOptions[1].data.eos = this.assetsOptions[1].data.eos.filter(o => o.isStaked && o.type === 'vtx').concat(assets)
+      this.$set(this, 'assetsOptions', this.assetsOptions)
     },
     async getVTXHistoriclPrice (days = 30) {
       let response = await this.$axios.get(
@@ -1882,6 +1881,7 @@ export default {
     },
     getInvestedTokens (investments) {
       let assets = []
+
       investments.forEach((t) => {
         if (!t || !t.tokens) return
 
@@ -1915,7 +1915,16 @@ export default {
           assets.push(data)
         })
       })
-      this.assetsOptions[1].data.eth = this.assetsOptions[1].data.eth.concat(assets)
+
+      let inv = this.$store.state.currentwallet.userData.ethInvestPools
+      let udata = { ethInvestPools: inv || [] }
+      if (investments[0]) {
+        udata.ethInvestPools[investments[0].owner.toLowerCase()] = inv && inv[investments[0].owner.toLowerCase()] ? inv[investments[0].owner.toLowerCase()].concat(assets) : [].concat(assets)
+      }
+      this.$store.commit('currentwallet/setUserData', udata)
+
+      assets = this.assetsOptions[1].data.eth.concat(assets)
+      this.assetsOptions[1].data.eth = assets
       this.$set(this, 'assetsOptions', this.assetsOptions)
       this.uniqueKey++
     },
@@ -1979,7 +1988,7 @@ export default {
       let all = null
       if (!['new', 'import'].includes(this.tab)) {
         all = this.setChains()
-        console.log(all, 'all')
+
         this.chains = all.filter(
           (o) =>
             o.type === 'verto' || (o.accounts &&
@@ -2008,9 +2017,9 @@ export default {
     initTable (chain = null, account = null) {
     //  let account = null
       // this.chains = (this.$route.params.accounts) ? HD.getVertoChains() :
-      console.log(888)
+
       this.getChains()
-      // console.log(this.chains, 'this.chains = ')
+      this.getVTXStakingInvestment()
       if (
         this.$store.state.investment.defaultAccount &&
        (this.$q.platform.is.mobile || this.$store.state.currentwallet.user)
@@ -2650,7 +2659,7 @@ export default {
   border-bottom-left-radius: 15px;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
-  margin-top: -29px;
+ /* margin-top: -29px; */
 }
 .q-tab--active {
   background: #f2f2f2;

@@ -1,5 +1,5 @@
 let shared_wallet_urls = [
-]/*
+]
 if (process.env.MODE === 'bex' || window.screen.width < 500) {
   shared_wallet_urls = [
     {
@@ -85,7 +85,7 @@ export default [
         meta: {
           authRequired: true
         }
-      }, */ /*
+      }, */
       {
         name: 'secret-words',
         path: '/verto/secret-words',
@@ -199,7 +199,7 @@ export default [
         meta: {
           authRequired: false
         }
-      }, */ /*
+      }, */
       {
         name: 'import-public-key',
         path: '/verto/import-public-key',
@@ -237,7 +237,7 @@ export default [
         meta: {
           authRequired: true
         }
-      } */ /*
+      } */
       {
         name: 'eos-account',
         path: '/verto/eos-account/:action',
@@ -408,7 +408,7 @@ export default [
           authRequired: true
         }
       },
-      *//*
+      */
       {
         name: 'send',
         path: '/verto/wallets/send',
@@ -749,4 +749,4 @@ export default [
       }
     ]
   } */
-//]
+]

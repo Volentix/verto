@@ -260,7 +260,7 @@
 import ParseDB from '@/util/ParseDb'
 import Formatter from '@/mixins/Formatter'
 import Lib from '@/util/walletlib'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 
 export default {
   props: ['txObject', 'tx', 'payloadId'],

@@ -383,7 +383,7 @@
 // import { VTextMarquee } from 'vue-text-marquee'
 import Vue from 'vue'
 import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import EosRPC from '@/util/EosWrapper'
 import Formatter from '@/mixins/Formatter'
 import ImportToken from '@/components/Verto/Token/ImportToken'
@@ -425,9 +425,8 @@ export default {
           value: 'testnet'
         }
       ],
-      dialog: false,
-      
-    
+      dialog: false
+
     }
   },
   created () {

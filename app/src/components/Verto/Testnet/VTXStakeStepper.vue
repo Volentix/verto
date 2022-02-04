@@ -430,7 +430,7 @@ import EosWrapper from '@/util/EosWrapper'
 import EOSContract from '@/mixins/EOSContract'
 import Formatter from '@/mixins/Formatter'
 const eos = new EosWrapper()
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 let stakingContract, volentixContract
 
 export default {

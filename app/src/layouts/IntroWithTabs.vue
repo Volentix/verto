@@ -87,7 +87,7 @@
               <ul class="left-menu">
                 <li class="q-pb-md flex text-center cursor-pointer tools-label-li" v-if="$store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" >
                   <a @click="chainTools.show = !chainTools.show" class="tools-label">
-                    <q-icon size="md"  class="q-pr-sm" :name="'img:'+$store.state.settings.defaultChainData.icon" />
+                    <q-icon size="md"  class="q-pr-sm" :name="'img:'+icons[$store.state.settings.defaultChainData.chain]" />
                     <span>Chains Tools
                       <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " />
                     </span>
@@ -291,7 +291,8 @@
 
 <script>
 import { version } from '../../package.json'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
+import HD from '@/util/hdwallet'
 // import Lib from '@/util/walletlib'
 import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
@@ -354,6 +355,10 @@ export default {
           title: 'Transact'
         }]
       },
+      icons: {
+        eth: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png',
+        eos: 'https://files.coinswitch.co/public/coins/eos.png'
+      },
       drawer: false,
       chainTools: {
         show: true,
@@ -388,6 +393,9 @@ export default {
     }
   },
   methods: {
+    terra () {
+      HD.Wallet('terra')
+    },
     goTo (path) {
       this.$router.push(`/verto/${path}`)
     },
@@ -990,7 +998,7 @@ h2 {
 }
 /deep/ .desktop-version {
   padding-left: 0vh !important;
-  padding-top: 0vh !important;
+/*  padding-top: 0vh !important; */
 }
 .top /deep/ .account_selector .q-btn__content {
   font-size: 12px;

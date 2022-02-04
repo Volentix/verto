@@ -100,7 +100,7 @@ import {
 } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
 let cruxClient
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.

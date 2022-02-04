@@ -32,7 +32,7 @@ import LandingPage from 'pages/Heartdefi/LandingPage'
 import Lib from '@/util/walletlib'
 import Connect from '../mixins/Connect'
 import DexInteraction from '../mixins/DexInteraction'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   mixins: [Connect, DexInteraction],
   components: {

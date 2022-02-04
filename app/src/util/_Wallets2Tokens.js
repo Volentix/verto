@@ -66,216 +66,97 @@ class Wallets2Tokens {
       w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase())
     )
 
-    if (store.state.settings.network === 'testnet') {
-      this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
-      this.tableData.map(async wallet => {
-        if (wallet.type === 'eos') {
-          wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
-          wallet.icon =
+    this.vtxPrice = 0
+    this.tableData = this.tableData.filter(o => o.origin !== 'eos_testnet')
+
+    this.tableData.map(wallet => {
+      // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
+      // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
+
+      // let vespucciScore = 0
+      // this.getCoinScore(coinSlug.slug).then(result => {
+      //   vespucciScore = result.vespucciScore
+      //   wallet.vespucciScore = vespucciScore
+      // })
+      if (!wallet.hasOwnProperty('type')) {
+        wallet.type = 'verto'
+      }
+      if (Lib.evms.find(f => f.chain === wallet.type) && wallet.type !== 'eth') {
+        wallet.type = 'eth'
+      }
+
+      if (wallet.type === 'eos') {
+        wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
+        wallet.icon =
             'https://files.coinswitch.co/public/coins/' +
             wallet.type.toLowerCase() +
             '.png'
-          wallet.chain = 'eos'
-          // wallet.name = 'crosschainfx'
-        }
-
-        wallet.disabled = false
-        let balances = {
-          data: []
-        }
-        if (wallet.type.toLowerCase() === 'eos') {
-          // It should be better to get all balances eosio.token is not deployed
-
-          let vtxbalance = await this.eos.getCurrencyBalanceP(
-            wallet.name,
-            'volentixtsys',
-            'VTX'
-          )
-          // let eosbalance = 0 //eosTestnet.getCurrencyBalanceP(wallet.name, 'eosio', 'VTX')
-          // console.log('eos balances', balances)
-          vtxbalance = vtxbalance.length ? vtxbalance[0].split(' ')[0] : 0
-          // console.log(vtxbalance, 'vtxbalance')
-          balances.data = [
-            { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' },
-            { amount: vtxbalance, code: 'volentixgsys', symbol: 'VTX' }
-          ]
-          // console.log('eos balances', balances)
-
-          if (wallet.privateKey) {
-            let value = wallet.privateKey.split('_')
-            wallet.privateKey = value[value.length - 1]
-          }
-
-          balances.data.map((t, index) => {
-            // console.log('eos token', t)
-            if (t.symbol.toLowerCase() !== 'eos') {
-              if (+t.amount !== 0) {
-                let name = wallet.name.toLowerCase()
-                let type = t.symbol.toLowerCase()
-                // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === type.toLowerCase())
-                // let vespucciScore = 0
-                // if (coinSlug) {
-                //   this.getCoinScore(coinSlug.slug).then(result => {
-                //     vespucciScore = result.vespucciScore
-                //   })
-                // }
-
-                let usdValue = 0
-                let usd = Lib.findInExchangeList('eos', type, t.code)
-                this.getUSD(t.code, type).then(result => {
-                  usdValue = result
-                  // console.log('this.eosUSD $$$$$ ', usdValue)
-                  self.tableData.push({
-                    disabled: false,
-                    type,
-                    name,
-                    // vespucciScore,
-                    key: wallet.key,
-                    privateKey: wallet.privateKey,
-                    privateKeyEncrypted: wallet.privateKeyEncrypted,
-                    amount: t.amount,
-                    tokenPrice: usd ? usdValue : usd,
-                    usd: usd ? usdValue * t.amount : 0,
-                    contract: t.code,
-                    precision: t.amount ? t.amount.split('.')[1].length : 0,
-                    chain: 'eos',
-                    to: '/verto/wallets/eos/' + type + '/' + name,
-                    icon:
-                      'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' +
-                      t.code +
-                      '-' +
-                      t.symbol.toLowerCase() +
-                      '.png'
-                  })
-                  // store.state.wallets.portfolioTotal += usdValue * t.amount
-                  this.updateWallet()
-                })
-              }
-            } else {
-              this.eos.getAccount(wallet.name).then(async a => {
-                if (this.eosUSD === 0) {
-                  await this.getEosUSD()
-                }
-
-                self.tableData
-                  .filter(
-                    w =>
-                      w.key === wallet.key &&
-                      w.type === 'eos' &&
-                      w.name === wallet.name
-                  )
-                  .map(async eos => {
-                    // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
-                    // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
-                    eos.amount = t.amount ? t.amount : 0
-                    eos.usd = this.eosUSD * t.amount
-                    eos.contract = 'eosio.token'
-                    eos.privateKey = wallet.privateKey
-                    eos.privateKeyEncrypted = wallet.privateKeyEncrypted
-                    eos.precision = t.amount.split('.')[1].length
-                    eos.tokenPrice = this.eosUSD
-                    eos.proxy = a.voter_info ? a.voter_info.proxy : ''
-                    eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
-                    // console.log('eos eos eos  ', eos)
-                    // store.state.wallets.portfolioTotal += this.eosUSD * t.amount
-                  })
-              })
-              this.updateWallet()
-            }
-          })
-
-          this.updateWallet()
-        }
-      })
-    } else if (store.state.settings.network === 'mainnet') {
-      this.tableData = this.tableData.filter(o => o.origin !== 'eos_testnet')
-
-      this.tableData.map(wallet => {
-        // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
-        // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
-
-        // let vespucciScore = 0
-        // this.getCoinScore(coinSlug.slug).then(result => {
-        //   vespucciScore = result.vespucciScore
-        //   wallet.vespucciScore = vespucciScore
-        // })
-        if (!wallet.hasOwnProperty('type')) {
-          wallet.type = 'verto'
-        }
-        if (Lib.evms.find(f => f.chain === wallet.type) && wallet.type !== 'eth') {
-          wallet.type = 'eth'
-        }
-
-        if (wallet.type === 'eos') {
-          wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
-          wallet.icon =
-            'https://files.coinswitch.co/public/coins/' +
-            wallet.type.toLowerCase() +
-            '.png'
-          wallet.chain = 'eos'
-        } else if (wallet.type === 'verto') {
-          wallet.to = '/verto/wallets/eos/verto/' + wallet.name.toLowerCase()
-          wallet.icon = 'https://files.coinswitch.co/public/coins/eos.png'
-          wallet.chain = 'eos'
-        } else {
-          wallet.to =
+        wallet.chain = 'eos'
+      } else if (wallet.type === 'verto') {
+        wallet.to = '/verto/wallets/eos/verto/' + wallet.name.toLowerCase()
+        wallet.icon = 'https://files.coinswitch.co/public/coins/eos.png'
+        wallet.chain = 'eos'
+      } else {
+        wallet.to =
             '/verto/wallets/' +
             wallet.type +
             '/' +
             wallet.type +
             '/' +
             wallet.key
-          wallet.chain = wallet.type
+        wallet.chain = wallet.type
 
-          wallet.disabled =
+        wallet.disabled =
             wallet.type !== 'eth' &&
             wallet.type !== 'dot' &&
             wallet.type !== 'ksm' &&
             wallet.type !== 'bnb' &&
             wallet.type !== 'sol'
 
-          if (wallet.type === 'ksm') {
-            wallet.icon =
+        if (wallet.type === 'ksm') {
+          wallet.icon =
               'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg'
-          } else if (wallet.type === 'avax') {
-            wallet.icon =
+        } else if (wallet.type === 'avax') {
+          wallet.icon =
               'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png'
-          } else if (wallet.type === 'sol') {
-            wallet.icon =
+        } else if (wallet.type === 'sol') {
+          wallet.icon =
               'https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png'
-          } else {
-            wallet.icon =
+        } else {
+          wallet.icon =
               'https://files.coinswitch.co/public/coins/' +
               wallet.type.toLowerCase() +
               '.png'
-          }
-          // wallet.vespucciScore = vespucciScore
         }
-        if (wallet.type === 'sol') {
-          // wallet.key = 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB'
-        }
-        wallet.disabled = false
+        // wallet.vespucciScore = vespucciScore
+      }
+      if (wallet.type === 'sol') {
+        // wallet.key = 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB'
+      }
+      wallet.disabled = false
 
-        if (
-          wallet.type === 'btc' ||
+      if (
+        wallet.type === 'btc' ||
           wallet.type === 'ltc' ||
           wallet.type === 'bnb' ||
           wallet.type === 'dash' ||
           wallet.type === 'dot' ||
           wallet.type === 'ksm' ||
           wallet.type === 'sol'
-        ) {
-          Lib.balance(wallet.type, wallet.key).then(result => {
-            // console.log('libwallet', result)
-            // static value for recording video purpos
-            // wallet.amount = wallet.type === 'btc' ? '0.23000000' : result.amount
-            wallet.amount = result.amount
-            wallet.tokenPrice = result.tokenPrice || 0
-            wallet.usd = result.usd
-          })
-        }
-      })
-    }
+      ) {
+        Lib.balance(wallet.type, wallet.key).then(result => {
+          // console.log('libwallet', result)
+          // static value for recording video purpos
+          // wallet.amount = wallet.type === 'btc' ? '0.23000000' : result.amount
+          wallet.amount = result.amount
+          wallet.tokenPrice = result.tokenPrice || 0
+          wallet.usd = result.usd
+        })
+      } else if (wallet.type === 'terra') {
+        this.getTerraBalance(wallet)
+      }
+    })
+
     store.state.currentwallet.config.keys
       .concat(watchAccounts).filter(w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase()))
       .filter(
@@ -481,6 +362,97 @@ class Wallets2Tokens {
     // console.log('this.$store.state.wallets', this.$store.state)
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
+  }
+
+  getCw20TokenBalanceQuery (tokens, userAddres) {
+    let r = { variables: {}, query: {} }, str = '{'
+    Object.keys(tokens.mainnet).forEach(t => {
+      // x.test = `   ` + t + `: WasmContractsContractAddressStore(     ContractAddress: "` + t + `"     QueryMsg: "{"balance":{"address":"` + userAddres + `"}}"  ) {     Height    Result     __typename   }`
+      str += `\n  ` + t + `: WasmContractsContractAddressStore(\n    ContractAddress: "` + t + `"\n    QueryMsg: "{\\"balance\\":{\\"address\\":\\"` + userAddres + `\\"}}"\n  ) {\n    Height\n    Result\n    __typename\n  }`
+    })
+    str += '}'
+    r.query = str /// .replace(/\\"/g, '\\\\\\')
+
+    return r
+  }
+  async getTerraBalance (wallet) {
+    axios.get(process.env[store.state.settings.network].CACHE + 'https://fcd.terra.dev/v1/market/swaprate/uusd').then(async res => {
+      let marketPrice = res.data
+      axios.get(process.env[store.state.settings.network].CACHE + 'https://assets.terra.money/cw20/tokens.json').then(async resTokens => {
+        let response = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://fcd.terra.dev/v1/bank/' + wallet.key))
+        if (response.data && response.data.balance) {
+          let resEc20s = await axios.post('https://mantle.terra.dev/', this.getCw20TokenBalanceQuery(resTokens.data, wallet.key))
+          let tokensWIthBlance = Object.keys(resEc20s.data.data).filter(o => parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance))
+          tokensWIthBlance.map(o => {
+            let tkData = resTokens.data.mainnet[Object.keys(resTokens.data.mainnet).find(x => resTokens.data.mainnet[x].token.toLowerCase() === o)]
+
+            let n = {
+              contract: o,
+              isCw20: true,
+              amount: parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance) / 10 ** (tkData.decimals || 6),
+              icon: tkData.icon,
+              type: tkData.symbol.toLowerCase(),
+              name: wallet.name,
+              watch: wallet.watch,
+              tokenPrice: 0,
+              key: wallet.key.toLowerCase(),
+              privateKey: wallet.privateKey,
+              usd: 0,
+              decimals: tkData.decimals,
+              chain: 'terra'
+            }
+            this.tableData.push(n)
+          })
+          response.data.balance.forEach(t => {
+            let priceData = marketPrice.find(o => o.denom === t.denom)
+
+            if (t.denom === 'uusd') {
+              priceData = { swaprate: 1 }
+            }
+            let sym = t.denom === 'uluna' ? 'Luna' : t.denom.substring(1).toUpperCase().substring(0, t.denom.length - 2) + 'T'
+            let data = {
+              type: sym,
+              contract: t.denom,
+              name: wallet.name,
+              watch: wallet.watch,
+              tokenPrice: priceData ? priceData.swaprate : 0,
+              key: wallet.key.toLowerCase(),
+              privateKey: wallet.privateKey,
+              amount: t.available / 10 ** 6,
+              usd: priceData ? priceData.swaprate * (t.available / 10 ** 6) : 0,
+              decimals: 6,
+              chain: 'terra',
+              icon: 'https://assets.terra.money/icon/60/' + sym + '.png'
+            }
+            if (t.denom === 'uusd') {
+              let i = this.tableData.findIndex(o => o.type === 'terra')
+              this.tableData[i] = data
+            } else {
+              this.tableData.push(data)
+            }
+          })
+          this.updateWallet()
+        }
+      })
+    })
+  }
+  async getVtxStakes (f) {
+    if (!this.vtxPrice) {
+      this.vtxPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=usd')).data['volentix-vtx'].usd
+    }
+
+    let stakes = await this.eos.getTable('vertostaking', f.name, 'accountstake')
+    let stakedAmounts = 0
+    if (stakes.length) {
+      stakes.forEach(s => {
+        s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
+        // s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+        stakedAmounts += +s.stake_amount
+      })
+    }
+    f.vtxStakes = stakedAmounts
+    f.vtxStakesUsd = stakedAmounts * this.vtxPrice
+    return f
   }
   fetchCustomTokens (wallets) {
     let data = localStorage.getItem('customTokens')
@@ -706,12 +678,14 @@ class Wallets2Tokens {
           if (this.eosUSD === 0) {
             await this.getEosUSD()
           }
+          eos = await this.getVtxStakes(eos)
 
           eos.amount = amount || '0.0000'
           eos.usd = this.eosUSD * amount
           eos.contract = 'eosio.token'
           eos.tokenPrice = this.eosUSD
           eos.precision = 4
+          eos.vtx = 4
           eos.accountData = a
           eos.proxy = a.voter_info ? a.voter_info.proxy : ''
           eos.staked = a.voter_info

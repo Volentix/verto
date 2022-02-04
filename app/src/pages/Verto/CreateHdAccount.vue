@@ -112,51 +112,6 @@ import ProfileHeader from '../../components/Verto/ProfileHeader'
 import HD from '@/util/hdwallet'
 import configManager from '@/util/ConfigManager'
 
-const keys = [{
-  'value': 'btc',
-  'label': 'Bitcoin'
-},
-{
-  'value': 'eth',
-  'label': 'Ethereum'
-},
-{
-  'value': 'bnb',
-  'label': 'Binance Chain'
-},
-{
-  'value': 'ltc',
-  'label': 'Litecoin'
-},
-{
-  'value': 'dash',
-  'label': 'DASH'
-},
-{
-  'value': 'avax',
-  'label': 'Avalanche'
-},
-{
-  'value': 'dot',
-  'label': 'Polkadot'
-},
-{
-  'value': 'ksm',
-  'label': 'Kusama'
-},
-{
-  'value': 'sol',
-  'label': 'Solana'
-},
-{
-  'value': 'xlm',
-  'label': 'Stellar Lumens'
-},
-{
-  'value': 'xtz',
-  'label': 'Tezos'
-}
-]
 export default {
   components: {
     // desktop components
@@ -200,7 +155,7 @@ export default {
   created () {
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    this.notCreated = keys.filter(o => !this.$store.state.wallets.tokens.find(w => w.chain === o.value))
+    this.notCreated = HD.names.filter(o => !this.$store.state.wallets.tokens.find(w => w.chain === o.value))
   },
   methods: {
     async addHdAccount () {

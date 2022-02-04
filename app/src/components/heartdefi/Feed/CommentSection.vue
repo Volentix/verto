@@ -134,7 +134,7 @@ export default {
       const obj = {
         title: this.comment,
         comment_id: new Date().getTime(),
-        type: 'project',
+        type: this.type,
         type_id: id,
         user_id: this.user.address
       }

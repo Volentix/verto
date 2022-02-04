@@ -1870,7 +1870,7 @@ const txStatus = {
   wait: 'The exchange has just been created and it’s waiting for coins to reach the deposit wallet'
 }
 import Lib from '@/util/walletlib'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   components: {
     SendComponent,

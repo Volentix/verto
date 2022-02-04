@@ -3,6 +3,8 @@ import Lib from '@/util/walletlib'
 import { Keyring } from '@polkadot/api'
 import nacl from 'tweetnacl'
 import { derivePath } from 'ed25519-hd-key'
+import { MnemonicKey } from '@terra-money/terra.js'
+import { encode } from 'js-base64'
 
 // import AvaHDWallet from 'ava-hd-wallet'
 
@@ -60,6 +62,10 @@ class HD {
       'value': 'eos',
       'label': 'EOS'
     },
+    { 'icon': 'https://assets.website-files.com/611153e7af981472d8da199c/61117b476d11877a9638750e_Terra%20Opengraph.png',
+      'value': 'terra',
+      'label': 'Terra'
+    },
     { 'icon': 'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg',
       'value': 'ksm',
       'label': 'Kusama'
@@ -100,7 +106,65 @@ class HD {
     })
     return chains.sort((a, b) => b.index - a.index)
   }
+  getTerraWrapper () {
+    const keySize = 256
+    const iterations = 100
+    const CryptoJS = require('crypto-js')
 
+    const encrypt = (msg, pass) => {
+      try {
+        const salt = CryptoJS.lib.WordArray.random(128 / 8)
+
+        const key = CryptoJS.PBKDF2(pass, salt, {
+          keySize: keySize / 32,
+          iterations: iterations
+        })
+
+        const iv = CryptoJS.lib.WordArray.random(128 / 8)
+
+        const encrypted = CryptoJS.AES.encrypt(msg, key, {
+          iv: iv,
+          padding: CryptoJS.pad.Pkcs7,
+          mode: CryptoJS.mode.CBC
+        })
+
+        const transitmessage =
+      salt.toString() + iv.toString() + encrypted.toString()
+        return transitmessage
+      } catch (error) {
+        return ''
+      }
+    }
+    const encodeWallet = (name, address, privateKey, password) => {
+      const data = { name, address, encrypted_key: encrypt(privateKey, password) }
+      console.log(data, 'data')
+      return encode(JSON.stringify(data))
+    }
+    const decrypt = (transitmessage, pass) => {
+      const salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32))
+      const iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32))
+      const encrypted = transitmessage.substring(64)
+
+      const keySize = 256
+      const iterations = 100
+      const key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: keySize / 32,
+        iterations: iterations
+      })
+
+      return CryptoJS.AES.decrypt(encrypted, key, {
+        iv: iv,
+        padding: CryptoJS.pad.Pkcs7,
+        mode: CryptoJS.mode.CBC
+      }).toString(CryptoJS.enc.Utf8)
+    }
+
+    return {
+      encrypt,
+      decrypt,
+      encodeWallet
+    }
+  }
   Wallet = async (walletType, addressIndex = 0) => {
     // const bip32 = require('bip32')
     // const util = require('ethereumjs-util')
@@ -112,7 +176,7 @@ class HD {
     const bitcoin = require('bitcoinjs-lib')
     const mnemonic = store.state.currentwallet.config.mnemonic
     const seed = bip39.mnemonicToSeedSync(mnemonic)
-
+    // const self = this
     const keys = {
       avax () {
         const avalanche = require('avalanche')
@@ -175,6 +239,37 @@ class HD {
         const privateKey = wif.encode(128, eosNode._privateKey, false)
 
         return { publicKey, privateKey }
+      },
+      terra () {
+        /* let t = JSON.parse(Buffer.from(
+          'eyJuYW1lIjoiYmVydGhvbnkiLCJhZGRyZXNzIjoidGVycmExMDRtcWpqbDdqNHBydmE3ZDVzc2hrd3dyZ3lteG5sajg4ejVnOXgiLCJlbmNyeXB0ZWRfa2V5IjoiODEzZTBkNWM0YWI1NzRiNmI1NjVkYTEwMTU2NGQyY2E0MmJjM2NiNzU4YzA2YzI1YTRiNTgzMjMxYWFhOTY2NnJ2YU1lSVlZMGZIQ2VwaWpXQmprUXBpOS9FcEFjQk1NQlBqaWFnaDlUSU5ONDQ1a2dDcCtxaWt2ajg2K0FQeWcvZzhkN2JtZTh0enlFMUhnZE5Dd0VGS0thNjlVTmloYVBWVVVabDBhZjdVPSJ9',
+          'base64'
+        ).toString('utf8'))
+        */
+        // create a key out of a mnemonic
+
+        const mk = new MnemonicKey({
+          mnemonic: mnemonic
+        })
+
+        let privateKey = Buffer.from(mk.privateKey.buffer).toString('hex')
+
+        // const rk = new RawKey(buffer)
+
+        //   const decoder = new TextDecoder()
+        // const str = decoder.decode(mk.privateKey)
+        // let str = Buffer.from(mk.privateKey.buffer).toString()
+        /* let d = TerraWrapper.decrypt(t.encrypted_key, 'samuel3434')
+        console.log(d, t, 'wallet', buffer)
+        let c = TerraWrapper.encrypt(d, 'samuel3434').toString()
+        let x = TerraWrapper.decrypt(c, 'samuel3434')
+        console.log(c, 'c', x, 45)
+let TerraWrapper = self.getTerraWrapper()
+        let w = TerraWrapper.encodeWallet('samuel1', mk.accAddress, privateKey, 'samuel34')
+
+        console.log(w, 'w', { publicKey: mk.accAddress, privateKey: privateKey })
+ */
+        return { publicKey: mk.accAddress, privateKey: privateKey }
       },
       steem () {
         const { PrivateKey, key } = require('steemjs-lib')

@@ -1,7 +1,7 @@
 <template>
   <div>
 
-      <q-table v-if="assets.length"  @row-click="onRowClick" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
+      <q-table v-if="assets.length"  @row-click="onRowClick" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false', 'chains' : type == 'chains'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col _coin_type cursor-pointer" @click="$emit('showTokenPage', props.row)">
             <div class="col-1 flex items-center">
@@ -85,7 +85,7 @@
 import DexInteraction from '@/mixins/DexInteraction'
 import Formatter from '@/mixins/Formatter'
 export default {
-  props: ['rowsPerPage', 'tableData'],
+  props: ['rowsPerPage', 'tableData', 'type'],
   data () {
     return {
       initialPagination: {
@@ -159,7 +159,15 @@ export default {
     this.getWindowWidth()
 
     this.initAssetTable()
-
+    if (this.type === 'chains') {
+      this.columns = this.columns.filter(o => !['currentPrice', 'amount', 'dailyChange'].includes(o.field))
+      this.assets.map(c => {
+        c.friendlyType = c.label
+        c.chainLabel = ''
+        c.usd = c.chainTotal
+        return c
+      })
+    }
     this.$bus.$on('selectedChain', () => {
       let chain = localStorage.getItem('selectedChain')
 
@@ -237,6 +245,9 @@ export default {
 }
 .desktop-card-style.current-investments .body-table-col .pairs{
   margin-bottom: -2px;
+}
+.chains ._coin_type{
+    width: 210px !important
 }
 .desktop-card-style.current-investments .body-table-col{
   &._coin_type{

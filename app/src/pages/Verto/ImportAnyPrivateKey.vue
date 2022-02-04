@@ -1209,7 +1209,7 @@
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import Formatter from '@/mixins/Formatter'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import Lib from '@/util/walletlib'
 const Web3 = require('web3')
 let web3 = new Web3(

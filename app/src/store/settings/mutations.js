@@ -2,7 +2,7 @@
 export function someMutation (state) {
 }
 */
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 
 export const setAirplaneMode = (state, data) => {
   state.airplaneMode = data

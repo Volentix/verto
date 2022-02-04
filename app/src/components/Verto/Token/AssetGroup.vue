@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'col-md-12':mode == 'all', 'col-md-6':mode == 'mini'}">
+  <div :class="{'col-md-12':mode == 'all', 'col-md-6':mode == 'mini' && card.view == 'grid', 'col-md-3':mode == 'mini' && card.view == 'list'}">
      <div v-if="card.view == 'grid'" class="q-mr-md">
       <div class="myportofolio-area">
         <div class="myportofolio-left full-width">
@@ -26,7 +26,7 @@
           </ul>
         </div>
       </div>
-       <AssetBalancesTable  v-if="mode == 'all'" class="full-width" :tableData="card.data" :rowsPerPage="card.data.length"   />
+       <AssetBalancesTable  v-if="mode == 'all'" class="full-width" :type="card.type" :tableData="card.data" :rowsPerPage="card.data.length"   />
 
       <div class="bitcoin-area" v-if="mode == 'mini'">
         <div class="bitcoin-part row q-col-gutter-sm rounded-borders">
@@ -35,11 +35,11 @@
             class="bitcoin-part_a "
             @click="$emit('setItemAction', { item: item, tab: card.type })"
             v-for="(item, i) in card.data.slice(0, mode == 'all' ? card.data.length + 1 : card.limit)"
-            :key="i"
+            :key="i+card.type"
           >
             <div class="bitcoin-parta full-width col-md-12">
               <div class="bitcoin-part_a1">
-                <img :src="item.icon" alt="images not found" />
+                <img :onerror="defaultToken(item.chain)" :src="item.icon" alt="images not found" />
               </div>
               <div class="bitcoin-part_a2 q-ml-md">
                 <q-item-section v-if="card.type == 'chains'">
@@ -102,12 +102,12 @@
         <q-toolbar-title :class="[card.textColor]" class="text-bold"
           >{{ card.title }}
           <span class="float-right text-grey text-bold shad"
-            >${{ nFormatter2(total, 1) }}</span
+            >${{ nFormatter2(total,card.type == 'investments' ? 0 : 1) }}</span
           >
         </q-toolbar-title>
       </q-toolbar>
 
-      <q-list class="shadow-1">
+      <q-list separator>
         <q-item-label header>{{ card.description }}</q-item-label>
         <div
           style="min-height: 318px"
@@ -122,14 +122,14 @@
         <q-item
           @click="$emit('setItemAction', { item: item, tab: card.type })"
           v-for="(item, i) in card.data.slice(0, card.limit)"
-          :key="i"
+          :key="i+card.type"
           class="q-mb-sm"
           clickable
           v-ripple
         >
           <q-item-section avatar>
             <q-avatar>
-              <img :src="item.icon" />
+              <img :src="item.icon"  :onerror="defaultToken(item.chain)"/>
             </q-avatar>
           </q-item-section>
 
@@ -170,6 +170,7 @@
           </q-item-section>
         </q-item>
         <q-item
+        v-if="card.data.length > card.limit"
           :class="[
             $store.state.settings.lightMode === 'false'
               ? card.bgColor
@@ -225,4 +226,151 @@ export default {
 .title-bg {
   background-color: #0a1830;
 }
+
+/*--- myportofolio-area start ---*/
+.myportofolio-area {
+    background-color: #fff;
+    display: flex;
+    margin-top: 25px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.myportofolio-left {
+    width: 50%;
+}
+
+.myportofolio-left  .title{
+    font-family: "Poppins-Bold";
+    color: #0e134c;
+    font-size: 25px;
+    margin: 0;
+}
+
+.myportofolio-right {
+    width: 50%;
+}
+
+.myportofolio-right ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    float: right;
+}
+
+.myportofolio-right ul li {
+    float: left;
+}
+
+.myportofolio-right ul li a {
+    color: #b5bbc7;
+    font-size: 16px;
+    width: 48px;
+    height: 48px;
+    background-color: #fff;
+    line-height: 48px;
+    border-radius: 50%;
+    box-shadow: 0px 1px 5px rgb(0 0 0 / 20%);
+    margin: auto;
+    display: block;
+    text-align: center;
+    margin-left: 14px;
+    transition: 0.2s all ease;
+}
+
+.myportofolio-right ul li a:hover {
+    color: #fff;
+    background-color: #01cfff;
+}
+
+.bitcoin-area {
+    padding-bottom: 20px;
+}
+
+.bitcoin-part {
+    display: flex;
+}
+
+.bitcoin-part_a {
+    width: 32%;
+}
+
+.bitcoin-part_b {
+    width: 32%;
+}
+
+.bitcoin-part_c {
+    width: 32%;
+}
+
+.bitcoin-parta {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 8px 10px;
+    border-radius: 5px;
+}
+
+.bitcoin-part_a1 {
+   width: 25%;
+}
+
+.bitcoin-part_a1 img {
+    width: 45px;
+    height: 45px;
+    display: block;
+}
+
+.bitcoin-part_a2 {
+   width: 70%;
+}
+
+.bitcoin-part_a2 p {
+    font-family: 'Poppins-Regular';
+    color: #bdbfbc;
+    font-size: 15px;
+    margin: 0;
+    padding-left: 2px;
+}
+
+.bitcoin-part_a2 p span {
+   font-weight: bold;
+    color: #3f4262;
+}
+
+.bitcoin-part_a2 h5 {
+    font-family: 'Poppins-Regular';
+    color: #bdbfbc;
+    font-size: 13px;
+    font-weight: 400;
+    margin: 0;
+    padding-left: 2px;
+}
+
+.bitcoin-part_a3 {
+    width: 39%;
+}
+
+.bitcoin-part_a3 h5 {
+    font-family: 'Poppins-Bold';
+    color: #3f4262;
+    font-size: 15px;
+    margin: 0;
+    padding-left: 2px;
+    text-align: right;
+}
+
+.bitcoin-part_a3 p {
+    font-family: 'Poppins';
+    color: #ab47bb;
+    font-size: 14px;
+    margin: 0;
+    text-align: right;
+    padding-top: 5px;
+}
+
+.bitcoin-part_a3 p span {
+    padding-right: 2px;
+}
+
 </style>

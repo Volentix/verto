@@ -128,7 +128,7 @@
                   <div class="standard-content--body__form">
 
                     <div class="row">
-                      <div  v-if="selectedCoin.chain == 'eos' || selectedCoin.isEvm" :class="{'col-md-12 col-12 q-pr-none': screenSize < 1024 || miniMode}" class="col col-8" >
+                      <div  v-if="selectedCoin.chain == 'eos' || selectedCoin.isEvm || selectedCoin.multitoken " :class="{'col-md-12 col-12 q-pr-none': screenSize < 1024 || miniMode}" class="col col-8" >
                         <span class="lab-input" @click="setOptions">Select token.. </span>
 
                         <q-select
@@ -425,7 +425,7 @@ import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
 import Formatter from '../../mixins/Formatter'
 import ETHContract from '../../mixins/EthContract'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import {
   mapState
 } from 'vuex'
@@ -535,7 +535,6 @@ export default {
       }
     },
     '$store.state.wallets.tokens': function (tokens) {
-      console.log(tokens, 'tokens')
       this.setOptions()
     },
     gasSelected (val) {
@@ -799,7 +798,6 @@ export default {
       this.sendAmount = this.currentToken.amount
     },
     openModalFun: function (item) {
-      console.log(this.currentAccount, 'this.currentAccount')
       if (this.currentAccount.privateKey) {
         this.sendTokens()
         this.openModalProgress = true
@@ -831,7 +829,6 @@ export default {
             'mnemonic',
             this.currentAccount.chain
           ).then((tx) => {
-            console.log(this.$store.state.currentwallet.wallet.tokenPrice, 'tokenPrice')
             Lib.gas(this.currentAccount.chain, tx, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
               this.gasOptions = res
               if (!this.gasSelected) {
@@ -841,7 +838,6 @@ export default {
           })
         } else if (this.currentAccount.chain === 'btc') {
           Lib.gas(this.currentAccount.chain, {}, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
-            console.log(res, 'res')
             this.gasOptions = res
             if (!this.gasSelected) {
               this.gasSelected = res[0]
@@ -878,7 +874,8 @@ export default {
         this.sendAmount,
         this.sendMemo,
         this.privateKey.key,
-        this.currentToken.contract
+        this.currentToken.contract,
+        this.currentToken.decimals
 
       ).then(result => {
         if (result.success) {

@@ -36,6 +36,7 @@ module.exports = function (ctx) {
       components: [
         'QOptionGroup',
         'QBanner',
+        'QForm',
         'QPopupProxy',
         'QSpinner',
         'QBadge',

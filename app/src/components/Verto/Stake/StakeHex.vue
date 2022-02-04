@@ -693,7 +693,7 @@
 <script>
 import { date } from 'quasar'
 import Formatter from '@/mixins/Formatter'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import GasSelector from '..//ETH/GasSelector.vue'
 import Lib from '@/util/walletlib'
 let hexContractAddress = '0x2b591e99afe9f32eaa6214f7b7629768c40eeb39'

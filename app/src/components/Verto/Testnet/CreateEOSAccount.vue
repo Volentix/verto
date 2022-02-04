@@ -146,7 +146,7 @@ import {
 } from '@/util/errorHandler'
 import ecc from 'eosjs-ecc'
 import configManager from '@/util/ConfigManager'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   name: 'VTXConverter',
   data () {

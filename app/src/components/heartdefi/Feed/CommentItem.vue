@@ -3,14 +3,14 @@
     <q-item dense class="q-px-none">
       <q-item-section side @click.prevent="" class="q-pr-sm">
         <q-avatar class="cursor-pointer" size="2.2rem">
-          <img :src="'https://ui-avatars.com/api/?name='+item.user_id.charAt(2)"/>
+          <img :src="avatar"/>
         </q-avatar>
       </q-item-section>
 
       <q-item-section @click.prevent="">
         <q-item-label class="text-dark text-subtitle2">
-          <span class="cursor-pointer text-bold">
-            {{item.user_id.substring(0,6)}}...{{item.user_id.substring(item.user_id.length-5,item.user_id.length)}}
+          <span class="cursor-pointer">
+            {{header}}
           </span>
         </q-item-label>
       </q-item-section>
@@ -57,106 +57,113 @@
         </q-item-label>
       </q-item-section>
     </q-item>
-
     <q-item dense>
       <q-item-section class="q-pl-lg text-subtitle2 text-dark q-py-sm">
         <q-item-label lines="2">
           {{item.title}}
         </q-item-label>
-        <q-item-label
-          class="q-pt-sm row q-gutter-x-sm item-actions">
-          <div
-            class="cursor-pointer col col-shrink"
-            @click.stop.prevent="user ? upvoteItem(item) : ''">
-            <q-icon
-              size="xs"
-              :color="upvoted ? 'red' : 'grey'"
-              name="play_arrow"
-              class="relative-position"
-              style="transform: rotateZ(270deg)"/>
-            Upvote
-            <span v-if="item_upvotes.length">
-              {{'('+item_upvotes.length+')'}}
-            </span>
-          </div>
-          <div
-            class="cursor-pointer col col-shrink"
-            @click="user && actions ? reply_comment = !reply_comment : ''">
-            <q-icon
-              size="xs"
-              color="grey"
-              name="reply"
-              class="relative-position"
-              style="top:-2px;"/>
-            Reply
-          </div>
-        </q-item-label>
       </q-item-section>
     </q-item>
-    <div
-      v-if="is_limit && comment_replies.length > reply_limit"
-      class="q-pt-sm fit row wrap justify-center items-start content-start">
-      <div class="text-primary q-pl-sm text-lowercase text-subtitle2 cursor-pointer" @click="is_limit=false" >
-        <span class="text-capitalize">
-          View
-        </span> {{(reply_limit === 0 ? 'replies' : (comment_replies.length - reply_limit)+' more replies' )}}
-      </div>
-    </div>
-    <div class="row q-mb-md q-px-lg">
-      <div
-        class="col-12 reply-item"
-        v-for="(rep,index) in comment_replies"
-        :key="rep.reply_id">
-        <template v-if="(is_limit ? index < reply_limit : true)">
-          <div :class="index == 0 ? 'q-pt-sm' : 'q-pt-md'">
-            <ReplyItem
-              @mentionReply="mentionReply"
-              :feed="feed"
-              :item="rep" />
-          </div>
-        </template>
-      </div>
-    </div>
-    <div class="row" v-if="reply_comment">
-      <form
-        class="col-md-12"
-        @submit.prevent="!user ? '' : submitReply(item)"
-      >
-        <q-item dense class="q-px-none q-ml-lg">
-          <q-item-section side top @click.prevent="" class="q-pr-sm">
-            <q-avatar class="cursor-pointer" size="2.2rem">
-              <img
-                :src="'https://ui-avatars.com/api/?name='+(user ? user.address.charAt(2) : 'u')" />
-            </q-avatar>
-          </q-item-section>
+    <template v-if="actions">
+      <q-item dense>
+        <q-item-section class="q-pl-lg text-subtitle2 text-dark q-py-sm">
+          <q-item-label
+            class="q-pt-sm row q-gutter-x-sm item-actions">
+            <div
+              class="cursor-pointer col col-shrink"
+              @click.stop.prevent="user ? upvoteItem(item) : $q.notify({message:'Connect a wallet to upvote', position:'center'})">
+              <q-icon
+                size="xs"
+                :color="upvoted ? 'red' : 'grey'"
+                name="play_arrow"
+                class="relative-position"
+                style="transform: rotateZ(270deg)"/>
+              Upvote
+              <span v-if="item_upvotes.length">
+                {{'('+item_upvotes.length+')'}}
+              </span>
+            </div>
+            <div
+              class="cursor-pointer col col-shrink"
+              @click="user ? reply_comment = !reply_comment : $q.notify({message:'Connect a wallet to reply', position:'center'})">
+              <q-icon
+                size="xs"
+                color="grey"
+                name="reply"
+                class="relative-position"
+                style="top:-2px;"/>
+              Reply
+            </div>
+          </q-item-label>
+        </q-item-section>
+      </q-item>
 
-          <q-item-section>
-            <q-input
-              ref="reply_input"
-              dense
-              outlined
-              v-model="reply"
-              autogrow
-              @keypress.enter.prevent.stop="submitReply(item)"
-              placeholder="Add reply"/>
-            <q-item-label
-              caption
-              class="cursor-pointer text-dark q-mt-sm"
-              @click="reply_comment = false;reply = ''">
-              Cancel
-            </q-item-label>
-          </q-item-section>
-          <q-item-section side top>
-            <q-btn
-              color="primary"
-              label="Send"
-              :loading="loading"
-              :disable="!user"
-              type="submit"/>
-          </q-item-section>
-        </q-item>
-      </form>
-    </div>
+      <div
+        v-if="is_limit && comment_replies.length > reply_limit"
+        class="q-pt-sm fit row wrap justify-center items-start content-start">
+        <div class="text-primary q-pl-sm text-lowercase text-subtitle2 cursor-pointer" @click="is_limit=false" >
+          <span class="text-capitalize">
+            View
+          </span> {{(reply_limit === 0 ? 'replies' : (comment_replies.length - reply_limit)+' more replies' )}}
+        </div>
+      </div>
+      <div class="row q-mb-md q-px-lg">
+        <div
+          class="col-12 reply-item"
+          v-for="(rep,index) in comment_replies"
+          :key="rep.reply_id">
+          <template v-if="(is_limit ? index < reply_limit : true)">
+            <div class="q-px-sm" :class="index == 0 ? 'q-pt-sm' : 'q-pt-md'">
+              <ReplyItem
+                @mentionReply="mentionReply"
+                :actions="actions"
+                :feed="feed"
+                :item="rep" />
+            </div>
+          </template>
+        </div>
+      </div>
+      <div class="row" v-if="reply_comment && user">
+        <form
+          class="col-md-12"
+          @submit.prevent="user ? submitReply(item) : $q.notify({message:'Connect a wallet to reply', position:'center'})"
+        >
+          <q-item dense class="q-px-none q-ml-lg">
+            <q-item-section side top @click.prevent="" class="q-pr-sm">
+              <q-avatar class="cursor-pointer" size="2.2rem">
+                <img
+                  :src="'https://ui-avatars.com/api/?name='+(user ? user.address.charAt(2) : 'u')" />
+              </q-avatar>
+            </q-item-section>
+
+            <q-item-section>
+              <q-input
+                ref="reply_input"
+                dense
+                outlined
+                v-model="reply"
+                autogrow
+                @keypress.enter.prevent.stop="submitReply(item)"
+                placeholder="Add reply"/>
+              <q-item-label
+                caption
+                class="cursor-pointer text-dark q-mt-sm"
+                @click="reply_comment = false;reply = ''">
+                Cancel
+              </q-item-label>
+            </q-item-section>
+            <q-item-section side top>
+              <q-btn
+                color="primary"
+                label="Send"
+                :loading="loading"
+                :disable="!user"
+                type="submit"/>
+            </q-item-section>
+          </q-item>
+        </form>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -211,6 +218,14 @@ export default {
   computed: {
     ...mapState('currentwallet', ['user']),
     ...mapState('settings', ['upvotes', 'replies']),
+    avatar () {
+      return this.item.image ? this.item.image : 'https://ui-avatars.com/api/?name=' + this.item.user_id.charAt(2)
+    },
+    header () {
+      if (!this.item) return ''
+      const header = this.item.custom_title ? this.item.custom_title : this.item.user_id.substring(0, 6) + '...' + this.item.user_id.substring(this.item.user_id.length - 5, this.item.user_id.length)
+      return header
+    },
     item_upvotes () {
       if (!this.feed || !this.item) return []
       const arr = this.$store.getters['settings/feed_upvotes']('comment', this.item.comment_id.toString())
@@ -248,7 +263,7 @@ export default {
   },
 
   mounted () {
-    console.log(this.item_upvotes)
+
   },
 
   methods: {
@@ -288,7 +303,7 @@ export default {
         })
     },
     upvoteItem (item) {
-      if (this.loading_upvote) return
+      if (this.loading_upvote || !this.user) return
       this.loading_upvote = true
       if (this.upvoted) {
         this.upvoted.obj.destroy()

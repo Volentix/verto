@@ -915,7 +915,7 @@ import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
 import TestnetPools from '../../../components/Verto/Defi/TestnetPools'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
 import { EosRPC, EosAPI } from '@/util/EosInterac'

@@ -769,7 +769,7 @@ import HD from '@/util/hdwallet'
 import { JsonRpc } from 'eosjs'
 import transactEOS from './transactEOS'
 import AccountSelector from './Exchange/AccountSelector.vue'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import { sleep } from '@/util/utils'
 export default {
   mixins: [Formatter],

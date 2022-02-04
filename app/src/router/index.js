@@ -8,7 +8,7 @@ import getVtx from './getVtx'
 import wallet from './wallet'
 
 const routes = [
-  ...otherRoutes
+  ...otherRoutes,
   ...getVtx,
   ...login,
   ...wallet

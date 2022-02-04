@@ -629,7 +629,7 @@ import AccountSelector from './Exchange/AccountSelector.vue'
 import { JsonRpc } from 'eosjs'
 import { QScrollArea } from 'quasar'
 import SignleTokenDialog from './MobileUI/SingleTokenDialog.vue'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 // import Godex from './Exchange/Godex.vue'
 import Lib from '@/util/walletlib'
 export default {
@@ -767,9 +767,9 @@ export default {
       } else {
         this.asset = asset
       }
-      if (this.asset.type === 'vtx') {
-        this.$store.state.settings.defaultChainData = this.asset
-      }
+      // if (this.asset.type === 'vtx') {
+      this.$store.state.settings.defaultChainData = this.asset
+      //    }
       this.depositCoin = {
         label: this.asset.type.toUpperCase(),
         value: this.asset.type,
@@ -911,7 +911,7 @@ export default {
           }
         })
     },
-    async getHistoriclPrice (days = 30) {
+    async getHistoriclPrice (days = 1) {
       this.chartData = false
       this.chartAvailable = true
       let id = this.asset.coinGeckoId

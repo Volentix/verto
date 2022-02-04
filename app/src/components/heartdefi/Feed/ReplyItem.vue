@@ -1,16 +1,16 @@
 <template>
-  <div v-if="item" class="q-px-sm">
+  <div v-if="item">
     <q-item dense class="q-px-none">
       <q-item-section side @click.prevent="" class="q-pr-sm">
         <q-avatar class="cursor-pointer" size="2.2rem">
-          <img :src="'https://ui-avatars.com/api/?name='+item.user_id.charAt(2)"/>
+          <img :src="avatar"/>
         </q-avatar>
       </q-item-section>
 
       <q-item-section @click.prevent="">
         <q-item-label class="text-dark text-subtitle2">
           <span class="cursor-pointer">
-            {{item.user_id.substring(0,6)}}...{{item.user_id.substring(item.user_id.length-5,item.user_id.length)}}
+            {{header}}
           </span>
         </q-item-label>
       </q-item-section>
@@ -58,42 +58,47 @@
         </q-item-label>
       </q-item-section>
     </q-item>
-
     <q-item dense>
       <q-item-section class="q-pl-lg text-subtitle2 text-dark q-py-sm">
         <q-item-label lines="2">
           {{item.title}}
         </q-item-label>
-        <q-item-label
-          class="q-pt-sm row q-gutter-x-sm item-actions">
-          <div
-            class="cursor-pointer col col-shrink"
-            @click.stop.prevent="user ? upvoteItem(item) : ''">
-            <q-icon
-              size="xs"
-              :color="upvoted ? 'red' : 'grey'"
-              name="play_arrow"
-              class="relative-position"
-              style="transform: rotateZ(270deg)"/>
-            Upvote
-            <span v-if="item_upvotes.length">
-              {{'('+item_upvotes.length+')'}}
-            </span>
-          </div>
-          <div
-            class="cursor-pointer col col-shrink"
-            @click="user ? $emit('mentionReply',item) : ''">
-            <q-icon
-              size="xs"
-              color="grey"
-              name="reply"
-              class="relative-position"
-              style="top:-2px;"/>
-            Reply
-          </div>
-        </q-item-label>
       </q-item-section>
     </q-item>
+    <template v-if="actions">
+      <q-item dense>
+        <q-item-section class="q-pl-lg text-subtitle2 text-dark q-py-sm">
+          <q-item-label
+            class="q-pt-sm row q-gutter-x-sm item-actions">
+            <div
+              class="cursor-pointer col col-shrink"
+              @click.stop.prevent="user ? upvoteItem(item) : $q.notify({message:'Connect a wallet to reply', position:'center'})">
+              <q-icon
+                size="xs"
+                :color="upvoted ? 'red' : 'grey'"
+                name="play_arrow"
+                class="relative-position"
+                style="transform: rotateZ(270deg)"/>
+              Upvote
+              <span v-if="item_upvotes.length">
+                {{'('+item_upvotes.length+')'}}
+              </span>
+            </div>
+            <div
+              class="cursor-pointer col col-shrink"
+              @click="user ? $emit('mentionReply',item) : $q.notify({message:'Connect a wallet to reply', position:'center'})">
+              <q-icon
+                size="xs"
+                color="grey"
+                name="reply"
+                class="relative-position"
+                style="top:-2px;"/>
+              Reply
+            </div>
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </template>
   </div>
 </template>
 
@@ -113,6 +118,12 @@ export default {
       type: Object,
       default () {
         return null
+      }
+    },
+    actions: {
+      type: Boolean,
+      default () {
+        return true
       }
     }
   },
@@ -134,6 +145,14 @@ export default {
   computed: {
     ...mapState('currentwallet', ['user']),
     ...mapState('settings', ['upvotes']),
+    avatar () {
+      return this.item.image ? this.item.image : 'https://ui-avatars.com/api/?name=' + this.item.user_id.charAt(2)
+    },
+    header () {
+      if (!this.item) return ''
+      const header = this.item.custom_title ? this.item.custom_title : this.item.user_id.substring(0, 6) + '...' + this.item.user_id.substring(this.item.user_id.length - 5, this.item.user_id.length)
+      return header
+    },
     item_upvotes () {
       if (!this.feed || !this.item) return []
       const arr = this.$store.getters['settings/feed_upvotes']('reply', this.item.reply_id.toString())

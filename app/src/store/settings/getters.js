@@ -2,6 +2,12 @@
 export function someGetter (state) {
 }
 */
+export const project = (state) => (id) => {
+  if (!id) return null
+  const index = state.projects.findIndex(x => x.id === id)
+  return index >= 0 ? state.projects[index] : null
+}
+
 export const feed_items = (state) => (type, type_id) => {
   if (!type_id) return []
   const comments = state.comments.filter((el) => el.type === type && el.type_id === type_id)

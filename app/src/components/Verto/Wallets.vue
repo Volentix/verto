@@ -884,7 +884,7 @@
 </template>
 
 <script>
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import mobileAssets from '@/components/Verto/Mobile/Wallets'
 import {
   QScrollArea,

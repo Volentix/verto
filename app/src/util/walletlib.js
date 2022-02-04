@@ -11,8 +11,9 @@ import {
   date
 } from 'quasar'
 import abiArray from '@/statics/abi/erc20.json'
-import initWallet from './Wallets2Tokens'
-
+import initWallet from './_Wallets2Tokens'
+import { LCDClient, MsgSend, RawKey, Coins, MsgExecuteContract, isTxError } from '@terra-money/terra.js'
+import { toAmount } from '@terra.kitchen/utils'
 const Web3 = require('web3')
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -811,6 +812,7 @@ class Lib {
   balance = async (chain, key, token) => {
     const self = this
     const wallet = {
+
       async sol (key, token) {
         let connection = new solanaWeb3.Connection(
           solanaWeb3.clusterApiUrl('mainnet-beta'),
@@ -1404,10 +1406,86 @@ class Lib {
     store.state.currentwallet.loggedIn = true
     initWallet('init', ['eth', 'tpls'])
   }
-  send = async (chain, token, from, to, value, memo, key, contract, data) => {
+  send = async (chain, token, from, to, value, memo, key, contract, decimals) => {
     const self = this
 
     const wallet = {
+      async terra (token, from, to, value, memo, key) {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const gasPrices = (await axios('https://fcd.terra.dev/v1/txs/gas_prices')).data
+            const gasPricesCoins = new Coins(gasPrices)
+
+            const terra = new LCDClient({
+              URL: 'https://lcd.terra.dev',
+              chainID: 'columbus-5',
+              gasPrices: gasPricesCoins
+              //    gasAdjustment: '1.5',
+              //   gas: 10000000
+            })
+            /* const coins = await terra.bank.balance(from)
+            console.log(coins)
+            if (coins) return
+            */
+            const wallet = terra.wallet(new RawKey(Buffer.from(key, 'hex')))
+            decimals = decimals || 6
+            let send = null
+            if (contract.length > 6) {
+              const amount = toAmount(value, { decimals })
+              const execute_msg = { transfer: { recipient: to, amount } }
+              console.log(wallet.key.accAddress,
+                contract,
+                execute_msg)
+
+              send = new MsgExecuteContract(
+                wallet.key.accAddress,
+                contract,
+                execute_msg
+              )
+            } else {
+              let tk = {}
+              tk[contract] = value * (10 ** decimals)
+              send = new MsgSend(
+                from,
+                to,
+                tk
+              )
+            }
+
+            wallet
+              .createAndSignTx({
+                msgs: [send],
+                memo: memo
+              })
+              .then(async tx => {
+                let data = await terra.tx.broadcast(tx)
+                console.log(data, 'data')
+                if (!isTxError(data)) {
+                  resolve({
+                    message: `https://finder.terra.money/mainnet/tx/${data.txhash}`,
+                    success: true,
+                    transaction_id: data.txhash
+                  })
+                } else {
+                  reject({
+                    message: 'Transaction failed',
+                    success: false
+                  })
+                }
+              }).catch(error => {
+                reject({
+                  message: error,
+                  success: false
+                })
+              })
+          } catch (error) {
+            reject({
+              message: error.message,
+              success: false
+            })
+          }
+        })
+      },
       async sol (token, from, to, value, memo, key) {
         let account = new solanaWeb3.Account(JSON.parse(key).data)
 
