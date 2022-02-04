@@ -16,7 +16,7 @@
           </nav>
         </div>
         <div v-if="!connected" class="col-3 download-btn flex justify-end items-center">
-          <q-btn color="white" class="shadow1" no-caps text-color="white" @click="connected = true" outline rounded label="Connect Wallet" />
+          <q-btn color="white" class="shadow1" no-caps text-color="white" @click="connectPopup = true" outline rounded label="Connect Wallet" />
         </div>
         <div v-if="connected" class="col flex justify-end items-center">
           <q-btn color="white" outline unelevated class="account-bar q-pl-none" no-caps rounded text-color="white">
@@ -54,7 +54,7 @@
                   color="white"
                   label="Disconnect"
                   rounded
-                  @click="connected = false"
+                  @click="connected = false;connectingMetamask = false;connectingWalletConnect = false;toggleActive = false"
                   no-caps
                   flat
                   icon="img:statics/staider/icon_disconnect.svg"
@@ -73,7 +73,7 @@
           </router-link>
         </div>
         <div v-if="!connected" class="col-6 main-menu flex justify-end items-center">
-          <q-btn color="white" class="shadow1 q-mr-sm" no-caps text-color="white" @click="connected = true" outline rounded label="Connect Wallet" />
+          <q-btn color="white" class="shadow1 q-mr-sm" no-caps text-color="white" @click="connectPopup = true" outline rounded label="Connect Wallet" />
           <q-btn color="white" @click="menuStatOpen = !menuStatOpen" flat class="q-pa-sm" text-color="black" dense>
             <svg v-if="!menuStatOpen" version="1.1"
               xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
@@ -164,6 +164,43 @@
         </div>
       </div>
     </div>
+    <q-dialog dark v-model="connectPopup">
+      <q-card dark class="connect-popup-wrapper">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="popup-title q-pl-sm">Account</div>
+          <q-space />
+          <q-btn icon="close" @click="connectPopup = false" size="sm" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section align="center">
+          <div class="q-pa-md" v-if="!connectingMetamask && !connectingWalletConnect">
+            <q-btn unelevated outline @click="connectToMetaMask" color="transparent" class="connect-provider-btn full-width q-pa-sm" no-caps text-color="white">
+              <div class="flex justify-between items-center full-width">
+                <span class="text-bold name">MetaMask</span>
+                <q-icon size="md" name="img:statics/staider/icon_metamask.svg" />
+              </div>
+            </q-btn>
+            <q-btn unelevated outline @click="connectToWalletConnect" color="transparent" class="connect-provider-btn full-width q-pa-sm q-mt-sm" no-caps text-color="white">
+              <div class="flex justify-between items-center full-width">
+                <span class="text-bold name">WalletConnect</span>
+                <q-icon size="md" name="img:statics/staider/icon_walletconnect.svg" />
+              </div>
+            </q-btn>
+          </div>
+          <div v-if="connectingMetamask" class="flex connecting-wrapper flex-center full-width">
+            <span class="text-bold name q-mr-lg">Connecting to MetaMask...</span>
+            <q-icon size="md" name="img:statics/staider/icon_metamask.svg" />
+          </div>
+          <div v-if="connectingWalletConnect" class="flex connecting-wrapper flex-center full-width">
+            <span class="text-bold name q-mr-lg">Connecting to WalletConnect...</span>
+            <q-icon size="md" name="img:statics/staider/icon_walletconnect.svg" />
+          </div>
+        </q-card-section>
+        <q-card-actions align="center" class="action-label">
+          <span v-if="!connectingMetamask && !connectingWalletConnect" class="q-pb-md">Select a wallet to connect</span>
+          <q-btn v-else color="white" class="q-pl-lg q-pr-lg" no-caps text-color="grey-6" @click="connectingMetamask = false; connectingWalletConnect = false; connectPopup = false" v-close-popup outline rounded label="Cancel" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -176,13 +213,25 @@ export default {
   props: ['active', 'link', 'currentPage'],
   data () {
     return {
-      connected: true,
+      connectingWalletConnect: false,
+      connectingMetamask: false,
+      connectPopup: false,
+      connected: false,
       toggleActive: false,
       accountAddress: '0x8e6b...12e2',
       menuStatOpen: false
     }
   },
   watch: {
+    connectPopup: function (val) {
+      if (val) {
+        // alert('true')
+        document.querySelector('.scroll_area_wrapper').classList.add('blur-effect')
+      } else {
+        // alert('false')
+        document.querySelector('.scroll_area_wrapper').classList.remove('blur-effect')
+      }
+    }
   },
   created () {
     // window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false)
@@ -194,6 +243,24 @@ export default {
     //   window.localStorage.setItem('skin', val)
     //   this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin')
     // },
+    connectToWalletConnect () {
+      this.connectingWalletConnect = true
+      setTimeout(() => {
+        if (this.connectPopup) {
+          this.connected = true
+          this.connectPopup = false
+        }
+      }, 4000)
+    },
+    connectToMetaMask () {
+      this.connectingMetamask = true
+      setTimeout(() => {
+        if (this.connectPopup) {
+          this.connected = true
+          this.connectPopup = false
+        }
+      }, 4000)
+    },
     avatar (name) {
       return toSvg(name, 30)
     },
@@ -362,7 +429,44 @@ export default {
       }
     }
   }
-
+  .connect-popup-wrapper{
+    background: #1D1D21;
+    width: 100%;
+    min-height: 274px;
+    max-width: 360px;
+    border-radius: 20px;
+    box-shadow: 0px 36px 36px 0px #000 !important;
+    .popup-title{
+      font-size: 12px;
+      font-family: $MainFont;
+      font-weight: 600;
+    }
+    .action-label{
+      font-size: 12px;
+      font-family: $MainFont;
+      font-weight: 400;
+      opacity: .4;
+    }
+    .connecting-wrapper{
+      min-height: 140px;
+      .name{
+        font-family: $MainFont;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+    .connect-provider-btn{
+      background: #16161A !important;
+      /deep/ .q-btn__wrapper:before {
+        border: 2px solid #2D2D2D !important;
+      }
+      .name{
+        font-family: $MainFont;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+  }
 </style>
 <style>
 .dropdown-wrapper{

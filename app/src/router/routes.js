@@ -55,6 +55,10 @@ if (process.env.QMODE !== 'bex') {
         {
           path: '/staider-new-prototype/summary',
           component: () => import('pages/StaiderPrototype/Summary.vue')
+        },
+        {
+          path: '/staider-new-prototype/vault',
+          component: () => import('pages/StaiderPrototype/Vault.vue')
         }
       ]
     },

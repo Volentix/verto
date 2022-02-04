@@ -100,6 +100,9 @@ export default {
       max-width: 100%;
       height: calc(100vh - 101px) !important;
     }
+    &.blur-effect{
+      filter: blur(5px);
+    }
   }
   .main-q-layout{
     overflow: hidden !important;

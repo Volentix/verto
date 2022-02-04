@@ -171,7 +171,7 @@
 import VueApexCharts from 'vue-apexcharts'
 import { toSvg } from 'jdenticon'
 export default {
-  name: 'Footer',
+  name: 'SummaryPage',
   components: {
     apexcharts: VueApexCharts
   },
