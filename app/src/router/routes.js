@@ -138,6 +138,20 @@ if (process.env.QMODE !== 'bex') {
     }
 
     {
+      path: '/',
+      component: () => import('layouts/staiderLayoutNewPrototype.vue'),
+      children: [
+        {
+          path: '/staider-new-prototype/summary',
+          component: () => import('pages/StaiderPrototype/Summary.vue')
+        },
+        {
+          path: '/staider-new-prototype/vault',
+          component: () => import('pages/StaiderPrototype/Vault.vue')
+        }
+      ]
+    },
+    {
       path: '/blocktopusCreate',
       component: () => import('layouts/Default.vue'),
       children: [
