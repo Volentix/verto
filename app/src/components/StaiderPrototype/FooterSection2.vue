@@ -1,5 +1,5 @@
 <template>
-  <div class="main-footer">
+  <div class="main-footer q-pl-lg q-pr-lg">
     <div class="fluid-container">
       <div class="row">
         <div class="column main-logo" :class="{'col-12': $q.screen.width < 768, 'col-3': $q.screen.width >= 768}">
