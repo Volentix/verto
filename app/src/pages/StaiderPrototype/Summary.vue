@@ -270,6 +270,7 @@ export default {
   @import "assets/styles/staider_theme/helpers.scss";
   .summary-section{
     min-height: 600px;
+    padding: 30px;
     .main-title{
       span{
         font-family: $MainFont;

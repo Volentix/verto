@@ -87,13 +87,16 @@ export default {
   }
   .scroll_area_wrapper{
     box-shadow: 0px 34px 54px 0px #000;
+    border-radius: 20px;
+    overflow: hidden;
     max-width: calc(100% - 180px);
     margin-left: auto;
     margin-right: auto;
     margin-top: 120px;
     border-radius: 20px;
     background: rgba(#1D1D21, .8);
-    padding: 30px;
+    padding: 0px;
+    padding-bottom: 20px;
     &.height-auto{
       margin-top: 100px;
       border-radius: 0px;
@@ -110,10 +113,11 @@ export default {
   }
   /deep/ .q-scrollarea--dark .q-scrollarea__thumb {
     background: #fff;
-    right: 10px;
+    right: 7px;
     border-radius: 20px;
     width: 10px;
-    transform: scale(.9);
+    transform: scale(0.8);
+    z-index: 9999;
   }
   /deep/ .q-page-container{
     padding-top: 0px !important;
@@ -148,4 +152,12 @@ export default {
       }
     }
   }
+</style>
+<style>
+.q-table__card--dark, .q-table--dark {
+  border: 2px solid #2d2d30 !important;
+}
+.q-table--dark .q-table__bottom, .q-table--dark thead, .q-table--dark tr, .q-table--dark th, .q-table--dark td {
+    border-color: #2d2d30 !important;
+}
 </style>
