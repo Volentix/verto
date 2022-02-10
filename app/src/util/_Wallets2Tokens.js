@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import Lib from '@/util/walletlib'
-// import coinsNames from '@/util/coinsNames'
+import CW20s from '@/statics/json/cw20.json'
 
 import EosWrapper from '@/util/EosWrapper'
 
@@ -19,6 +19,7 @@ class Wallets2Tokens {
     let ethWallet = null
     this.tableDataCache = []
     this.tableData = []
+    this.cw20Pairs = CW20s
 
     // store.state.wallets.portfolioTotal = 0
     /*
@@ -375,6 +376,26 @@ class Wallets2Tokens {
 
     return r
   }
+  async getCw20TokenPrice (amount, contract, decimals = 6) {
+    let val = 0
+    if (!this.cw20Pairs.length) {
+      let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.terraswap.io/pairs')
+      if (res && res.data) {
+        this.cw20Pairs = res.data.pairs
+      }
+    }
+
+    let contr = this.cw20Pairs.find(o => o.asset_infos.find(a => a.token) && o.asset_infos.find(i => i.token).token.contract_addr === contract)
+
+    if (contr) {
+      let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://fcd.terra.dev/wasm/contracts/' + contr.contract_addr + '/store?query_msg={"simulation":{"offer_asset":{"amount":"' + amount + '","info":{"native_token":{"denom":"' + contr.asset_infos.find(o => o.native_token).native_token.denom + '"}}}}}')
+      if (res.data && res.data.result) {
+        val = 1 / (res.data.result.return_amount / amount)
+      }
+    }
+
+    return val
+  }
   async getTerraBalance (wallet) {
     axios.get(process.env[store.state.settings.network].CACHE + 'https://fcd.terra.dev/v1/market/swaprate/uusd').then(async res => {
       let marketPrice = res.data
@@ -383,25 +404,30 @@ class Wallets2Tokens {
         if (response.data && response.data.balance) {
           let resEc20s = await axios.post('https://mantle.terra.dev/', this.getCw20TokenBalanceQuery(resTokens.data, wallet.key))
           let tokensWIthBlance = Object.keys(resEc20s.data.data).filter(o => parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance))
-          tokensWIthBlance.map(o => {
+          tokensWIthBlance.map(async o => {
             let tkData = resTokens.data.mainnet[Object.keys(resTokens.data.mainnet).find(x => resTokens.data.mainnet[x].token.toLowerCase() === o)]
-
+            let amount = parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance)
+            let decimals = tkData.decimals || 6
+            let usd = await this.getCw20TokenPrice(amount, o, decimals)
+            amount = amount / 10 ** decimals
             let n = {
               contract: o,
               isCw20: true,
-              amount: parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance) / 10 ** (tkData.decimals || 6),
+              amount: amount,
               icon: tkData.icon,
-              type: tkData.symbol.toLowerCase(),
+              type: tkData.symbol,
               name: wallet.name,
               watch: wallet.watch,
-              tokenPrice: 0,
+              tokenPrice: usd || 0,
               key: wallet.key.toLowerCase(),
               privateKey: wallet.privateKey,
-              usd: 0,
+              usd: usd * amount,
               decimals: tkData.decimals,
               chain: 'terra'
             }
+
             this.tableData.push(n)
+            this.updateWallet()
           })
           response.data.balance.forEach(t => {
             let priceData = marketPrice.find(o => o.denom === t.denom)
@@ -814,7 +840,7 @@ class Wallets2Tokens {
         process.env[store.state.settings.network].CACHE +
           'https://api.zapper.fi/v1/balances/tokens?addresses%5B%5D=' +
           wallet.key +
-          '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+          '&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa'
       )
       .then(res => {
         let ethBalance = {

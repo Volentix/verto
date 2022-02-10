@@ -184,7 +184,7 @@ export default {
     padding-bottom: 50px;
     padding-right: 18px;
     @media screen and (min-width: 768px) {
-      padding-top: 11vh;
+      padding-top: 0vh;
       padding-bottom: 0px;
     }
   }

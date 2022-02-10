@@ -31,7 +31,7 @@
       <div class="bitcoin-area" v-if="mode == 'mini'">
         <div class="bitcoin-part row q-col-gutter-sm rounded-borders">
           <div
-          :class="{'col-md-3': mode == 'all', 'col-md-6' :  mode == 'mini'}"
+            :class="{'col-md-3': mode == 'all', 'col-md-6' :  mode == 'mini'}"
             class="bitcoin-part_a "
             @click="$emit('setItemAction', { item: item, tab: card.type })"
             v-for="(item, i) in card.data.slice(0, mode == 'all' ? card.data.length + 1 : card.limit)"
@@ -46,9 +46,9 @@
                   <q-item-label lines="1">{{ item.label }}</q-item-label>
                   <q-item-label class="text-bold"
                     >${{
-                      nFormatter2(
+                      formatNumber(
                         getChainTotal(item),
-                        getChainTotal(item) > 10 ? 0 : 2
+                        2
                       )
                     }}</q-item-label
                   >
@@ -139,29 +139,30 @@
               >${{
                 nFormatter2(
                   getChainTotal(item),
-                  getChainTotal(item) > 10 ? 0 : 2
+                  2
                 )
               }}</q-item-label
             >
           </q-item-section>
           <q-item-section v-else-if="card.type == 'assets'">
-            <q-item-label>{{ item.type.toUpperCase() }}</q-item-label>
-            <q-item-label class="text-bold" lines="1"
-              >${{ formatNumber(item.usd, 2) }}</q-item-label
+            <q-item-label  lines="1">{{ item.type.toUpperCase() }}</q-item-label>
+
+             <q-item-label :class="{'text-grey': $store.state.settings.lightMode === 'true'}" class="text-bold" lines="1"
+              caption>{{ formatNumber(item.amount, 2) }} <span v-if="item.usd">| ${{ nFormatter2(item.usd) }}</span></q-item-label
             >
           </q-item-section>
           <q-item-section v-if="card.type == 'investments'">
             <q-item-label
-              >{{ item.type.toUpperCase() }}
+              lines="1">{{ item.type.toUpperCase() }}
               {{ item.isStaked ? "Staked" : "" }}</q-item-label
             >
             <div v-if="item.pending">
-              Fetching HEX stats...
+              Fetching..
 
               <q-linear-progress indeterminate color="grey" class="q-mb-md" />
             </div>
-            <q-item-label v-else class="text-bold" lines="1"
-              >${{ formatNumber(item.usd, 2) }}</q-item-label
+            <q-item-label :class="{'text-grey': $store.state.settings.lightMode === 'true'}" class="text-bold" lines="1"
+              caption>{{ formatNumber(item.amount , 1) }} <span v-if="item.usd">| ${{ nFormatter2(item.usd,1) }}</span></q-item-label
             >
           </q-item-section>
 

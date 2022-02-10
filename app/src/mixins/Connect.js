@@ -25,7 +25,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const random = () => { return (Math.random() + 1).toString(36).substring(7) }
 export default {
   methods: {
-    initConnect () {
+    async initConnect () {
       this.$store.commit('currentwallet/setLoggedIn', false)
       /* var currentUser = Parse.User.current()
 
@@ -42,8 +42,8 @@ export default {
             //  console.log(error)
           })
       } */
-      this.loadMoralis()
-      this.initServer()
+      await this.loadMoralis()
+      await this.initServer()
     },
     setDialog (val) {
       this.showDialog = val
@@ -168,10 +168,12 @@ export default {
       element2.setAttribute('src', 'https://unpkg.com/moralis/dist/moralis.js')
       document.head.appendChild(element2)
     },
-    setUser (address, wallet = 'metamask') {
+    setUser (address, wallet = 'metamask', balance = 0) {
+      console.log(address, wallet, balance)
       this.$store.state.currentwallet.userData = {}
       this.user.address = address.toLowerCase()
       this.user.wallet = wallet
+      this.user.balance = balance
       this.user.addressFriendly = (this.user.address.substring(0, 6) + '...' + this.user.address.substr(this.user.address.length - 5)).toLowerCase()
       this.$store.commit('currentwallet/setLoggedIn', true)
       this.$store.commit('currentwallet/setLoggedData', this.user)
@@ -179,45 +181,51 @@ export default {
     },
     async initServer () {
       if (typeof Moralis === 'undefined') {
-        await delay(5000)
-        return this.initServer()
+        await delay(1000)
+        await this.initServer()
+        return
       }
 
-      setTimeout(async () => {
       /* global Moralis */
-        Moralis.initialize('Y3EQRdHC128aqLOdXG4Hzs5eXzXbsiAqX5dBSCMi')
-        Moralis.serverURL = 'https://blqup05sr0xr.usemoralis.com:2053/server'
-        // this.getTokensData()
-        if (Moralis.User.current()) {
-          let user = Moralis.User.current()
-          this.setUser(user.get('ethAddress'))
-          // await Moralis.enableWeb3()
-          //  let Web3 = require('web3')
-          //  let web3 = new Web3(Moralis.provider)
-          Moralis.onAccountChanged(async (accounts) => {
-            this.setUser(accounts[0])
-            await Moralis.link(accounts[0])
-          })
-        }
-        this.connectLoading = false
-      }, 1000)
+
+      await Moralis.start({ serverUrl: 'https://blqup05sr0xr.usemoralis.com:2053/server', appId: 'Y3EQRdHC128aqLOdXG4Hzs5eXzXbsiAqX5dBSCMi' })
+
+      Moralis.serverURL = 'https://blqup05sr0xr.usemoralis.com:2053/server'
+
+      // this.getTokensData()
+      if (Moralis.User.current()) {
+        let user = Moralis.User.current()
+        let data = await Moralis.Web3API.account.getNativeBalance()
+        this.setUser(user.get('ethAddress'), 'metamask', data.balance / (10 ** 18))
+        await Moralis.enableWeb3()
+        //  let Web3 = require('web3')
+        //  let web3 = new Web3(Moralis.provider)
+        Moralis.onAccountChanged(async (accounts) => {
+          let data = await Moralis.Web3API.account.getNativeBalance()
+          this.setUser(accounts[0], 'metamask', data.balance / (10 ** 18))
+          await Moralis.link(accounts[0])
+        })
+      }
+      this.connectLoading = false
     },
 
     async connect (wallet, data) {
       this.connectLoading = true
       this.user.wallet = wallet
-
+      if (typeof Moralis === 'undefined') {
+        await delay(1000)
+        return this.connect(wallet)
+      }
       if (wallet === 'metamask') {
-        if (typeof Moralis === 'undefined') {
-          await delay(5000)
-          return this.connect(wallet)
-        }
-        Moralis.Web3.authenticate().then(async (user) => {
+        await Moralis.enableWeb3()
+        Moralis.authenticate({ signingMessage: 'Log in with Staider' }).then(async (user) => {
           this.connectLoading = false
-          this.setUser(user.get('ethAddress'))
-          Moralis.Web3.onAccountsChanged(async (accounts) => {
-            this.setUser(accounts[0])
-            await Moralis.Web3.link(accounts[0])
+          let data = await Moralis.Web3API.account.getNativeBalance()
+          this.setUser(user.get('ethAddress'), wallet, data.balance / (10 ** 18))
+          Moralis.onAccountsChanged(async (accounts) => {
+            let data = await Moralis.Web3API.account.getNativeBalance()
+            this.setUser(accounts[0], wallet, data.balance / (10 ** 18))
+            await Moralis.link(accounts[0])
           })
         }).catch(async (error) => {
           if (error.toString().includes('Parse.initialize')) {
@@ -225,17 +233,25 @@ export default {
             this.connect()
           } else {
             this.connectLoading = false
+            this.connectionError = error.message
+            setTimeout(() => {
+              this.connectionError = false
+            }, 3000)
           }
         })
       } else if (wallet === 'walletconnect') {
-        walletConnectProvider.enable().then((accounts, e) => {
+        walletConnectProvider.enable().then(async (accounts, e) => {
           this.connectLoading = false
           if (accounts && accounts[0]) {
             this.provider = walletConnectProvider
-            this.setUser(accounts[0], 'walletconnect')
+            const options = { chain: 'eth', address: accounts[0] }
+            let data = await Moralis.Web3API.account.getNativeBalance(options)
+            this.setUser(accounts[0], 'walletconnect', data.balance / (10 ** 18))
 
-            walletConnectProvider.on('accountsChanged', (newAccounts) => {
-              this.setUser(accounts[0], 'walletconnect')
+            walletConnectProvider.on('accountsChanged', async (newAccounts) => {
+              const options = { chain: 'eth', address: accounts[0] }
+              let data = await Moralis.Web3API.account.getNativeBalance(options)
+              this.setUser(newAccounts[0], 'walletconnect', data.balance / (10 ** 18))
             })
           }
         }).catch(e => {
@@ -273,11 +289,13 @@ export default {
       showDialog: false,
       action: 'deposit',
       connectOptions: false,
+      connectionError: false,
       provider: null,
       EnzymeData: null,
       trigger: 1,
       user: {
         wallet: null,
+        balance: null,
         avatar: null,
         address: null,
         chain: 'eth',

@@ -2,7 +2,7 @@ import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
 import * as solanaWeb3 from '@solana/web3.js'
-// import abiHex from '@/statics/abi/hex.json'
+import abiHex from '@/statics/abi/hex.json'
 import abiEnz from '@/statics/abi/enz.json'
 import {
   userError
@@ -101,13 +101,12 @@ class Lib {
     } else {
       this.evms = evms
     }
-    console.log(this.evms, ' this.evms')
   }
   async hexStake (address) {
     let locked = 0
     let res = await axios.post('https://cpu.volentix.io/api/global/hexStats', { address: address })
     if (res.data.locked) {
-      locked = res.data.locked
+      locked = parseFloat(res.data.locked)
     }
     return locked
   }
@@ -121,12 +120,9 @@ class Lib {
     let data = await hex.methods.getCreator().call()
     console.log(data, 'data')
   }
-  async getHexStake (addr) {
-    let val = await this.hexStake(addr)
-    return val
-    /*
-    /* global BigInt
-    // addr = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
+  async getHexStakeData (addr) {
+    /* global BigInt */
+
     const compiledContractABI = JSON.parse(abiHex.result)
     const hexAddr = '0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39'
     const Web3 = require('web3')
@@ -207,23 +203,35 @@ class Lib {
 
     const interestForDay = (dayObj, myShares) => {
       let i = myShares * dayObj.payout / dayObj.shares
-      console.log(Number(i), 'i')
+
       return i
     }
 
-    let total = 0n
+    // let total = 0n
+    let stakeData = []
     for (let i = 0; i < stakeCount; i++) {
       let stake = await hex.methods.stakeLists(addr, i).call()
       // let interest = 0n
 
       let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
-      console.log(Number(interest) / (10 ** 8), stake.stakedHearts / (10 ** 8))
-      total += (BigInt(stake.stakedHearts) + interest) / BigInt(10 ** 8)
+      interest = Number((interest) / BigInt(10 ** 8))
+      stakeData.push({
+        startDate: parseInt(stake.lockedDay) + 1,
+        endDate: parseInt(stake.lockedDay) + parseInt(stake.stakedDays) + 1,
+        principal: parseInt(stake.stakedHearts) / 10 ** 8,
+        stakeshares: stake.stakeShares,
+        interest: interest,
+        index: i,
+        stakeId: stake.stakeId
+      })
     }
-    total = Number(total)
+    //  total = Number(total)
 
-    return total
-    */
+    return stakeData
+  }
+  async getHexStake (addr) {
+    let val = await this.hexStake(addr)
+    return val
   }
   getDefaultToken (chain) {
     let defaultImg = 'statics/empty-token.png'
@@ -243,7 +251,7 @@ class Lib {
   }
   async fetchNfts (address) {
     /// address = '0x60e4d786628fea6478f785a6d7e704777c86a7c6'
-    let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88&newBalances=true'
+    let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa&newBalances=true'
     let res = await axios.get(url)
     let nfts = []
     if (res.data && res.data[address] && res.data[address].products.length) {
@@ -1222,7 +1230,7 @@ class Lib {
         (asset.address && t.platforms2.includes(asset.address.toLowerCase())) ||
         (!t.platforms2.join(',').includes('0x'))
       ))
-    console.log(asset, 'asset', token)
+
     return token ? token.id : null
   }
   async getCoinGeckoPrice (asset) {
@@ -1459,7 +1467,7 @@ class Lib {
               })
               .then(async tx => {
                 let data = await terra.tx.broadcast(tx)
-                console.log(data, 'data')
+
                 if (!isTxError(data)) {
                   resolve({
                     message: `https://finder.terra.money/mainnet/tx/${data.txhash}`,

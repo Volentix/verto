@@ -127,8 +127,9 @@ export default {
     vtxstaking: false,
     tab: 'dashboard'
   },
-  chainsSendEnabled: ['eos', 'bnb', 'eth', 'dot', 'ksm', 'bsc', 'avax', 'avaxc', 'matic', 'ftm', 'btc'],
+  chainsSendEnabled: ['eos', 'bnb', 'eth', 'dot', 'ksm', 'bsc', 'avax', 'avaxc', 'matic', 'ftm', 'btc', 'terra'],
   disableChains: ['xtz', 'xlm', 'ltc', 'dash'],
+  importDisabled: ['bnb', 'dot', 'ksm', 'avax', 'sol'],
   backupConfig: false,
   defiMenu: 'swap',
   isDemo: false,

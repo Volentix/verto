@@ -392,7 +392,7 @@ export default {
       })
 
       let amount = isNaN(value) ? '0.00' : formatter.format(value)
-      if (parseFloat(num) >= 1000000) amount = this.nFormatter2(num)
+      if (parseFloat(num) >= 9999) amount = this.nFormatter2(num, decimals, 1)
       if (parseFloat(amount) === 0 && parseFloat(num) !== 0 && !isNaN(amount) && decimals !== 0 && Math.abs(parseFloat(num)) < 0.00001) {
         if (scientific) {
           amount = parseFloat(num).toExponential().replace(/e\+?/, ' x10^')

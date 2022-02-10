@@ -26,7 +26,7 @@
               />
             </q-tabs>
 
-            <q-separator v-if="!$q.platform.is.mobile"/>
+            <q-separator v-if="!$q.platform.is.mobile" />
 
             <q-tab-panels v-model="tab" animated>
               <q-tab-panel name="stake">
@@ -66,15 +66,15 @@
                       :name="1"
                       prefix="1"
                       :done="step > 1"
-                    >
-                      <div class="row">
-                        <div class="col-md-4">
+                    ><div class="row">
+                      <div class="row col-md-5" >
+                        <div class="col-md-12">
                           <span class="text-body2">Switch account here</span>
                           <q-select
                             :dark="$store.state.settings.lightMode === 'true'"
                             :light="$store.state.settings.lightMode === 'false'"
                             separator
-                            rounded
+
                             outlined
                             @input="
                               $store.state.currentwallet.wallet =
@@ -82,7 +82,7 @@
                               initAccount();
                               initData();
                             "
-                            class="select-input q-pt-sm"
+                            class="select-input q-py-md q-mb-md"
                             v-model="currentAccount"
                             use-input
                             :options="tableData"
@@ -145,13 +145,10 @@
                               />
                             </template>
                           </q-select>
-                            <div class="row current-stake-balanca">
+                          <div class="row current-stake-balanca">
                             <div class="">
                               <span class="--title row text-h6">
-                                Current Balance<br />{{
-                                  params.tokenID.toUpperCase()
-                                }}
-                                (Liquid)
+                                Liquid Balance
                               </span>
                               <span class="--amount row text-h4">
                                 {{ formatNumber(currentAccount.amount, 0) }}
@@ -170,22 +167,33 @@
                             </div>
                             <div class="col">
                               <span class="--title row text-h6">
-                                Current Stake<br />{{
-                                  params.tokenID.toUpperCase()
-                                }}
-                                (Staked)
+                                Staked + Interest
+
                               </span>
-                              <span class="--amount row text-h4">
+                              <span
+                                v-if="currentAccount.staked != 'pending'"
+                                class="--amount row text-h4"
+                              >
                                 {{ formatNumber(currentAccount.staked, 0) }}
                                 {{ params.tokenID.toUpperCase() }}</span
                               >
+                              <span v-else>
+                                <q-linear-progress
+                                  indeterminate
+                                  color="grey"
+                                  class="q-mt-sm"
+                              /></span>
                             </div>
                           </div>
                         </div>
+                        <div class="col-md-12 ">
+                          <StakesTable @getEndStakeEndingData="getEndStakeEndingData" :key="currentAccount.key" :address="currentAccount.key"
 
+                          />
+                        </div>
                       </div>
 
-                      <div class="text-black">
+                      <div class="text-black col-md-6">
                         <!-- <p class="text-h6 text-grey">Condition 1</p> -->
                         <div v-if="condition === 1" class="condition_1">
                           <p class="--alert text-indigo-6 text-h6">
@@ -213,8 +221,7 @@
                         <div v-if="condition === 3" class="condition_3">
                           <div class="text-black">
                             <div class="row">
-
-                              <div class="col-md-6 q-pa-md ">
+                              <div class="col-md-12 q-pa-md">
                                 <div
                                   class="
                                     summary-wrapper
@@ -223,17 +230,20 @@
                                     q-mx-lg q-px-lg
                                     rounded-borders
                                   "
-
                                 >
                                   <div class="full-width">
-
-                                    <span>Enter amount</span>
+                                     <div  v-if="action == 'Unstake'" class="q-mb-lg">
+                                       <q-btn flat icon="arrow_back" @click="action = 'Stake'; getStakingObject()" label="Back" />
+                                       <span class="q-pt-sm text-deep-purple-12">Your are about to unstake...</span>
+                                     </div>
+                                    <span v-if="action == 'Stake'">Enter amount</span>
                                     <q-input
+                                    v-if="action == 'Stake'"
                                       :dark="
                                         $store.state.settings.lightMode ===
                                         'true'
                                       "
-                                       style="max-width: 300px"
+                                      style="max-width: 300px"
                                       :light="
                                         $store.state.settings.lightMode ===
                                         'false'
@@ -244,14 +254,18 @@
                                       rounded
                                       outlined
                                       class="--input"
-                                      @input="getStakingData(); getStakingObject()"
+                                      @input="
+                                        getStakingData();
+                                        getStakingObject();
+                                      "
                                       :rules="[
                                         (val) => val >= 1 || '1 HEX Minimum',
                                       ]"
                                     />
-                                    <span>Enter number of days</span>
+
                                     <q-input
-                                     style="max-width: 300px"
+                                    v-if="action == 'Stake'"
+                                      style="max-width: 300px"
                                       :dark="
                                         $store.state.settings.lightMode ===
                                         'true'
@@ -267,76 +281,95 @@
                                       max="5555"
                                       outlined
                                       class="--input"
-                                      @input="getStakingData(); getStakingObject()"
+                                      @input="
+                                        getStakingData();
+                                        getStakingObject();
+                                      "
                                       :rules="[
-                                        (val) => val >= 0 && val <= 5555 || 'Day should be between 1 and 5555',
+                                        (val) =>
+                                          (val >= 0 && val <= 5555) ||
+                                          'Day should be between 1 and 5555',
                                       ]"
                                     />
                                     <GasSelector
-                                ref="gas_global"
-                                :key="daysNumber+sendAmount+uniqueKey"
-                                v-if="currentAccount &&
-                                  txObj &&
-                                  txObj.data
-                                "
-                                @setGas="setSelectedGas"
-                                :txObject="txObj"
-                                :currentAccount="currentAccount"
-                                :txData="{  method: 'txObject'}"
-                                :type="'hex'"
-                              />
-                               <q-btn
-                               :disable="!txObj || !txObj.gas"
-                          @click="step = 2"
-                          unelevated
-                          color="deep-purple-14"
-                          class="--next-btn"
-                          rounded
-                          label="Stake Hex"
-                        />
-                                    <div   v-if="false">
-                                     <span class="--title row text-h6">
-                                      Amount to stake
-                                    </span>
-                                    <span class="--amount row text-h4">
-                                      {{ formatNumber(sendAmount, 2) }}
-                                      {{ params.tokenID.toUpperCase() }}</span
-                                    >
-                                    <span
-                                      class="--title row text-h6 text-indigo-6"
-                                      :class="{ 'q-pt-md': sendAmount < 1 }"
-                                    >
-                                      Estimated stake reward
-                                    </span>
-                                    <span class="--amount row text-h4">
-                                      {{ formatNumber(estimatedReward, 2) }}
-                                      {{ params.tokenID.toUpperCase() }}
-                                    </span>
-                                    <span
-
-                                      class="
-                                        --title
-                                        row
-                                        text-h6 text-indigo-6
-                                        q-pt-lg
+                                      ref="gas_global"
+                                      :key="daysNumber + sendAmount + uniqueKey"
+                                      v-if="
+                                        currentAccount && txObj && txObj.data
                                       "
-                                    >
-                                      Staking period
-                                    </span>
-                                    <span class="--amount row text-h4">{{
-                                      `${stakePeriod * period_duration}` +
-                                      " days"
-                                    }}</span>
+                                      @setGas="setSelectedGas"
+                                      :txObject="txObj"
+                                      :currentAccount="currentAccount"
+                                      :txData="{ method: 'txObject' }"
+                                      :type="'hex'"
+                                    />
+
+                                    <q-btn
+                                      :disable="!txObj || !txObj.gas"
+                                      @click="step = 2"
+                                      unelevated
+                                      color="deep-purple-14"
+                                      class="--next-btn"
+                                      rounded
+                                      :key="uniqueKey"
+                                      :label="action == 'Stake' ? 'Stake Hex' : 'Unstake'"
+                                    />
+                                    <div v-if="false">
+                                      <span class="--title row text-h6">
+                                        Amount to stake
+                                      </span>
+                                      <span class="--amount row text-h4">
+                                        {{ formatNumber(sendAmount, 2) }}
+                                        {{ params.tokenID.toUpperCase() }}</span
+                                      >
+                                      <span
+                                        class="
+                                          --title
+                                          row
+                                          text-h6 text-indigo-6
+                                        "
+                                        :class="{ 'q-pt-md': sendAmount < 1 }"
+                                      >
+                                        Estimated stake reward
+                                      </span>
+                                      <span class="--amount row text-h4">
+                                        {{ formatNumber(estimatedReward, 2) }}
+                                        {{ params.tokenID.toUpperCase() }}
+                                      </span>
+                                      <span
+                                        class="
+                                          --title
+                                          row
+                                          text-h6 text-indigo-6
+                                          q-pt-lg
+                                        "
+                                      >
+                                        Staking period
+                                      </span>
+                                      <span class="--amount row text-h4">{{
+                                        `${stakePeriod * period_duration}` +
+                                        " days"
+                                      }}</span>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div v-html="summary" class="col-md-6 summary-data" :style="$q.platform.is.mobile ? 'margin-top: auto':''"> </div>
+
+                              <div
+                                v-if="false"
+                                v-html="summary"
+                                class="col-md-6 summary-data"
+                                :style="
+                                  $q.platform.is.mobile
+                                    ? 'margin-top: auto'
+                                    : ''
+                                "
+                              ></div>
                             </div>
                           </div>
                         </div>
                       </div>
-
+</div>
                       <div class="staked-wrapper">
                         <div
                           v-for="(stake, i) in stakes"
@@ -466,7 +499,7 @@
                           q-mt-sm
                         "
                       >
-                        You are about to stake
+                        You are about to {{action}} <span v-if="action == 'Stake'">
                         <span class="text-deep-purple-12"
                           >{{ formatNumber(sendAmount, 0) }}
                           {{ params.tokenID.toUpperCase() }}</span
@@ -474,7 +507,13 @@
                         for a period of
                         <span class="text-deep-purple-12"
                           >{{ daysNumber }} days</span
-                        >.
+                        >. </span>
+                         <span v-else><br/>
+                         <b>Principal:</b> {{contextData.principal}} HEX<br/>
+                         <b>Stake ID: </b> {{contextData.stakeId}}<br/>
+                          </span>
+                          <span v-if="ErrorMessage" class="text-red q-pt-md">{{ErrorMessage}}</span>
+
                       </div>
                       <div class="text-black">
                         <div class="text-h4 --subtitle">Are you sure?</div>
@@ -513,9 +552,12 @@
                         v-if="!transactionError && transactionId"
                         class="content__success"
                       >
-                      <q-linear-progress indeterminate  v-if="status == 'pending'" />
+                        <q-linear-progress
+                          indeterminate
+                          v-if="status == 'pending'"
+                        />
                         <img
-                         v-else-if="status == 'success'"
+                          v-else-if="status == 'success'"
                           src="statics/success_icon.svg"
                           class="success_icon"
                           alt=""
@@ -576,7 +618,10 @@
                       </div>
                     </q-step>
                   </q-stepper>
-                  <div class="staked-wrapper full-width" v-if="step == 4 && false">
+                  <div
+                    class="staked-wrapper full-width"
+                    v-if="step == 4 && false"
+                  >
                     <div
                       v-for="(stake, i) in stakes"
                       :key="i"
@@ -693,21 +738,25 @@
 <script>
 import { date } from 'quasar'
 import Formatter from '@/mixins/Formatter'
+import StakesTable from './HexStakesTable.vue'
 import initWallet from '@/util/_Wallets2Tokens'
 import GasSelector from '..//ETH/GasSelector.vue'
 import Lib from '@/util/walletlib'
 let hexContractAddress = '0x2b591e99afe9f32eaa6214f7b7629768c40eeb39'
-let abi = '[{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data1","type":"uint256"},{"indexed":true,"internalType":"bytes20","name":"btcAddr","type":"bytes20"},{"indexed":true,"internalType":"address","name":"claimToAddr","type":"address"},{"indexed":true,"internalType":"address","name":"referrerAddr","type":"address"}],"name":"Claim","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data1","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data2","type":"uint256"},{"indexed":true,"internalType":"address","name":"senderAddr","type":"address"}],"name":"ClaimAssist","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"address","name":"updaterAddr","type":"address"}],"name":"DailyDataUpdate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"uint40","name":"stakeId","type":"uint40"}],"name":"ShareRateChange","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data1","type":"uint256"},{"indexed":true,"internalType":"address","name":"stakerAddr","type":"address"},{"indexed":true,"internalType":"uint40","name":"stakeId","type":"uint40"}],"name":"StakeEnd","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data1","type":"uint256"},{"indexed":true,"internalType":"address","name":"stakerAddr","type":"address"},{"indexed":true,"internalType":"uint40","name":"stakeId","type":"uint40"},{"indexed":true,"internalType":"address","name":"senderAddr","type":"address"}],"name":"StakeGoodAccounting","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"address","name":"stakerAddr","type":"address"},{"indexed":true,"internalType":"uint40","name":"stakeId","type":"uint40"}],"name":"StakeStart","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"address","name":"memberAddr","type":"address"},{"indexed":true,"internalType":"uint256","name":"entryId","type":"uint256"},{"indexed":true,"internalType":"address","name":"referrerAddr","type":"address"}],"name":"XfLobbyEnter","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"address","name":"memberAddr","type":"address"},{"indexed":true,"internalType":"uint256","name":"entryId","type":"uint256"},{"indexed":true,"internalType":"address","name":"referrerAddr","type":"address"}],"name":"XfLobbyExit","type":"event"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"constant":true,"inputs":[],"name":"allocatedSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"rawSatoshis","type":"uint256"},{"internalType":"bytes32[]","name":"proof","type":"bytes32[]"},{"internalType":"address","name":"claimToAddr","type":"address"},{"internalType":"bytes32","name":"pubKeyX","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyY","type":"bytes32"},{"internalType":"uint8","name":"claimFlags","type":"uint8"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"},{"internalType":"uint256","name":"autoStakeDays","type":"uint256"},{"internalType":"address","name":"referrerAddr","type":"address"}],"name":"btcAddressClaim","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes20","name":"","type":"bytes20"}],"name":"btcAddressClaims","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes20","name":"btcAddr","type":"bytes20"},{"internalType":"uint256","name":"rawSatoshis","type":"uint256"},{"internalType":"bytes32[]","name":"proof","type":"bytes32[]"}],"name":"btcAddressIsClaimable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes20","name":"btcAddr","type":"bytes20"},{"internalType":"uint256","name":"rawSatoshis","type":"uint256"},{"internalType":"bytes32[]","name":"proof","type":"bytes32[]"}],"name":"btcAddressIsValid","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"claimToAddr","type":"address"},{"internalType":"bytes32","name":"claimParamHash","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyX","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyY","type":"bytes32"},{"internalType":"uint8","name":"claimFlags","type":"uint8"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"claimMessageMatchesSignature","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"currentDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"dailyData","outputs":[{"internalType":"uint72","name":"dayPayoutTotal","type":"uint72"},{"internalType":"uint72","name":"dayStakeSharesTotal","type":"uint72"},{"internalType":"uint56","name":"dayUnclaimedSatoshisTotal","type":"uint56"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"beginDay","type":"uint256"},{"internalType":"uint256","name":"endDay","type":"uint256"}],"name":"dailyDataRange","outputs":[{"internalType":"uint256[]","name":"list","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"beforeDay","type":"uint256"}],"name":"dailyDataUpdate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"globalInfo","outputs":[{"internalType":"uint256[13]","name":"","type":"uint256[13]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"globals","outputs":[{"internalType":"uint72","name":"lockedHeartsTotal","type":"uint72"},{"internalType":"uint72","name":"nextStakeSharesTotal","type":"uint72"},{"internalType":"uint40","name":"shareRate","type":"uint40"},{"internalType":"uint72","name":"stakePenaltyTotal","type":"uint72"},{"internalType":"uint16","name":"dailyDataCount","type":"uint16"},{"internalType":"uint72","name":"stakeSharesTotal","type":"uint72"},{"internalType":"uint40","name":"latestStakeId","type":"uint40"},{"internalType":"uint128","name":"claimStats","type":"uint128"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"merkleLeaf","type":"bytes32"},{"internalType":"bytes32[]","name":"proof","type":"bytes32[]"}],"name":"merkleProofIsValid","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"pubKeyX","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyY","type":"bytes32"},{"internalType":"uint8","name":"claimFlags","type":"uint8"}],"name":"pubKeyToBtcAddress","outputs":[{"internalType":"bytes20","name":"","type":"bytes20"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"pubKeyX","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyY","type":"bytes32"}],"name":"pubKeyToEthAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"stakerAddr","type":"address"}],"name":"stakeCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"stakeIndex","type":"uint256"},{"internalType":"uint40","name":"stakeIdParam","type":"uint40"}],"name":"stakeEnd","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"stakerAddr","type":"address"},{"internalType":"uint256","name":"stakeIndex","type":"uint256"},{"internalType":"uint40","name":"stakeIdParam","type":"uint40"}],"name":"stakeGoodAccounting","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"stakeLists","outputs":[{"internalType":"uint40","name":"stakeId","type":"uint40"},{"internalType":"uint72","name":"stakedHearts","type":"uint72"},{"internalType":"uint72","name":"stakeShares","type":"uint72"},{"internalType":"uint16","name":"lockedDay","type":"uint16"},{"internalType":"uint16","name":"stakedDays","type":"uint16"},{"internalType":"uint16","name":"unlockedDay","type":"uint16"},{"internalType":"bool","name":"isAutoStake","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"newStakedHearts","type":"uint256"},{"internalType":"uint256","name":"newStakedDays","type":"uint256"}],"name":"stakeStart","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"xfLobby","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"referrerAddr","type":"address"}],"name":"xfLobbyEnter","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"memberAddr","type":"address"},{"internalType":"uint256","name":"entryId","type":"uint256"}],"name":"xfLobbyEntry","outputs":[{"internalType":"uint256","name":"rawAmount","type":"uint256"},{"internalType":"address","name":"referrerAddr","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"enterDay","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"xfLobbyExit","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"xfLobbyFlush","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"xfLobbyMembers","outputs":[{"internalType":"uint40","name":"headIndex","type":"uint40"},{"internalType":"uint40","name":"tailIndex","type":"uint40"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"memberAddr","type":"address"}],"name":"xfLobbyPendingDays","outputs":[{"internalType":"uint256[2]","name":"words","type":"uint256[2]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"beginDay","type":"uint256"},{"internalType":"uint256","name":"endDay","type":"uint256"}],"name":"xfLobbyRange","outputs":[{"internalType":"uint256[]","name":"list","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"}]'
+let abi =
+  '[{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data1","type":"uint256"},{"indexed":true,"internalType":"bytes20","name":"btcAddr","type":"bytes20"},{"indexed":true,"internalType":"address","name":"claimToAddr","type":"address"},{"indexed":true,"internalType":"address","name":"referrerAddr","type":"address"}],"name":"Claim","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data1","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data2","type":"uint256"},{"indexed":true,"internalType":"address","name":"senderAddr","type":"address"}],"name":"ClaimAssist","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"address","name":"updaterAddr","type":"address"}],"name":"DailyDataUpdate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"uint40","name":"stakeId","type":"uint40"}],"name":"ShareRateChange","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data1","type":"uint256"},{"indexed":true,"internalType":"address","name":"stakerAddr","type":"address"},{"indexed":true,"internalType":"uint40","name":"stakeId","type":"uint40"}],"name":"StakeEnd","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"data1","type":"uint256"},{"indexed":true,"internalType":"address","name":"stakerAddr","type":"address"},{"indexed":true,"internalType":"uint40","name":"stakeId","type":"uint40"},{"indexed":true,"internalType":"address","name":"senderAddr","type":"address"}],"name":"StakeGoodAccounting","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"address","name":"stakerAddr","type":"address"},{"indexed":true,"internalType":"uint40","name":"stakeId","type":"uint40"}],"name":"StakeStart","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"address","name":"memberAddr","type":"address"},{"indexed":true,"internalType":"uint256","name":"entryId","type":"uint256"},{"indexed":true,"internalType":"address","name":"referrerAddr","type":"address"}],"name":"XfLobbyEnter","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"data0","type":"uint256"},{"indexed":true,"internalType":"address","name":"memberAddr","type":"address"},{"indexed":true,"internalType":"uint256","name":"entryId","type":"uint256"},{"indexed":true,"internalType":"address","name":"referrerAddr","type":"address"}],"name":"XfLobbyExit","type":"event"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"constant":true,"inputs":[],"name":"allocatedSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"rawSatoshis","type":"uint256"},{"internalType":"bytes32[]","name":"proof","type":"bytes32[]"},{"internalType":"address","name":"claimToAddr","type":"address"},{"internalType":"bytes32","name":"pubKeyX","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyY","type":"bytes32"},{"internalType":"uint8","name":"claimFlags","type":"uint8"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"},{"internalType":"uint256","name":"autoStakeDays","type":"uint256"},{"internalType":"address","name":"referrerAddr","type":"address"}],"name":"btcAddressClaim","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes20","name":"","type":"bytes20"}],"name":"btcAddressClaims","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes20","name":"btcAddr","type":"bytes20"},{"internalType":"uint256","name":"rawSatoshis","type":"uint256"},{"internalType":"bytes32[]","name":"proof","type":"bytes32[]"}],"name":"btcAddressIsClaimable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes20","name":"btcAddr","type":"bytes20"},{"internalType":"uint256","name":"rawSatoshis","type":"uint256"},{"internalType":"bytes32[]","name":"proof","type":"bytes32[]"}],"name":"btcAddressIsValid","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"claimToAddr","type":"address"},{"internalType":"bytes32","name":"claimParamHash","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyX","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyY","type":"bytes32"},{"internalType":"uint8","name":"claimFlags","type":"uint8"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"claimMessageMatchesSignature","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"currentDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"dailyData","outputs":[{"internalType":"uint72","name":"dayPayoutTotal","type":"uint72"},{"internalType":"uint72","name":"dayStakeSharesTotal","type":"uint72"},{"internalType":"uint56","name":"dayUnclaimedSatoshisTotal","type":"uint56"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"beginDay","type":"uint256"},{"internalType":"uint256","name":"endDay","type":"uint256"}],"name":"dailyDataRange","outputs":[{"internalType":"uint256[]","name":"list","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"beforeDay","type":"uint256"}],"name":"dailyDataUpdate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"globalInfo","outputs":[{"internalType":"uint256[13]","name":"","type":"uint256[13]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"globals","outputs":[{"internalType":"uint72","name":"lockedHeartsTotal","type":"uint72"},{"internalType":"uint72","name":"nextStakeSharesTotal","type":"uint72"},{"internalType":"uint40","name":"shareRate","type":"uint40"},{"internalType":"uint72","name":"stakePenaltyTotal","type":"uint72"},{"internalType":"uint16","name":"dailyDataCount","type":"uint16"},{"internalType":"uint72","name":"stakeSharesTotal","type":"uint72"},{"internalType":"uint40","name":"latestStakeId","type":"uint40"},{"internalType":"uint128","name":"claimStats","type":"uint128"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"merkleLeaf","type":"bytes32"},{"internalType":"bytes32[]","name":"proof","type":"bytes32[]"}],"name":"merkleProofIsValid","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"pubKeyX","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyY","type":"bytes32"},{"internalType":"uint8","name":"claimFlags","type":"uint8"}],"name":"pubKeyToBtcAddress","outputs":[{"internalType":"bytes20","name":"","type":"bytes20"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"pubKeyX","type":"bytes32"},{"internalType":"bytes32","name":"pubKeyY","type":"bytes32"}],"name":"pubKeyToEthAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"stakerAddr","type":"address"}],"name":"stakeCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"stakeIndex","type":"uint256"},{"internalType":"uint40","name":"stakeIdParam","type":"uint40"}],"name":"stakeEnd","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"stakerAddr","type":"address"},{"internalType":"uint256","name":"stakeIndex","type":"uint256"},{"internalType":"uint40","name":"stakeIdParam","type":"uint40"}],"name":"stakeGoodAccounting","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"stakeLists","outputs":[{"internalType":"uint40","name":"stakeId","type":"uint40"},{"internalType":"uint72","name":"stakedHearts","type":"uint72"},{"internalType":"uint72","name":"stakeShares","type":"uint72"},{"internalType":"uint16","name":"lockedDay","type":"uint16"},{"internalType":"uint16","name":"stakedDays","type":"uint16"},{"internalType":"uint16","name":"unlockedDay","type":"uint16"},{"internalType":"bool","name":"isAutoStake","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"newStakedHearts","type":"uint256"},{"internalType":"uint256","name":"newStakedDays","type":"uint256"}],"name":"stakeStart","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"xfLobby","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"referrerAddr","type":"address"}],"name":"xfLobbyEnter","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"memberAddr","type":"address"},{"internalType":"uint256","name":"entryId","type":"uint256"}],"name":"xfLobbyEntry","outputs":[{"internalType":"uint256","name":"rawAmount","type":"uint256"},{"internalType":"address","name":"referrerAddr","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"enterDay","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"xfLobbyExit","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"xfLobbyFlush","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"xfLobbyMembers","outputs":[{"internalType":"uint40","name":"headIndex","type":"uint40"},{"internalType":"uint40","name":"tailIndex","type":"uint40"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"memberAddr","type":"address"}],"name":"xfLobbyPendingDays","outputs":[{"internalType":"uint256[2]","name":"words","type":"uint256[2]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"beginDay","type":"uint256"},{"internalType":"uint256","name":"endDay","type":"uint256"}],"name":"xfLobbyRange","outputs":[{"internalType":"uint256[]","name":"list","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"}]'
 export default {
   name: 'HEXConverter',
   components: {
-    GasSelector
+    GasSelector,
+    StakesTable
   },
   data () {
     return {
       tab: 'stake',
       step: 1,
       period_duration: 1,
+      stakeData: [],
       daysNumber: 100,
       txObj: null,
       timers: [],
@@ -740,6 +789,8 @@ export default {
       },
       uniqueKey: 0,
       transactionId: null,
+      action: 'Stake',
+      contextData: null,
       transactionError: '',
       spinnerVisible: false,
       isPwd: true,
@@ -772,27 +823,52 @@ export default {
         console.log(res, ' res')
       })
       */
+    this.getStakingData()
   },
   methods: {
     getStakingObject () {
       this.txObj = {
         from: this.currentAccount.key,
         to: hexContractAddress,
-        chainId: 1
-
+        chainId: 1,
+        gas: 0
       }
 
       const web3 = Lib.getWeb3Instance('eth')
-      var hearts = Math.round(this.sendAmount * (10 ** 8))
-      let hexrefContract = new web3.eth.Contract(JSON.parse(abi), hexContractAddress)
-      this.txObj.data = hexrefContract.methods.stakeStart(web3.utils.toHex(hearts.toString()), this.daysNumber).encodeABI()
+      var hearts = Math.round(this.sendAmount * 10 ** 8)
+      let hexrefContract = new web3.eth.Contract(
+        JSON.parse(abi),
+        hexContractAddress
+      )
+      this.txObj.data = hexrefContract.methods
+        .stakeStart(web3.utils.toHex(hearts.toString()), this.daysNumber)
+        .encodeABI()
       this.$set(this, 'txObj', this.txObj)
+
+      this.uniqueKey++
+      this.action = 'Stake'
+    },
+    getEndStakeEndingData (data) {
+      const web3 = Lib.getWeb3Instance('eth')
+      this.contextData = data
+      let hexrefContract = new web3.eth.Contract(
+        JSON.parse(abi),
+        hexContractAddress
+      )
+
+      this.txObj.gas = 0
+      let d = hexrefContract.methods
+        .stakeEnd(data.index, data.stakeId)
+        .encodeABI()
+      this.$set(this.txObj, 'data', d)
+      this.action = 'Unstake'
       this.uniqueKey++
     },
     setSelectedGas (data) {
       if (data.value && data.value.gas && data.value.gasPrice) {
         this.txObj.gas = data.value.gas
         this.txObj.gasPrice = data.value.gasPrice
+        this.$set(this, 'txObj', this.txObj)
       }
     },
     async getStakingData () {
@@ -800,7 +876,12 @@ export default {
         stake: this.sendAmount,
         days: this.daysNumber,
         chosencurrency: 'USD',
-        hex_price_prediction: (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=hex&vs_currencies=usd')).data.hex.usd
+        hex_price_prediction: (
+          await this.$axios.get(
+            process.env[this.$store.state.settings.network].CACHE +
+              'https://api.coingecko.com/api/v3/simple/price?ids=hex&vs_currencies=usd'
+          )
+        ).data.hex.usd
       }
       this.spinnerVisible = true
       this.$axios
@@ -821,17 +902,25 @@ export default {
         })
     },
     initAccount () {
-      this.tableData = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens
-        .filter((o) => o.chain === 'eth' && o.type === 'eth')))
-        .map((o) => {
-          o.label = o.name
-          o.value = o.key
-          o.icon = 'https://ethplorer.io/images/HEX2b591e99.png'
-          let token = this.$store.state.wallets.tokens
-            .find((a) => a.chain === 'eth' && a.type === 'hex' && a.key.toLowerCase() === o.key.toLowerCase())
-          o.amount = token ? token.amount : 0
-          return o
-        })
+      this.tableData = JSON.parse(
+        JSON.stringify(
+          this.$store.state.wallets.tokens.filter(
+            (o) => o.chain === 'eth' && o.type === 'eth'
+          )
+        )
+      ).map((o) => {
+        o.label = o.name
+        o.value = o.key
+        o.icon = 'https://ethplorer.io/images/HEX2b591e99.png'
+        let token = this.$store.state.wallets.tokens.find(
+          (a) =>
+            a.chain === 'eth' &&
+            a.type === 'hex' &&
+            a.key.toLowerCase() === o.key.toLowerCase()
+        )
+        o.amount = token ? token.amount : 0
+        return o
+      })
 
       if (this.tableData && this.tableData.length) {
         if (!this.currentAccount) {
@@ -862,6 +951,8 @@ export default {
         : 0
 
       this.sendAmount = 100
+      this.getStakingObject()
+      this.action = 'Stake'
       // this.changeAmount()
       /*
       if (this.stakes.length === 0) {
@@ -934,9 +1025,10 @@ export default {
         this.setTimers()
         this.currentAccount.staked = stakedAmounts
         */
-      this.currentAccount.staked = await Lib.getHexStake(this.currentAccount.key)
-
-      this.getStakingObject()
+      this.$set(this.currentAccount, 'staked', 'pending')
+      this.currentAccount.staked = await Lib.getHexStake(
+        this.currentAccount.key
+      )
     },
 
     setTimers () {
@@ -1006,6 +1098,7 @@ export default {
       }
     },
     stakeHex () {
+      this.ErrorMessage = false
       this.spinnerVisible = true
       let data = {
         gasData: this.txObj,
@@ -1032,21 +1125,18 @@ export default {
               '" target="_blank">Block explorer</a>'
             this.step = 4
             this.status = 'pending'
-            let status = await Lib.checkEvmTxStatus(
-              this.transactionId,
-              'eth'
-            )
+            let status = await Lib.checkEvmTxStatus(this.transactionId, 'eth')
             if (status) {
               this.showMessage =
-              'Transaction submitted. Current status: Sucessful. <a href="https://etherscan.io/tx/' +
-              this.transactionId +
-              '" target="_blank">Block explorer</a>'
+                'Transaction submitted. Current status: Sucessful. <a href="https://etherscan.io/tx/' +
+                this.transactionId +
+                '" target="_blank">Block explorer</a>'
               this.status = 'success'
             } else {
               this.showMessage =
-              'Transaction submitted. Current status: Failed. <a href="https://etherscan.io/tx/' +
-              this.transactionId +
-              '" target="_blank">Block explorer</a>'
+                'Transaction submitted. Current status: Failed. <a href="https://etherscan.io/tx/' +
+                this.transactionId +
+                '" target="_blank">Block explorer</a>'
               this.status = 'failed'
             }
 
@@ -1061,7 +1151,7 @@ export default {
         .catch((error) => {
           this.spinnerVisible = false
           this.transactionError = true
-          this.ErrorMessage = error
+          this.ErrorMessage = error.message
         })
     },
     async sendTransaction () {
@@ -1077,9 +1167,7 @@ export default {
         this.initData()
         this.spinnerVisible = true
         initWallet()
-      } catch (error) {
-
-      }
+      } catch (error) {}
       this.spinnerVisible = false
     },
     displayError (error, freeCpu = false, actions, message = null) {
@@ -1111,7 +1199,7 @@ export default {
 
         initWallet(this.currentAccount.name)
       } catch (error) {
-      //  this.displayError(error, true, actions, message)
+        //  this.displayError(error, true, actions, message)
       }
     },
     formatAmountString () {
@@ -1146,34 +1234,37 @@ export default {
 .q-tabs {
   display: none;
 }
-.summary-data /deep/ h1 , .summary-data /deep/ h3 , .summary-data /deep/ h2 {
-    font-size:20px;
-        line-height: 1rem;
+.summary-data /deep/ h1,
+.summary-data /deep/ h3,
+.summary-data /deep/ h2 {
+  font-size: 20px;
+  line-height: 1rem;
 }
 .summary-data {
-    margin-top:-200px
+  margin-top: -200px;
 }
-.summary-data /deep/  h1  {
-    font-weight:700
-
+.summary-data /deep/ h1 {
+  font-weight: 700;
 }
 .dark-theme .summary-data {
-  color:white
+  color: white;
 }
-.dark-theme  .summary-wrapper {
- color:white
+.dark-theme .summary-wrapper {
+  color: white;
 }
-.summary-data /deep/  table , .summary-data /deep/ .table {
-        width: 100%!important ;
-
+.summary-data /deep/ table,
+.summary-data /deep/ .table {
+  width: 100% !important ;
 }
 .summary-data /deep/ .lead {
-    margin-top:40px
+  margin-top: 40px;
 }
-.summary-data /deep/  p , .summary-data /deep/  table , .summary-data /deep/  .table ,.summary-data /deep/  tbody {
-
-    font-size: 16px !important;
-    line-height:1.7
+.summary-data /deep/ p,
+.summary-data /deep/ table,
+.summary-data /deep/ .table,
+.summary-data /deep/ tbody {
+  font-size: 16px !important;
+  line-height: 1.7;
 }
 
 .summary {

@@ -259,13 +259,13 @@ class HD {
         //   const decoder = new TextDecoder()
         // const str = decoder.decode(mk.privateKey)
         // let str = Buffer.from(mk.privateKey.buffer).toString()
-        /* let d = TerraWrapper.decrypt(t.encrypted_key, 'samuel3434')
+        /* let d = TerraWrapper.decrypt(t.encrypted_key, '')
         console.log(d, t, 'wallet', buffer)
-        let c = TerraWrapper.encrypt(d, 'samuel3434').toString()
-        let x = TerraWrapper.decrypt(c, 'samuel3434')
+        let c = TerraWrapper.encrypt(d, '').toString()
+        let x = TerraWrapper.decrypt(c, '')
         console.log(c, 'c', x, 45)
 let TerraWrapper = self.getTerraWrapper()
-        let w = TerraWrapper.encodeWallet('samuel1', mk.accAddress, privateKey, 'samuel34')
+        let w = TerraWrapper.encodeWallet('samuel1', mk.accAddress, privateKey, '')
 
         console.log(w, 'w', { publicKey: mk.accAddress, privateKey: privateKey })
  */

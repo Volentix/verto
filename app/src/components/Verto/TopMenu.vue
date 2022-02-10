@@ -162,7 +162,7 @@
           :light="$store.state.settings.lightMode === 'false'"
           :dark="$store.state.settings.lightMode === 'true'"
           >
-            <q-item :key="index" v-for="(chain, index) in chains" dense :to="getImportLink(chain.chain)" clickable v-close-popup>
+            <q-item :key="index" v-for="(chain, index) in chains.filter(c => !this.$store.state.settings.importDisabled.includes(c.value))" dense :to="getImportLink(chain.chain)" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar
                   :icon="'img:'+chain.icon"
@@ -177,7 +177,7 @@
         </q-btn-dropdown>
           <q-btn-dropdown
           no-caps
-          icon="img:statics/empty-token.png"
+          icon="token"
           label="Import Token"
           flat
           dense
@@ -434,7 +434,7 @@ export default {
       (o) => o.value.toLowerCase() === this.$store.state.settings.network
     )
     // this.options = CrosschainDex.getAllCoins()
-    this.chains = HD.getVertoChains()
+    this.chains = HD.getVertoChains().filter(c => !this.$store.state.settings.disableChains.includes(c.value))
     window.localStorage.setItem(
       'skin',
       window.localStorage.getItem('skin') !== null

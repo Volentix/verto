@@ -54,15 +54,15 @@
         <q-item v-else> </q-item>
       </template>
     </q-select>
-         <q-input @input="getTokenData" class="col-md-12" filled v-model="address" label="Enter token address" />
-          <q-input :disable="readOnly.symbol"  v-if="fetchToken" class="col-md-6" filled v-model="symbol" label="Enter token symbol"   />
-           <q-input :disable="readOnly.decimals" v-if="fetchToken" class="col-md-6"  filled v-model="decimals" type="number" label="Decimals"  />
+         <q-input      :dark="$store.state.settings.lightMode === 'true'" @input="getTokenData" class="col-md-12" filled v-model="address" label="Enter token address" />
+          <q-input     :dark="$store.state.settings.lightMode === 'true'" :disable="readOnly.symbol"  v-if="fetchToken" class="col-md-6" filled v-model="symbol" label="Enter token symbol"   />
+           <q-input      :dark="$store.state.settings.lightMode === 'true'" :disable="readOnly.decimals" v-if="fetchToken" class="col-md-6"  filled v-model="decimals" type="number" label="Decimals"  />
         </div>
         <p v-if="error" class="text-red q-pl-md">{{error}}</p>
         <p v-else-if="success"  class="text-green q-pl-md">{{success}}</p>
         <q-card-actions align="right" class="text-primary q-pr-md q-pb-md">
-          <q-btn flat label="Cancel" v-close-popup />
-          <q-btn @click="updateLocalSettings" :disable="!fetchToken" rounded color="black" label="Add Token"  />
+          <q-btn     :dark="$store.state.settings.lightMode === 'true'" flat label="Cancel" v-close-popup />
+          <q-btn     :dark="$store.state.settings.lightMode === 'true'"  @click="updateLocalSettings" :disable="!fetchToken" rounded color="black" label="Add Token"  />
         </q-card-actions>
     </q-card>
   </q-dialog>

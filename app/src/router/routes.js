@@ -138,7 +138,7 @@ if (process.env.QMODE !== 'bex') {
     }
 
     {
-      path: '/',
+      path: '/te',
       component: () => import('layouts/staiderLayoutNewPrototype.vue'),
       children: [
         {
@@ -150,7 +150,20 @@ if (process.env.QMODE !== 'bex') {
           component: () => import('pages/StaiderPrototype/Vault.vue')
         }
       ]
-    },
+    },  */ {
+      path: '/u',
+      component: () => import('layouts/Staider/MainLayout.vue'),
+      children: [
+        {
+          path: '/summary',
+          component: () => import('pages/Staider/Summary.vue')
+        },
+        {
+          path: '/vault/:fundID',
+          component: () => import('components/Staider/Vault.vue')
+        }
+      ]
+    } /*
     {
       path: '/blocktopusCreate',
       component: () => import('layouts/Default.vue'),

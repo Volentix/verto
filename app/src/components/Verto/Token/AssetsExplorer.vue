@@ -144,7 +144,7 @@
                   !$route.params.accounts,
               }">
               <a
-                @click="tab = 'create'"
+                @click="tab = 'create'; getChains()"
                 :class="{ active: tab == 'create' }"
                 href="javascript:void(0)"
                 ><q-icon name="link"  /> New account</a
@@ -1381,7 +1381,7 @@ export default {
         .filter((o) => o.chain === 'eth' && o.type === 'eth')
         .forEach((w) => {
           if (!this.$store.state.currentwallet.userData.ethInvestPools || !this.$store.state.currentwallet.userData.ethInvestPools[w.key.toLowerCase()]) { this.getInvestments(w) } else {
-            this.getInvestedTokens(this.$store.state.currentwallet.userData.ethInvestPools[w.key.toLowerCase()])
+            this.getInvestedTokens(this.$store.state.currentwallet.userData.ethInvestPools[w.key.toLowerCase()], 88)
           }
         })
     }, 2000)
@@ -1648,15 +1648,22 @@ export default {
             amount: stakedAmounts,
             icon: 'https://ethplorer.io/images/HEX2b591e99.png'
           }
-          let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex')
+          let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex' /* && o.owner === f.key */)
 
-          let data = { hexStakes: { } }
+          let data = { hexStakes: (this.$store.state.currentwallet.userData.hexStakes || {}) }
           data.hexStakes[f.key] = a
           this.$store.commit('currentwallet/setUserData', data)
 
           if (index >= 0) {
+            let newVal = this.assetsOptions[1].data.eth[index]
+            console.log(newVal, 'newVal', a)
+            newVal.usd += a.usd
+            newVal.amount += a.amount
+            newVal.pending = false
+            console.log(newVal, 'newVal', a, this.assetsOptions[1].data.eth)
             this.assetsOptions[1].data.eth.splice(index, 1)
-            this.assetsOptions[1].data.eth.push(a)
+            this.assetsOptions[1].data.eth.push(newVal)
+            console.log(newVal, 'newVal', a, this.assetsOptions[1].data.eth)
           } else {
             this.assetsOptions[1].data.eth.push(a)
           }
@@ -1791,9 +1798,9 @@ export default {
     },
     showTokenPage (asset) {
       if (this.readOnly) return
-      if (this.tab === 'investments' && asset.type === 'vtx' && asset.isStaked) {
+      if (asset.isStaked) {
         this.$router.push({
-          path: '/verto/stake/eos/vtx'
+          path: '/verto/stake/' + asset.chain + '/' + asset.type
         })
       } else {
         this.$router.push({
@@ -1879,50 +1886,54 @@ export default {
       )
       this.chartData = response.data
     },
-    getInvestedTokens (investments) {
+    getInvestedTokens (investments, formatted = false) {
       let assets = []
+      if (!formatted) {
+        investments.forEach((t) => {
+          if (!t || !t.tokens) return
 
-      investments.forEach((t) => {
-        if (!t || !t.tokens) return
+          t.tokens.forEach((a) => {
+            let protocolData = this.platformOptions.find(
+              (o) => t.protocolDisplay && o.label.toLowerCase() === t.protocolDisplay.toLowerCase()
+            )
+            let index = assets.findIndex(
+              (t) => t.type === a.symbol.toLowerCase()
+            )
+            if (index > -1) {
+              assets[index].poolsCount += 1
+              assets[index].usd += a.balanceUSD
+              assets[index].amount += a.balance
+              return
+            }
 
-        t.tokens.forEach((a) => {
-          let protocolData = this.platformOptions.find(
-            (o) => t.protocolDisplay && o.label.toLowerCase() === t.protocolDisplay.toLowerCase()
-          )
-          let index = assets.findIndex(
-            (t) => t.type === a.symbol.toLowerCase()
-          )
-          if (index > -1) {
-            assets[index].poolsCount += 1
-            assets[index].usd += a.balanceUSD
-            assets[index].amount += a.balance
-            return
-          }
-
-          let data = {
-            usd: a.balanceUSD,
-            rateUsd: a.price,
-            type: a.symbol.toLowerCase(),
-            chain: 'eth',
-            poolName: t.label,
-            owner: t.owner,
-            poolsCount: 1,
-            amount: a.balance,
-            icon: 'https://token.enzyme.finance/' + a.address,
-            protocol: protocolData ? protocolData.label : null,
-            protocolIcon: protocolData ? protocolData.icon : 'https://etherscan.io/images/main/empty-token.png'
-          }
-          assets.push(data)
+            let data = {
+              usd: a.balanceUSD,
+              rateUsd: a.price,
+              type: a.symbol.toLowerCase(),
+              chain: 'eth',
+              poolName: t.label,
+              owner: t.owner,
+              poolsCount: 1,
+              amount: a.balance,
+              icon: 'https://token.enzyme.finance/' + a.address,
+              protocol: protocolData ? protocolData.label : null,
+              protocolIcon: protocolData ? protocolData.icon : 'https://etherscan.io/images/main/empty-token.png'
+            }
+            assets.push(data)
+          })
         })
-      })
-
-      let inv = this.$store.state.currentwallet.userData.ethInvestPools
-      let udata = { ethInvestPools: inv || [] }
-      if (investments[0]) {
-        udata.ethInvestPools[investments[0].owner.toLowerCase()] = inv && inv[investments[0].owner.toLowerCase()] ? inv[investments[0].owner.toLowerCase()].concat(assets) : [].concat(assets)
+      } else {
+        assets = investments
       }
-      this.$store.commit('currentwallet/setUserData', udata)
+      if (!formatted) {
+        let inv = this.$store.state.currentwallet.userData.ethInvestPools
+        let udata = { ethInvestPools: inv || {} }
+        if (investments[0]) {
+          udata.ethInvestPools[investments[0].owner.toLowerCase()] = inv && inv[investments[0].owner.toLowerCase()] ? inv[investments[0].owner.toLowerCase()].concat(assets) : [].concat(assets)
+        }
 
+        this.$store.commit('currentwallet/setUserData', udata)
+      }
       assets = this.assetsOptions[1].data.eth.concat(assets)
       this.assetsOptions[1].data.eth = assets
       this.$set(this, 'assetsOptions', this.assetsOptions)
@@ -1986,7 +1997,7 @@ export default {
     },
     getChains () {
       let all = null
-      if (!['new', 'import'].includes(this.tab)) {
+      if (!['create', 'import'].includes(this.tab)) {
         all = this.setChains()
 
         this.chains = all.filter(
@@ -2005,8 +2016,11 @@ export default {
           .filter(
             (o) => !this.$store.state.settings.disableChains.includes(o.chain)
           )
-      } else {
-        all = HD.getVertoChains()
+      } else if (this.tab === 'import') {
+        all = HD.getVertoChains().filter(c => !this.$store.state.settings.importDisabled.includes(c.value)).filter(c => !this.$store.state.settings.disableChains.includes(c.value))
+        this.chains = all
+      } else if (this.tab === 'create') {
+        all = HD.getVertoChains().filter(c => c.isEvm || ['btc', 'eos'].includes(c.value))
         this.chains = all
       }
       return all
@@ -2799,5 +2813,8 @@ ul.tabs li a.active {
  }
  .investments .col-md-3 .main {
     height: 219px;
+}
+.wrapper {
+    padding-left: 40px;
 }
 </style>
