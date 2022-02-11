@@ -36,8 +36,12 @@
           <span class="label">Share Price</span>
           <span class="value">{{currentVault.sharePrice}} <small>$US</small></span>
           <span v-if="$q.screen.width >= 768" class="daily-change">Daily change: <b :class="currentVault.dailyChangeStyle">{{currentVault.dailyChange}}</b></span>
-          <div class="flex flex-center action-btn-wrapper">
+          <div v-if="!canDeposit" class="flex flex-center action-btn-wrapper">
             <q-btn color="white" class="q-mt-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Whitelist to deposit" />
+          </div>
+          <div v-else class="flex flex-center action-btn-wrapper">
+            <q-btn @click="depositPopup = true" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Deposit" />
+            <q-btn @click="withdrawPopup = true" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Withdraw" />
           </div>
         </div>
         <div class="col-4 network-wrapper text-white">
@@ -231,6 +235,118 @@
         </div>
       </div>
     </div>
+    <q-dialog dark v-model="depositPopup">
+      <q-card dark class="deposit-withdraw-popup-wrapper">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="popup-title q-pl-sm">Deposit</div>
+          <q-space />
+          <q-btn icon="close" @click="depositPopup = false" size="sm" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section align="left">
+          <div class="row">
+            <div class="column q-pa-sm" :class="{'col-8':$q.screen.width > 643, 'col-12':$q.screen.width < 643}">
+              <span class="instruction">Choose Amount and Token to deposit</span>
+              <div class="deposit-amount-component column q-mt-md">
+                <span class="label flex justify-between text-grey-6 q-mb-sm">
+                  <span>Amount</span>
+                  <span>2,500 USDC</span>
+                </span>
+                <div class="input-wrapper">
+                  <q-input dark outlined v-model="amount" class="amount-input" />
+                  <span class="hint text-grey-6 q-mt-sm flex">0.00 $US</span>
+                  <div class="max-wrapper flex items-center">
+                    <q-btn-dropdown
+                      class="coin-dropdown-wrapper-btn"
+                      flat
+                      no-caps
+                      dark
+                      align="left"
+                      content-class="vault-dropdown-wrapper coin-drop"
+                    >
+                      <template v-slot:label>
+                        <div class="flex text-white coin-item justify-start">
+                          <span class="imgs flex flex-center q-mr-md">
+                            <img height="22" src="statics/staider/coins/usdc.svg" alt="">
+                          </span>
+                          <span class="column pairs vault-name coin justify-center items-start">
+                            <span class="value flex justify-start text-capitalize text-bold">ETH</span>
+                          </span>
+                        </div>
+                      </template>
+                      <div class="column no-wrap dropdown-content q-pt-sm q-pb-sm coin-dropdown">
+                        <div class="flex text-white q-pl-md q-pr-md q-pb-xs q-pt-xs coin-item justify-start">
+                          <span class="imgs flex flex-center q-mr-md">
+                            <img height="22" src="statics/staider/coins/eth.svg" alt="">
+                          </span>
+                          <span class="column pairs vault-name coin justify-center items-start">
+                            <span class="value flex justify-start text-capitalize text-bold">ETH</span>
+                          </span>
+                        </div>
+                        <div class="flex text-white q-pl-md q-pr-md q-pb-xs q-pt-xs coin-item justify-start">
+                          <span class="imgs flex flex-center q-mr-md">
+                            <img :height="22" src="statics/staider/coins/usdc.svg" alt="">
+                          </span>
+                          <span class="column pairs vault-name coin justify-center items-start">
+                            <span class="value flex justify-start text-capitalize text-bold">USDC</span>
+                          </span>
+                        </div>
+                      </div>
+                    </q-btn-dropdown>
+                    <q-btn color="transparent" unelevated text-color="white" class="max-btn" label="Max" />
+                  </div>
+                </div>
+              </div>
+              <div class="share-lockup-time q-mt-md">
+                <span class="label">Shares Lockup Time</span> <span class="info" @mouseenter="showInfo = true" @mouseleave="showInfo = false">?</span>
+                <span class="infobull-wrapper" :class="{'show': showInfo}">Amount of time an account has to wait between deposit and withdrawal</span>
+              </div>
+              <span class="share-lockup-amount text-grey-6">1 day</span>
+              <q-btn color="white" flat class="advanced-settings-btn q-mt-sm q-pa-none" text-color="white" label="Advanced settings" no-caps icon-right="expand_more" />
+              <q-checkbox dark v-model="termsConditions" class="termsConditions" color="yellow">
+                <span>I agree to the <a href="#" target="_blank">Terms & Conditions.</a></span>
+              </q-checkbox>
+            </div>
+            <div class="col-4"></div>
+          </div>
+        </q-card-section>
+        <q-card-actions align="right" class="action-label q-mr-md q-mb-md">
+          <q-btn color="white" class="q-pl-lg q-pr-lg" no-caps text-color="white" @click="depositPopup = false" v-close-popup outline rounded label="Deposit" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog dark v-model="withdrawPopup">
+      <q-card dark class="deposit-withdraw-popup-wrapper">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="popup-title q-pl-sm">Withdraw</div>
+          <q-space />
+          <q-btn icon="close" @click="withdrawPopup = false" size="sm" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section align="left">
+          <div class="row">
+            <div class="col-10 column q-pa-sm">
+              <span class="instruction">Your current Balance</span>
+              <div class="deposit-amount-component column">
+                <span class="label flex justify-between text-grey-7 q-mb-sm">
+                  <span>206.422185828859854 shares</span>
+                </span>
+                <span class="hint text-grey-6 q-mt-md flex text-bold">Quantity of shares</span>
+                <div class="input-wrapper q-mt-xs">
+                  <q-input dark outlined v-model="amountWithdraw" class="amount-input" />
+                  <span class="hint text-grey-6 q-mt-sm flex">The number of the shares you would like to withdraw.</span>
+                  <div class="max-wrapper withdraw flex items-center">
+                    <q-btn color="yellow" unelevated text-color="black" class="max-btn yellow" label="Max" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-actions align="right" class="action-label q-mr-md q-mb-md q-mt-lg">
+          <q-btn color="white" class="q-pl-lg q-pr-lg cancel" no-caps text-color="grey-6" @click="withdrawPopup = false" v-close-popup unelevated rounded label="Cancel" />
+          <q-btn color="white" class="q-pl-lg q-pr-lg" no-caps text-color="white" @click="withdrawPopup = false" v-close-popup outline rounded label="Continue" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -243,6 +359,13 @@ export default {
   },
   data () {
     return {
+      showInfo: false,
+      termsConditions: false,
+      amount: '0 USDC',
+      amountWithdraw: '206.4221858288598535031',
+      depositPopup: false,
+      withdrawPopup: false,
+      canDeposit: true,
       fundID: '0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a',
       tab: 'vault-holdings',
       toggleActive: false,
@@ -314,6 +437,22 @@ export default {
             legend: false
           }
         }]
+      }
+    }
+  },
+  watch: {
+    depositPopup: function (val) {
+      if (val) {
+        document.querySelector('.scroll_area_wrapper').classList.add('blur-effect')
+      } else {
+        document.querySelector('.scroll_area_wrapper').classList.remove('blur-effect')
+      }
+    },
+    withdrawPopup: function (val) {
+      if (val) {
+        document.querySelector('.scroll_area_wrapper').classList.add('blur-effect')
+      } else {
+        document.querySelector('.scroll_area_wrapper').classList.remove('blur-effect')
       }
     }
   },
@@ -472,6 +611,9 @@ export default {
           margin-top: -10px;
         }
       }
+      .coin-name{
+        font-family: $MainFont;
+      }
       .vault-name{
         font-family: $MainFont;
         .pair{
@@ -556,14 +698,209 @@ export default {
       margin-top: 0px;
     }
   }
+  .deposit-withdraw-popup-wrapper{
+    background: #1D1D21;
+    width: 100%;
+    min-height: 274px;
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow: 0px 36px 36px 0px #000 !important;
+    .popup-title{
+      font-size: 12px;
+      font-family: $MainFont;
+      font-weight: 600;
+    }
+    .action-label{
+      font-size: 12px;
+      font-family: $MainFont;
+      font-weight: 400;
+      opacity: 1;
+      .cancel{
+        background: #2D2D30 !important;
+        opacity: .8;
+      }
+    }
+    .input-wrapper{
+      position: relative;
+      .max-wrapper{
+        position: absolute;
+        top: 0px;
+        left: 100%;
+        width: 52%;
+        height: 44px;
+        &.withdraw{
+          width: auto;
+        }
+        @media screen and (max-width: 643px) {
+          &:not(.withdraw){
+            position: relative;
+            top: 0px;
+            left: 0%;
+            width: 100%;
+            height: 44px;
+            margin-top: 10px;
+          }
+        }
+        .max-btn{
+          background: rgba(#2D2D30, .8) !important;
+          font-family: $MainFont !important;
+          font-weight: 400 !important;
+          font-size: 12px !important;
+          border-radius: 7px !important;
+          margin-left: 5px;
+          height: 44px;
+          &.yellow{
+            background: $MainYellow !important;
+          }
+          /deep/ .q-btn__wrapper{
+            padding: 0px 10px !important;
+          }
+        }
+        .coin-dropdown-wrapper-btn{
+          background: rgba(#2D2D30, .8) !important;
+          font-family: $MainFont !important;
+          font-weight: 600 !important;
+          font-size: 14px !important;
+          border-radius: 7px !important;
+          margin-left: 5px;
+          height: 44px;
+          @media screen and (max-width: 643px) {
+            margin-left: 0px;
+          }
+        }
+      }
+    }
+    .instruction{
+      font-size: 16px;
+      font-family: $MainFont;
+      font-weight: 400;
+    }
+    .connecting-wrapper{
+      min-height: 140px;
+      .name{
+        font-family: $MainFont;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+    /deep/ .advanced-settings-btn{
+      color: $MainYellow !important;
+      font-family: $MainFont !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      opacity: .6;
+      width: fit-content;
+      margin-left: -15px;
+      &:hover{
+        opacity: 1;
+      }
+      .q-focus-helper{
+        display: none;
+      }
+    }
+    .share-lockup-time{
+      position: relative;
+      width: fit-content;
+      .infobull-wrapper{
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        color: #FFF;
+        font-family: $MainFont;
+        font-size: 12px;
+        font-weight: 200;
+        background: #1D1D21 !important;
+        box-shadow: 0px 14px 14px 0px rgba(#000, .5) !important;
+        padding: 10px 15px;
+        border-radius: 8px;
+        transition: transform ease .3s, opacity ease .3s;
+        opacity: 0;
+        transform: translate(10px,-50%);
+        visibility: hidden;
+        width: 244px;
+        &.show{
+          opacity: 1;
+          transform: translate(0px,-50%);
+          visibility: visible;
+        }
+      }
+      .info{
+        background: #FFF;
+        display: inline-flex;
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        justify-content: center;
+        color: #333;
+        font-family: $MainFont;
+        font-size: 13px;
+        align-items: center;
+        font-weight: 700;
+        margin-left: 10px;
+        cursor: pointer;
+        &:hover{
+          background: $MainYellow;
+        }
+      }
+    }
+    /deep/ .termsConditions{
+      margin-left: -9px;
+      opacity: .8;
+      .q-checkbox__inner--truthy .q-checkbox__bg,
+      .q-checkbox__inner--indet .q-checkbox__bg {
+          background: $MainYellow;
+          border-color: $MainYellow;
+      }
+      .q-checkbox__bg{
+        border-color: #333;;
+      }
+      a{
+        color: $MainYellow;
+        text-decoration: none;
+      }
+    }
+    /deep/ .amount-input{
+      background: #16161A !important;
+      font-family: $MainFont !important;
+      font-size: 16px !important;
+      border-radius: 8px !important;
+      margin-left: -2px;
+      height: 44px;
+      /deep/ .q-input__wrapper:before {
+        border: 2px solid #2D2D2D !important;
+      }
+      &.q-field--dark .q-field__control{
+        height: 44px;
+        .q-field__native{
+          font-weight: 700 !important;
+        }
+        &:before{
+          border: 2px solid #2D2D2D !important;
+        }
+        &:hover:before{
+          border: 2px solid #353535 !important;
+        }
+      }
+    }
+  }
 </style>
 <style>
 .vault-dropdown-wrapper{
   background: #1D1D21 !important;
   box-shadow: 0px 36px 36px 0px !important;
 }
+.vault-dropdown-wrapper.coin-drop{
+  width: 180px !important;
+  max-width: 180px !important;
+  margin-top: 10px !important;
+  transform: translateX(48px);
+}
 .vault-dropdown-wrapper .dropdown-content{
   background: #1D1D21 !important;
+}
+.vault-dropdown-wrapper .dropdown-content.coin-dropdown{
+  border: 2px solid #F6F973;
+  border-radius: 10px;
 }
 .vault-dropdown-wrapper .dropdown-content hr{
   opacity: .2 !important;
@@ -584,6 +921,18 @@ export default {
 }
 .vault-dropdown-wrapper-btn.active{
   /* border: 3px solid #F6F973; */
+}
+.vault-dropdown-wrapper .vault-name.coin .value{
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+.vault-dropdown-wrapper .coin-item{
+  cursor: pointer;
+  opacity: .7;
+}
+.vault-dropdown-wrapper .coin-item:hover{
+  opacity: 1;
 }
 .vault-dropdown-wrapper .dropdown-content a{
   text-decoration: none;

@@ -19,7 +19,7 @@
           <q-btn color="white" class="shadow1" no-caps text-color="white" @click="connectPopup = true" outline rounded label="Connect Wallet" />
         </div>
         <div v-if="connected" class="col flex justify-end items-center">
-          <q-btn color="white" outline unelevated class="account-bar q-pl-none" no-caps rounded text-color="white">
+          <q-btn @click="wrongNetworkPopup = true" color="white" outline unelevated class="account-bar q-pl-none" no-caps rounded text-color="white">
             <div class="row items-center account-bar_row">
               <div class="col bg-black q-mr-md account-balance flex flex-center">
                 <span class="q-pl-sm">0.002 ETH</span>
@@ -98,7 +98,7 @@
           </q-btn>
         </div>
         <div v-if="connected" class="col-9 flex justify-end items-center">
-          <q-btn color="white" outline unelevated class="account-bar q-pl-none" no-caps rounded text-color="white">
+          <q-btn @click="wrongNetworkPopup = true" color="white" outline unelevated class="account-bar q-pl-none" no-caps rounded text-color="white">
             <div class="row items-center account-bar_row">
               <div class="col bg-black q-mr-md account-balance flex flex-center">
                 <span class="q-pl-sm">0.002 ETH</span>
@@ -201,6 +201,23 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog dark v-model="wrongNetworkPopup">
+      <q-card dark class="connect-popup-wrapper">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="popup-title q-pl-sm">Network</div>
+          <q-space />
+          <q-btn icon="close" @click="wrongNetworkPopup = false" size="sm" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section align="center">
+          <div class="flex connecting-wrapper flex-center full-width">
+            <span class="text-bold name">You’re connected to the wrong network ! Change the network settings in your wallet.</span>
+          </div>
+        </q-card-section>
+        <q-card-actions align="center" class="action-label wrongnetwork q-mb-md">
+          <q-btn color="white" class="q-pl-md q-pr-md text-bold" no-caps text-color="white" @click="wrongNetworkPopup = false" v-close-popup outline rounded label="Switch network" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -213,6 +230,7 @@ export default {
   props: ['active', 'link', 'currentPage'],
   data () {
     return {
+      wrongNetworkPopup: false,
       connectingWalletConnect: false,
       connectingMetamask: false,
       connectPopup: false,
@@ -224,6 +242,15 @@ export default {
   },
   watch: {
     connectPopup: function (val) {
+      if (val) {
+        // alert('true')
+        document.querySelector('.scroll_area_wrapper').classList.add('blur-effect')
+      } else {
+        // alert('false')
+        document.querySelector('.scroll_area_wrapper').classList.remove('blur-effect')
+      }
+    },
+    wrongNetworkPopup: function (val) {
       if (val) {
         // alert('true')
         document.querySelector('.scroll_area_wrapper').classList.add('blur-effect')
@@ -446,6 +473,12 @@ export default {
       font-family: $MainFont;
       font-weight: 400;
       opacity: .4;
+      &.wrongnetwork{
+        opacity: 1;
+        /deep/ .q-btn__wrapper:before {
+          border: 2px solid $MainYellow !important;
+        }
+      }
     }
     .connecting-wrapper{
       min-height: 140px;
