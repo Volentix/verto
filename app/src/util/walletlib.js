@@ -121,15 +121,13 @@ class Lib {
     console.log(data, 'data')
   }
   async getHexStakeData (addr) {
-    /* global BigInt */
-
     const compiledContractABI = JSON.parse(abiHex.result)
     const hexAddr = '0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39'
     const Web3 = require('web3')
     const web3 = new Web3(this.getEvmData('eth').provider)
     let hex = new web3.eth.Contract(compiledContractABI, hexAddr)
     let stakeCount = await hex.methods.stakeCount(addr).call()
-
+    /* /* global BigInt
     const getLastDataDay = async (hex) => {
       let globalInfo = await hex.methods.globalInfo().call()
       const lastDay = globalInfo[4]
@@ -149,10 +147,13 @@ class Lib {
     }
 
     const HEARTS_UINT_SHIFT = 72n
-    const HEARTS_MASK = (1n << HEARTS_UINT_SHIFT) - 1n
+
     const SATS_UINT_SHIFT = 56n
     const SATS_MASK = (1n << SATS_UINT_SHIFT) - 1n
-    const decodeDailyData = (encDay) => {
+
+      const HEARTS_MASK = (1n << HEARTS_UINT_SHIFT) - 1n
+
+      const decodeDailyData = (encDay) => {
       let v = BigInt(encDay)
       let payout = v & HEARTS_MASK
       v = v >> HEARTS_UINT_SHIFT
@@ -161,6 +162,7 @@ class Lib {
       let sats = v & SATS_MASK
       return { payout, shares, sats }
     }
+
     const getStake = async (hex, addr, sid) => {
       let stakeCount = await hex.methods.stakeCount(addr).call()
       for (let i = 0; i < stakeCount; i++) {
@@ -174,6 +176,7 @@ class Lib {
       let stake = await hex.methods.stakeLists(addr, idx).call()
       return stake
     }
+
     const getInterestToDate = async (hex, addr, stakeId, stakeIndex, stake) => {
       let s
       if (stake !== undefined) {
@@ -199,13 +202,13 @@ class Lib {
     }
     const interestForRange = (dailyData, myShares) => {
       return dailyData.reduce((s, d) => s + interestForDay(d, myShares), 0n)
-    }
 
     const interestForDay = (dayObj, myShares) => {
       let i = myShares * dayObj.payout / dayObj.shares
 
       return i
     }
+    } */
 
     // let total = 0n
     let stakeData = []
@@ -213,14 +216,15 @@ class Lib {
       let stake = await hex.methods.stakeLists(addr, i).call()
       // let interest = 0n
 
-      let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
-      interest = Number((interest) / BigInt(10 ** 8))
+      // let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
+      // interest = Number((interest) / BigInt(10 ** 8))
+      console.log(stake, 'stake')
       stakeData.push({
         startDate: parseInt(stake.lockedDay) + 1,
         endDate: parseInt(stake.lockedDay) + parseInt(stake.stakedDays) + 1,
         principal: parseInt(stake.stakedHearts) / 10 ** 8,
         stakeshares: stake.stakeShares,
-        interest: interest,
+        //  interest: interest,
         index: i,
         stakeId: stake.stakeId
       })

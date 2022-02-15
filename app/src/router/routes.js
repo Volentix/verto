@@ -151,7 +151,7 @@ if (process.env.QMODE !== 'bex') {
         }
       ]
     },  */ {
-      path: '/u',
+      path: '/',
       component: () => import('layouts/Staider/MainLayout.vue'),
       children: [
         {

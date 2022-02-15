@@ -3,7 +3,7 @@
     <div class="container">
       <div v-if="$q.screen.width >= 768" class="row justify-between disktop-version-wrapper">
         <div class="col-3 main-logo">
-          <router-link to="/home/">
+          <router-link to="/">
             <img src="statics/staider/staider_logo_white.svg" alt="">
           </router-link>
         </div>
@@ -68,7 +68,7 @@
       </div>
       <div v-else class="row mobile-version-wrapper">
         <div class="main-logo" :class="{'col-3': connected, 'col-6': !connected}">
-          <router-link to="/home/">
+          <router-link to="/">
             <img src="statics/staider/sif_logo_white.svg" alt="">
           </router-link>
         </div>
@@ -209,6 +209,7 @@
 import { toSvg } from 'jdenticon'
 import Connect from '../../mixins/Connect'
 import Formatter from '../../mixins/Formatter'
+// import Enzyme from '../../util/Staider/EnzymeV4'
 export default {
   // name: 'ComponentName',
   components: {
@@ -232,19 +233,22 @@ export default {
         this.connectingMetamask = this.connectToWalletConnect = false
       }
     },
-    '$store.state.currentwallet.user': function (val) {
-      this.connectingMetamask = this.connectingMetamask = false
+    '$store.state.currentwallet.user': {
+      handler (val) {
+        this.connectingMetamask = this.connectingMetamask = false
 
-      if (val) {
-        this.accountAddress = val.addressFriendly
-        if (this.connectPopup) {
+        if (val) {
+          this.accountAddress = val.addressFriendly
+
           this.connected = true
           this.connectPopup = false
+        } else {
+          this.connected = false
+          this.accountAddress = null
         }
-      } else {
-        this.connected = false
-        this.accountAddress = null
-      }
+      },
+      deep: true,
+      immediate: false
     },
     connectPopup: function (val) {
       if (val) {
@@ -257,7 +261,7 @@ export default {
     }
   },
   async created () {
-    await this.initConnect()
+
   },
   methods: {
     // toggleLightDarkMode (val) {

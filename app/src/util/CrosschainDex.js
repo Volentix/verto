@@ -147,8 +147,10 @@ class Crosschaindex {
   async getCoinByChain (chain) {
     let self = this
     let coins = {
-      eth () {
-        return store.state.settings.coins.oneinch
+      async eth () {
+        let result = await axios.get(_1inch + '/v3.0/1/tokens')
+        coins = result.data.tokens
+        return self.format1InchTokens(coins, 'bsc')
       },
       eos () {
         return store.state.settings.coins.defibox.sort((a, b) => b.priority - a.priority)

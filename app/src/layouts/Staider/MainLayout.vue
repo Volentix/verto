@@ -19,7 +19,7 @@
       <q-scroll-observer @scroll="onScroll" />
       <q-page-container>
         <!-- This is where pages get injected -->
-        <router-view />
+        <router-view :key="$store.state.currentwallet.user ? $store.state.currentwallet.user.address : 'login'" />
       </q-page-container>
       <FooterSection2 />
     </q-scroll-area>
@@ -31,7 +31,9 @@
 import HeaderSection from '@/components/Staider/Header'
 import FooterSection2 from '@/components/StaiderPrototype/FooterSection2'
 import { QScrollArea, QScrollObserver } from 'quasar'
+import Connect from '@/mixins/Connect'
 export default {
+  mixins: [Connect],
   components: {
     // Faqs
     HeaderSection,
@@ -48,7 +50,8 @@ export default {
       backdrop: false
     }
   },
-  created () {
+  async created () {
+    await this.initConnect()
   },
   methods: {
     onScroll (info) {

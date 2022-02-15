@@ -1,7 +1,10 @@
 <template>
   <div class="summary-section">
     <div class="fluid-container">
-      <div class="row">
+    <div v-if="!$store.state.currentwallet.user" class="text-h6 text-white flex flex-center">Connect your wallet</div>
+     <div v-if="$store.state.currentwallet.user && datasVaults == null">  <q-linear-progress indeterminate color="grey" /></div>
+
+      <div class="row" v-if="$store.state.currentwallet.user">
         <div class="col-12 col-sm-12 col-md-5 col-lg-5" v-if="investorData">
           <div class="main-title column text-white q-mb-lg" :class="{'items-center': $q.screen.width < 768, 'q-pb-lg' : seriesGeneral.length < 2}">
             <span>Portfolio summary</span>
@@ -59,7 +62,7 @@
                 title=""
                 :data="datasVaults"
                 :columns="columns"
-                :loading="datasVaults.length === 0"
+                :loading="loading"
                 row-key="asset"
                 @row-click="onRowClick"
                 bordered
@@ -161,7 +164,7 @@
                 title=""
                 :data="dataDeposits.filter( o => o.__typename == 'SharesBoughtEvent')"
                 :columns="columnsDeposits"
-                :loading="columnsDeposits.length === 0"
+                :loading="loading"
                 row-key="tx"
                 bordered
                 v-if="$q.screen.width >= 768"
@@ -263,7 +266,7 @@
                 title=""
                 :data="dataDeposits.filter( o => o.__typename == 'SharesBoughtEvent')"
                 :columns="columnsDeposits"
-                :loading="columnsDeposits.length === 0"
+                :loading="loading"
                 row-key="tx"
                 bordered
                 v-if="$q.screen.width >= 768"
@@ -368,7 +371,8 @@
 <script>
 import VueApexCharts from 'vue-apexcharts'
 import { toSvg } from 'jdenticon'
-import Enzyme from '@/util/Staider/Enzyme'
+// import Enzyme from '@/util/Staider/Enzyme'
+import EnzymeV4 from '@/util/Staider/EnzymeV4'
 import Formatter from '@/mixins/Formatter'
 export default {
   mixins: [Formatter],
@@ -397,7 +401,8 @@ export default {
       datasVaults: [],
       dataDeposits: [],
       tab: 'vaults',
-      seriesGeneral: [59, 41],
+      loading: true,
+      seriesGeneral: [],
       investorData: null,
       chartOptionsGeneral: {
         chart: {
@@ -409,8 +414,8 @@ export default {
         theme: {
           palette: 'palette10'
         },
-        colors: ['#2775CA', '#E418E4'],
-        labels: ['SIF USDC Vault', 'SPF PulseChain Vault'],
+        colors: [],
+        labels: [],
         dataLabels: {
           // enabled: false,
           enabled: true,
@@ -442,21 +447,40 @@ export default {
   },
   mounted () {
   },
+  watch: {
+    '$store.state.currentwallet.user': function (val) {
+      if (val) { this.getUserData() }
+    } },
   async  created () {
-    let data = (await Enzyme.getInvestorData('0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'))
-
-    this.datasVaults = data.datasVaults
-    this.seriesGeneral = data.repartition
-    this.chartOptionsGeneral.labels = Object.assign({}, data).datasVaults.map(f => f.name)
-    this.investorData = data
-
-    data.datasVaults.forEach(async f => {
-      this.dataDeposits = this.dataDeposits.concat(await Enzyme.getDeposits(f.address))
-    })
-
-    // this.$set(this, 'investorData', data)
+    if (this.$store.state.currentwallet.user) { this.getUserData() }
   },
   methods: {
+    async getUserData () {
+      let data = (await EnzymeV4.getInvestorData(this.$store.state.currentwallet.user.address))
+
+      this.datasVaults = data.datasVaults
+
+      if (data.datasVaults.length) {
+        this.seriesGeneral = data.repartition
+        this.chartOptionsGeneral.labels = Object.assign({}, data).datasVaults.map(f => f.name)
+        this.investorData = data
+
+        data.datasVaults.forEach(async f => {
+        //  this.dataDeposits = this.dataDeposits.concat(await Enzyme.getDeposits(f.address))
+          this.dataDeposits = this.dataDeposits.concat(await EnzymeV4.getActivity(f.address, 'deposit'))
+        })
+        // this.$set(this, 'investorData', data)
+      } else {
+        this.investorData = {
+          repartition: 0,
+          totalPValue: 0,
+          avApy: 0,
+          sinceInception: 0,
+          thisMonth: 0
+        }
+      }
+      this.loading = false
+    },
     onRowClick (evt, row) {
       this.$router.push('/vault/' + row.address)
     },

@@ -75,7 +75,8 @@ export default {
     getNewUser () {
       this.connectLoading = true
       let user = Parse.User.current()
-      this.user.wallet = 'verto'
+
+      this.$set(this.user, 'wallet', 'verto')
 
       if (!user) {
         let u = {
@@ -131,14 +132,10 @@ export default {
       this.$store.state.wallets.tokens = []
       this.connectLoading = false
       this.$route.params.key = null
-      this.user = {
-        address: null,
-        addressFriendly: null,
-        wallet: null,
-        chain: 'eth'
-      }
+      this.user = null
 
       this.connectLoading = false
+      this.$store.state.currentwallet.user = null
       this.$store.state.currentwallet.userData = {}
       this.$store.commit('currentwallet/setLoggedIn', false)
       this.$store.commit('currentwallet/setLoggedData', null)
@@ -169,49 +166,53 @@ export default {
       document.head.appendChild(element2)
     },
     setUser (address, wallet = 'metamask', balance = 0) {
-      console.log(address, wallet, balance)
-      this.$store.state.currentwallet.userData = {}
-      this.user.address = address.toLowerCase()
-      this.user.wallet = wallet
-      this.user.balance = balance
-      this.user.addressFriendly = (this.user.address.substring(0, 6) + '...' + this.user.address.substr(this.user.address.length - 5)).toLowerCase()
-      this.$store.commit('currentwallet/setLoggedIn', true)
-      this.$store.commit('currentwallet/setLoggedData', this.user)
-      this.connectOptions = false
+      if (address) {
+        this.$store.state.currentwallet.userData = {}
+        this.$set(this.user, 'address', address.toLowerCase())
+        this.$set(this.user, 'wallet', wallet)
+        this.$set(this.user, 'balance', balance)
+        this.$set(this.user, 'addressFriendly', (this.user.address.substring(0, 6) + '...' + this.user.address.substr(this.user.address.length - 5)).toLowerCase())
+        this.$set(this.user, 'address', address.toLowerCase())
+
+        this.$store.commit('currentwallet/setLoggedIn', true)
+        this.$store.commit('currentwallet/setLoggedData', this.user)
+        this.connectOptions = false
+      }
     },
     async initServer () {
+      console.log('6')
       if (typeof Moralis === 'undefined') {
         await delay(1000)
         await this.initServer()
         return
       }
+      console.log('7')
 
       /* global Moralis */
 
       await Moralis.start({ serverUrl: 'https://blqup05sr0xr.usemoralis.com:2053/server', appId: 'Y3EQRdHC128aqLOdXG4Hzs5eXzXbsiAqX5dBSCMi' })
-
-      Moralis.serverURL = 'https://blqup05sr0xr.usemoralis.com:2053/server'
-
+      console.log('8')
       // this.getTokensData()
       if (Moralis.User.current()) {
+        console.log('9')
         let user = Moralis.User.current()
         let data = await Moralis.Web3API.account.getNativeBalance()
         this.setUser(user.get('ethAddress'), 'metamask', data.balance / (10 ** 18))
         await Moralis.enableWeb3()
         //  let Web3 = require('web3')
         //  let web3 = new Web3(Moralis.provider)
-        Moralis.onAccountChanged(async (accounts) => {
+        Moralis.onAccountChanged(async (account) => {
           let data = await Moralis.Web3API.account.getNativeBalance()
-          this.setUser(accounts[0], 'metamask', data.balance / (10 ** 18))
-          await Moralis.link(accounts[0])
+
+          this.setUser(account, 'metamask', data.balance / (10 ** 18))
+          await Moralis.link(account)
         })
       }
       this.connectLoading = false
     },
-
     async connect (wallet, data) {
       this.connectLoading = true
-      this.user.wallet = wallet
+      this.$set(this.user, 'wallet', wallet)
       if (typeof Moralis === 'undefined') {
         await delay(1000)
         return this.connect(wallet)
@@ -222,10 +223,11 @@ export default {
           this.connectLoading = false
           let data = await Moralis.Web3API.account.getNativeBalance()
           this.setUser(user.get('ethAddress'), wallet, data.balance / (10 ** 18))
-          Moralis.onAccountsChanged(async (accounts) => {
+          Moralis.onAccountsChanged(async (account) => {
             let data = await Moralis.Web3API.account.getNativeBalance()
-            this.setUser(accounts[0], wallet, data.balance / (10 ** 18))
-            await Moralis.link(accounts[0])
+
+            this.setUser(account, wallet, data.balance / (10 ** 18))
+            await Moralis.link(account)
           })
         }).catch(async (error) => {
           if (error.toString().includes('Parse.initialize')) {
@@ -293,14 +295,7 @@ export default {
       provider: null,
       EnzymeData: null,
       trigger: 1,
-      user: {
-        wallet: null,
-        balance: null,
-        avatar: null,
-        address: null,
-        chain: 'eth',
-        addressFriendly: null
-      }
+      user: {}
     }
   }
 }
