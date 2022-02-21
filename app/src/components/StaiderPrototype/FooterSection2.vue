@@ -1,5 +1,5 @@
 <template>
-  <div class="main-footer q-pl-lg q-pr-lg">
+  <div class="main-footer q-pl-lg q-pr-lg" :class="{'site': appSiteMode === 'site'}">
     <div class="fluid-container">
       <div class="row">
         <div class="column main-logo" :class="{'col-12': $q.screen.width < 768, 'col-3': $q.screen.width >= 768}">
@@ -69,6 +69,7 @@ export default {
   name: 'Footer',
   data () {
     return {
+      appSiteMode: 'site',
       footerNav3: [
         { to: '/funds', title: 'Explore funds' },
         { to: '/team', title: 'Team' },
@@ -99,6 +100,12 @@ export default {
   @import "assets/styles/staider_theme/helpers.scss";
   .main-footer{
     margin-top: 100px;
+    &.site{
+      padding: 0px 10px;
+      max-width: calc(100% - 180px);
+      margin-left: auto;
+      margin-right: auto;
+    }
     .h_line{
       position: relative;
       top: 5px;
