@@ -459,14 +459,14 @@ export default {
   data () {
     return {
       slippage: '3%',
-      advancedSettings: true,
+      advancedSettings: false,
       termsConditionPopup: false,
       showInfo: false,
       showInfoSlippage: false,
       termsConditions: false,
       amount: '0 USDC',
       amountWithdraw: '206.4221858288598535031',
-      depositPopup: true,
+      depositPopup: false,
       withdrawPopup: false,
       canDeposit: true,
       fundID: '0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a',

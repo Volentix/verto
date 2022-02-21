@@ -1,0 +1,36 @@
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In  -->
+<svg version="1.1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="59px" height="59px" viewBox="0 0 59 59" style="enable-background:new 0 0 59 59;" xml:space="preserve">
+<style type="text/css">
+	.st0{clip-path:url(#XMLID_20_);}
+	.st1{fill:url(#XMLID_21_);}
+	.st2{fill:#FFFFFF;}
+	.st3{clip-path:url(#XMLID_22_);}
+	.st4{fill:url(#XMLID_23_);}
+</style>
+<defs>
+</defs>
+<g id="XMLID_15_">
+	<g id="XMLID_16_">
+		<defs>
+			<rect id="XMLID_17_" width="59" height="59"/>
+		</defs>
+		<clipPath id="XMLID_20_">
+			<use xlink:href="#XMLID_17_"  style="overflow:visible;"/>
+		</clipPath>
+		<g id="b_1_" class="st0">
+
+				<linearGradient id="XMLID_21_" gradientUnits="userSpaceOnUse" x1="-1387.1603" y1="-5279.2017" x2="-1387.2153" y2="-5279.1553" gradientTransform="matrix(776 0 0 776 1076487 4096672)">
+				<stop  offset="0" style="stop-color:#B6509E"/>
+				<stop  offset="1" style="stop-color:#2EBAC6"/>
+			</linearGradient>
+			<circle id="XMLID_19_" class="st1" cx="29.2" cy="29.5" r="28.7"/>
+			<path id="XMLID_18_" class="st2" d="M41.8,41l-9.7-23.3c-0.5-1.2-1.4-1.7-2.4-1.7h-0.9c-1.1,0-1.9,0.6-2.4,1.8L22.1,28h-3.2
+				c-1,0-1.9,0.5-1.9,1.5v0c0,1,1,1.5,1.9,1.5h1.7l-4,9.9c-0.1,0.2-0.1,0.5-0.1,0.7c0,0.5,0.2,1,0.5,1.3c0.3,0.3,0.7,0.5,1.3,0.5
+				c0.4,0,0.7-0.1,1-0.3c0.3-0.2,0.5-0.6,0.7-1L24.4,31h3.1c1,0,1.5-0.5,1.5-1.5v0c0-1-0.6-1.4-1.5-1.4h-1.6l3.4-8.6l9.2,22.9
+				c0.2,0.4,0.4,0.6,0.7,0.8c0.3,0.2,0.6,0.3,1,0.3c0.5,0,1-0.2,1.3-0.5s0.5-0.8,0.5-1.3C41.9,41.4,41.9,41.2,41.8,41z"/>
+		</g>
+	</g>
+</g>
+</svg>

@@ -148,6 +148,10 @@ if (process.env.QMODE !== 'bex') {
         {
           path: '/staider-new-prototype/vault',
           component: () => import('pages/StaiderPrototype/Vault.vue')
+        },
+        {
+          path: '/staider-new-prototype/landing',
+          component: () => import('pages/StaiderPrototype/Landing.vue')
         }
       ]
     },  */ {

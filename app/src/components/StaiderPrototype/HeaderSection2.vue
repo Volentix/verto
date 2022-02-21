@@ -7,7 +7,7 @@
             <img src="statics/staider/staider_logo_white.svg" alt="">
           </router-link>
         </div>
-        <div v-if="false" class="col-6 main-menu flex justify-center items-center">
+        <div v-if="appSiteMode === 'site'" class="col-6 main-menu flex justify-center items-center">
           <nav class="full-width flex justify-center items-center">
             <router-link to="/about">About Staider</router-link>
             <router-link to="/faq">FAQ</router-link>
@@ -230,6 +230,7 @@ export default {
   props: ['active', 'link', 'currentPage'],
   data () {
     return {
+      appSiteMode: 'site',
       wrongNetworkPopup: false,
       connectingWalletConnect: false,
       connectingMetamask: false,
@@ -365,6 +366,12 @@ export default {
   .main-menu{
     nav{
       a{
+        font-family: $MainFont;
+        font-weight: 200;
+        opacity: .7;
+        &:hover{
+          opacity: 1;
+        }
         font-size: 14px;
         color: #FFF;
         text-decoration: none;

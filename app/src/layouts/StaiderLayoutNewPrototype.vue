@@ -5,6 +5,11 @@
       <HeaderSection2 class="backdrop-mobile" :class="{'activate-backdrop-mobile': backdrop}" />
     </q-header>
 
+    <div class="animation_simulation_wrapper flex justify-center items-center">
+      <img v-if="true" src="statics/staider/var1.png" alt="">
+      <canvas v-else id="abstract_aniamtion"></canvas>
+    </div>
+
     <q-drawer
       v-model="leftDrawer"
       side="left"
@@ -15,7 +20,7 @@
       </q-scroll-area>
     </q-drawer>
 
-    <q-scroll-area style="height: calc(100vh - 180px)" class="scroll_area_wrapper" :class="{'height-auto': $q.screen.width < 768}" dark>
+    <q-scroll-area style="height: calc(100vh - 180px)" class="scroll_area_wrapper" :class="{'height-auto': $q.screen.width < 768, 'site': appSiteMode === 'site'}" dark>
       <q-scroll-observer @scroll="onScroll" />
       <q-page-container>
         <!-- This is where pages get injected -->
@@ -43,6 +48,7 @@ export default {
   },
   data () {
     return {
+      appSiteMode: 'site',
       leftDrawer: false,
       currentPage: '',
       backdrop: false,
@@ -83,7 +89,7 @@ export default {
     position: absolute !important;
     z-index: 9999;
     background: transparent;
-    max-width: calc(100% - 10px);
+    max-width: calc(100% - 0px);
   }
   .scroll_area_wrapper{
     box-shadow: 0px 34px 54px 0px #000;
@@ -91,6 +97,8 @@ export default {
     overflow: hidden;
     max-width: calc(100% - 180px);
     margin-left: auto;
+    z-index:3;
+    position: relative;
     margin-right: auto;
     margin-top: 120px;
     border-radius: 20px;
@@ -105,6 +113,19 @@ export default {
     }
     &.blur-effect{
       filter: blur(5px);
+    }
+    &.site{
+      box-shadow: none;
+      border-radius: 0px;
+      overflow: hidden;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 0px;
+      background: rgba(#1D1D21, 0);
+      padding: 0px;
+      padding-bottom: 0px;
+      height: 100vh !important;
     }
   }
   .main-q-layout{
@@ -150,6 +171,18 @@ export default {
           margin-top: 16px;
         }
       }
+    }
+  }
+  .animation_simulation_wrapper{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: #040404 !important;
+    img{
+      width: 100%;
     }
   }
 </style>
