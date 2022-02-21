@@ -1792,8 +1792,8 @@
 
     <!-- <GodexDialog  v-if="$q.platform.is.mobile" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoinOptions.sync="depositCoinOptions" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" /> -->
     <div class="row">
-     <div class="col-md-4 offset-md-3">
-     <GodexDialog ref="txUi" style="width:400px;"   :step.sync="step" :paths="paths" :formatNumber="formatNumber" :isPathInvalid="isPathInvalid" :setMinimum="setMinimum" :getSwapInfo="getSwapInfo" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoin.sync="depositCoin" :depositCoinOptions.sync="depositCoinOptions" :depositCoinUnfilter="depositCoinUnfilter" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" :swapData="swapData" :spinner="spinner" :setPathTransaction="setPathTransaction" :getDepositTxData="getDepositTxData" :destinationCoin.sync="destinationCoin"  :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :currentDex="currentDex" :switchAmounts="switchAmounts"
+     <div class="col-md-8 offset-md-1">
+     <GodexDialog ref="txUi" style="width:800px;"   :step.sync="step" :paths="paths" :formatNumber="formatNumber" :isPathInvalid="isPathInvalid" :setMinimum="setMinimum" :getSwapInfo="getSwapInfo" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoin.sync="depositCoin" :depositCoinOptions.sync="depositCoinOptions" :depositCoinUnfilter="depositCoinUnfilter" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" :swapData="swapData" :spinner="spinner" :setPathTransaction="setPathTransaction" :getDepositTxData="getDepositTxData" :destinationCoin.sync="destinationCoin"  :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :currentDex="currentDex" :switchAmounts="switchAmounts"
                     :createTransaction="createTransaction" :error="error" :chains="chains" :path="path" :splitterModel="splitterModel" :tab.sync="tab" :setPathData="setPathData" :innerStep="innerStep" :chainData="chainData" :approvalCheckRun="approvalCheckRun" :fromAccountSelected="fromAccountSelected" :getKeyFormat="getKeyFormat" :setSelectedGas="setSelectedGas" :processApproval="processApproval" :swapTokens="swapTokens" :toAccountSelected="toAccountSelected" :setTransactionStatus="setTransactionStatus" :setTab="setTab" :exchangeDetails="exchangeDetails" :showSendComponent="showSendComponent" :validStatus="validStatus" :copyToClipboard="copyToClipboard" />
      </div>
      <div class="col-md-4" v-if="false">
@@ -2545,7 +2545,8 @@ export default {
       } else {
         let dexes = await CrosschainDex.getDex(
           from.toLowerCase(),
-          to.toLowerCase()
+          to.toLowerCase(),
+          chain
         )
         // no crosschain
         dexes = dexes.filter(s => s.chains.includes(chain))
@@ -2735,7 +2736,7 @@ export default {
         amount: amount,
         icon: this.depositCoin.image
       })
-      console.log(list, 'list')
+
       list
         .filter((a) => a.amount && !isNaN(a.amount) && a.type !== this.destinationCoin.value.toLowerCase())
         .forEach(async (o) => {

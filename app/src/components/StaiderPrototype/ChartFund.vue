@@ -29,6 +29,8 @@ function formatNumber2 (number, tofix) {
   const val = (number / 1).toFixed(tofix).replace(',', ' ')
   return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
+let currency = window.localStorage.getItem('currency')
+currency = currency || 'USD'
 export default {
   name: 'ChartFund',
   components: {
@@ -72,9 +74,9 @@ export default {
             // console.log(dateTime.toLocaleDateString('en-US'))
             const timeStamp = new Date(unixTime * 1000)
             const hour = date.formatDate(timeStamp, 'DD MMMM YYYY HH:mm')
-            let sign = window.localStorage.getItem('currency').toUpperCase() !== 'USD' ? '' : '$'
+            let sign = currency.toUpperCase() !== 'USD' ? '' : '$'
             return (
-              '<div class="arrow_box_tooltip q-pa-md"><span class="' + (window.localStorage.getItem('skin') === 'dark' ? 'text-grey-5' : 'text-grey') + '">' + hour + '</span><br> <span class="text-h6 ' + (window.localStorage.getItem('skin') === 'dark' ? 'text-white' : '') + '"> Share Price: ' + sign + formatNumber2(series[0][dataPointIndex], 3) + ' ' + window.localStorage.getItem('currency').toUpperCase() + '</span>' + '</div>'
+              '<div class="arrow_box_tooltip q-pa-md"><span class="' + (window.localStorage.getItem('skin') === 'dark' ? 'text-grey-5' : 'text-grey') + '">' + hour + '</span><br> <span class="text-h6 ' + (window.localStorage.getItem('skin') === 'dark' ? 'text-white' : '') + '"> Share Price: ' + sign + formatNumber2(series[0][dataPointIndex], 3) + ' ' + currency.toUpperCase() + '</span>' + '</div>'
             )
           }
         },
@@ -149,8 +151,8 @@ export default {
           },
           labels: {
             formatter: function (value) {
-              let sign = window.localStorage.getItem('currency').toUpperCase() !== 'USD' ? '' : '$'
-              return sign + formatNumber2(value, 0) + ' ' + window.localStorage.getItem('currency').toUpperCase()
+              let sign = currency.toUpperCase() !== 'USD' ? '' : '$'
+              return sign + formatNumber2(value, 0) + ' ' + currency.toUpperCase()
             }
           }
         }

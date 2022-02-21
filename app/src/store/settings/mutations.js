@@ -7,6 +7,9 @@ import initWallet from '@/util/_Wallets2Tokens'
 export const setAirplaneMode = (state, data) => {
   state.airplaneMode = data
 }
+export const setComponentState = (state, data) => {
+  state.components[data.key] = data.data
+}
 export const setGlobalSettings = (state, data) => {
   for (let key in data) {
     if (!state.globalSettings[key]) {

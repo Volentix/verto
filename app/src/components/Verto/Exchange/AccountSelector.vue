@@ -533,12 +533,7 @@
                           class="header-wallet full-width flex justify-between"
                         >
                           <q-item-section class="item-name">
-                            <span
-                              class="item-name--name"
-                              v-if="item && item.isEvm"
-                            >
-                              {{ getAccountLabel(item) }}</span
-                            >
+
                             <span
                               >No {{ tokChain.chain.toUpperCase() }} account
                               found</span

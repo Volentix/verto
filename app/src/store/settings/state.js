@@ -3,6 +3,7 @@ export default {
   rightOrder: false,
   network: 'mainnet',
   accountTab: null,
+  components: {},
   devMode: false,
   defaultChainData: null,
   globalSettings: {},

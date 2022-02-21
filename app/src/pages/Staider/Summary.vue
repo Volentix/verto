@@ -33,7 +33,7 @@
             </div>
             <div class="col-6 column items-end stat-item q-mb-md">
               <span>Change to date</span>
-              <span :class="['number',investorData.sinceInception.color]" >{{investorData.sinceInception.value}} <small>$US</small></span>
+              <span :class="['number',investorData.sinceInception.color]" >{{investorData.sinceInception.value}} <small>%</small></span>
             </div>
           </div>
         </div>
@@ -264,7 +264,7 @@
                 dark
                 table-style="box-shadow: none;"
                 title=""
-                :data="dataDeposits.filter( o => o.__typename == 'SharesBoughtEvent')"
+                :data="dataDeposits.filter( o => o.__typename == 'SharesRedeemedEvent')"
                 :columns="columnsDeposits"
                 :loading="loading"
                 row-key="tx"
@@ -446,6 +446,14 @@ export default {
     }
   },
   mounted () {
+    if (this.$store.state.settings.components[this.$options.name]) {
+      for (let i in this.$store.state.settings.components[this.$options.name].$data) {
+        this.$set(this, i, this.$store.state.settings.components[this.$options.name].$data[i])
+      }
+    }
+  },
+  destroyed () {
+    this.$store.commit('settings/setComponentState', { key: this.$options.name, data: this })
   },
   watch: {
     '$store.state.currentwallet.user': function (val) {
@@ -456,18 +464,18 @@ export default {
   },
   methods: {
     async getUserData () {
-      let data = (await EnzymeV4.getInvestorData(this.$store.state.currentwallet.user.address))
+      let data = (await EnzymeV4.getUserVaults(this.$store.state.currentwallet.user.address))
 
-      this.datasVaults = data.datasVaults
-
-      if (data.datasVaults.length) {
-        this.seriesGeneral = data.repartition
-        this.chartOptionsGeneral.labels = Object.assign({}, data).datasVaults.map(f => f.name)
-        this.investorData = data
-
-        data.datasVaults.forEach(async f => {
+      if (data.length) {
+        this.chartOptionsGeneral.labels = Object.assign([], data).map(f => f.name)
+        let ids = Object.assign([], data).map(f => f.vault.id)
+        this.investorData = await EnzymeV4.getAggregateVaultsData(ids)
+        console.log(ids, 'ids')
+        this.datasVaults = await EnzymeV4.getInvestorData(this.$store.state.currentwallet.user.address)
+        this.seriesGeneral = this.investorData.repartition
+        data.forEach(async f => {
         //  this.dataDeposits = this.dataDeposits.concat(await Enzyme.getDeposits(f.address))
-          this.dataDeposits = this.dataDeposits.concat(await EnzymeV4.getActivity(f.address, 'deposit'))
+          this.dataDeposits = this.dataDeposits.concat(await EnzymeV4.getActivity(f.vault.id, 'deposit', this.$store.state.currentwallet.user.address))
         })
         // this.$set(this, 'investorData', data)
       } else {
