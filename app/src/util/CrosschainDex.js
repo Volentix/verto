@@ -5,6 +5,7 @@ import { number_to_asset, asset } from 'eos-common'
 import RenJS from '@renproject/ren'
 import { Bitcoin, Ethereum } from '@renproject/chains'
 import Lib from '@/util/walletlib'
+import { Coins, MsgExecuteContract } from '@terra-money/terra.js'
 import HD from '@/util/hdwallet'
 import abiArray from '@/statics/abi/erc20.json'
 const _1inch = process.env[store.state.settings.network].CACHE + 'https://api.1inch.exchange'
@@ -199,7 +200,7 @@ class Crosschaindex {
         data = [x]
       }
     }
-    console.log(data, 'data')
+
     return data
   }
   getAllCoins (unique = true, dex = false) {
@@ -225,7 +226,7 @@ class Crosschaindex {
     })
     const getImage = (type) => {
       let images = {
-        eth: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png',
+        eth: 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png',
         btc: 'https://api.godex.io/storage/coins/nlQJWbSb5SZ0CsXk0RTDFH2Tsg4bcRKuZLZwVyKr.png',
         usdc: 'https://tokens.1inch.exchange/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png'
       }
@@ -244,12 +245,12 @@ class Crosschaindex {
   }
 
   getApprovalDataV3 (tokenAddress, evmData) {
-    let response = axios.get('https://api.1inch.exchange/v3.0/' + evmData.network_id + '/approve/calldata?tokenAddress=' + tokenAddress)
+    let response = axios.get(process.env[store.state.settings.network].CACHE + 'https://api.1inch.exchange/v3.0/' + evmData.network_id + '/approve/calldata?tokenAddress=' + tokenAddress)
     return response
   }
 
   getSpender1Inchv3 (evmData) {
-    let response = axios.get('https://api.1inch.exchange/v3.0/' + evmData.network_id + '/approve/spender')
+    let response = axios.get(process.env[store.state.settings.network].CACHE + 'https://api.1inch.exchange/v3.0/' + evmData.network_id + '/approve/spender')
     return response
   }
   async isOneinchApprovalRequired (fromUserAddress, fromToken, toToken, amountToSend, fromChain) {
@@ -257,12 +258,13 @@ class Crosschaindex {
     let check = {
       required: false,
       error: false,
+      entity: '1inch',
       transactionObject: null
     }
     const web3 = Lib.getWeb3Instance(fromChain)
     let evmData = Lib.evms.find(o => o.chain === fromChain)
     let tokenData = await this.getOneInchCoinData(fromToken, toToken, evmData.network_id)
-
+    console.log(tokenData, 5, fromUserAddress, fromToken, toToken, amountToSend, fromChain)
     if (tokenData && tokenData.fromData && tokenData.toData && evmData.nativeToken !== fromToken.toLowerCase()) {
       const tokenContract = new web3.eth.Contract(abiArray, tokenData.fromData.address)
 
@@ -392,24 +394,23 @@ class Crosschaindex {
    getCW20Pairs () {
      return CW20s
    }
-   getPair = (from, to, amount) => {
+   getPair = (from, to, amount, chain) => {
      const self = this
-
+     if (!parseFloat(amount) || !from || !to) return
      let list = {
        oneinch () {
          return new Promise(async (resolve, reject) => {
            let fromToken = store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === from.toLowerCase())
            let toToken = store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === to.toLowerCase())
            let validChains = []
-           let evmData = {
-             network_id: 1
-           }
-           await Promise.all(['eth', 'matic', 'bsc'].map(async chain => {
-             let evm = Lib.evms.find(o => o.chain === chain)
-             let pair = await self.getOneInchCoinData(from, to, evm.network_id)
+           let evmData = null
+           await Promise.all([chain].map(async chain => {
+             evmData = Lib.evms.find(o => o.chain === chain)
+             console.log(evmData, 'evmData', chain)
+             let pair = await self.getOneInchCoinData(from, to, evmData.network_id)
 
              if (pair.fromData && pair.toData) {
-               validChains.push(evm.chain)
+               validChains.push(evmData.chain)
              }
            }))
 
@@ -425,13 +426,44 @@ class Crosschaindex {
            }
            axios
              .get(process.env[store.state.settings.network].CACHE + self.base.oneinch + evmData.network_id + '/quote?' + new URLSearchParams(data).toString())
-             .then(res => {
+             .then(async res => {
                data.amount = res.data.toTokenAmount.toString() / (10 ** toToken.decimals)
                data.fromChains = validChains
                data.toChains = validChains
                data.isCrosschain = false
                data.limitMaxDepositCoin = 0
                data.limitMinDepositCoin = 0
+
+               data.approval = await self.isOneinchApprovalRequired(
+                 store.state.investment.defaultAccount.key,
+                 from,
+                 to,
+                 amount,
+                 chain
+               )
+               data.fee = {}
+               let gas = res.data.estimatedGas, gasPrice = 0
+               let web3 = Lib.getWeb3Instance(chain)
+               if (data.approval.required) {
+                 let obj = Object.assign({}, data.approval.transactionObject)
+                 delete obj.nonce
+                 delete obj.chainId
+                 delete obj.gasPrice
+
+                 gas = await web3.eth.estimateGas(obj)
+                 data.approval.transactionObject.gas = gas
+                 data.approval.transactionObject.gas = web3.utils.toHex(gas.toString())
+                 data.txParams = data.approval.transactionObject
+                 gasPrice = parseInt(data.txParams.gasPrice) / 1000000000
+               } else {
+                 data.txParams = await self.createTransaction(from, to, amount, null, chain, chain, store.state.investment.defaultAccount.key, store.state.investment.defaultAccount.key)
+                 let g = await Lib.getEtherereumPriceGas()
+                 gasPrice = g
+                 data.txParams.gas = web3.utils.toHex(gas.toString())
+                 data.txParams.gasPrice = web3.utils.toHex((g * 1000000000).toString())
+               }
+               data.fee.native = (gas * (gasPrice) * 1000000000) / 10 ** 18
+               data.fee.usd = data.fee.native * (await Lib.getCoinGeckoPrice(null, 'ethereum'))
 
                resolve({
                  pair: data
@@ -445,7 +477,7 @@ class Crosschaindex {
          })
        },
        terraswap () {
-         // let router = 'terra19qx5xe6q9ll4w0890ux7lv2p4mf3csd4qvt3ex'
+       //  let router = 'terra19qx5xe6q9ll4w0890ux7lv2p4mf3csd4qvt3ex'
          return new Promise(async (resolve, reject) => {
            let tokens = await self.getCoinByChain('terra')
            let data = {
@@ -468,6 +500,9 @@ class Crosschaindex {
                }
                if (execute_msg?.execute_swap_operations) {
                  const { operations } = execute_msg.execute_swap_operations
+                 if (execute_msg.execute_swap_operations) {
+                   execute_msg.execute_swap_operations.offer_amount = parseInt(amount * 10 ** fromToken.decimals).toString()
+                 }
                  return {
                    contract,
                    tx: {
@@ -476,7 +511,7 @@ class Crosschaindex {
                    },
                    msg: {
                      simulate_swap_operations: {
-                       offer_amount: (amount * 10 ** fromToken.decimals).toString(),
+                       offer_amount: parseInt(amount * 10 ** fromToken.decimals).toString(),
                        operations
                      }
                    }
@@ -484,7 +519,7 @@ class Crosschaindex {
                }
                if (execute_msg?.swap) {
                  const offer_asset = execute_msg?.swap?.offer_asset || {
-                   amount: (amount * 10 ** fromToken.decimals).toString(),
+                   amount: parseInt(amount * 10 ** fromToken.decimals).toString(),
                    info: {
                      token: {
                        contract_addr: fromToken.address
@@ -505,7 +540,7 @@ class Crosschaindex {
                }
                return undefined
              })
-             console.log(simulateQueries, 'simulateQueries')
+
              await Promise.all(simulateQueries.map(async route => {
                /*   const execute_msg = route[0].value
                 ?.execute_msg
@@ -562,8 +597,40 @@ class Crosschaindex {
                    key = 'amount'
                  }
                  if (res.data.result[key]) {
-                   data.amount = parseFloat(res.data.result[key] / (10 ** fromToken.decimals))
-                   data.path = route
+                   data.amount = parseFloat(res.data.result[key] / (10 ** toToken.decimals))
+                   if (route.tx.execute_msg.execute_swap_operations) {
+                     route.tx.execute_msg.execute_swap_operations.minimum_receive = parseInt(res.data.result[key] - res.data.result[key] * 0.03).toString()
+                   }
+                   if (route.tx.execute_msg.swap && route.tx.execute_msg.swap.belief_price === '0' && route.tx.execute_msg.swap.max_spread === '0') {
+                     route.tx.execute_msg.swap.max_spread = '0.005'
+                     route.tx.execute_msg.swap.belief_price = (amount / data.amount).toString()
+                   }
+                   if (fromToken.isCW20) {
+                     let params = { send: {
+                       msg: '',
+                       amount: (amount * (10 ** fromToken.decimals)).toString(),
+                       contract: route.tx.contract
+                     } }
+
+                     params.send.msg = Buffer.from(JSON.stringify(route.tx.execute_msg),
+                       'utf8'
+                     ).toString('base64')
+
+                     data.txParams = new MsgExecuteContract(
+                       store.state.investment.defaultAccount.key,
+                       fromToken.address,
+                       params
+                     )
+                   } else {
+                     let params = {}
+                     params[fromToken.address] = amount * (10 ** fromToken.decimals)
+                     data.txParams = new MsgExecuteContract(
+                       store.state.investment.defaultAccount.key,
+                       route.tx.contract,
+                       JSON.parse(JSON.stringify(route.tx.execute_msg)),
+                       new Coins(params)
+                     )
+                   }
                  }
                }
              }))
@@ -658,7 +725,7 @@ class Crosschaindex {
            data.isCrosschain = false
            data.limitMaxDepositCoin = 0
            data.limitMinDepositCoin = 0
-           console.log(data, 'data')
+
            resolve({
              pair: data
            })

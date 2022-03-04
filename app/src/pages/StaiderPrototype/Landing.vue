@@ -6,7 +6,7 @@
           <div class="column justify-center items-start">
             <h1>Your portfolio <br>on autopilot</h1>
             <h2>Retain full custody of your assets</h2>
-            <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Launch app" />
+            <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Launch app" />
           </div>
         </div>
         <div class="col-12 col-sm-12 col-md-6 col-lg-6 flex flex-center staider3d">
@@ -90,7 +90,7 @@
                 <span class="apy"><b>N/A</b> Up to APY</span>
               </div>
               <div class="vault-wrapper__cta col flex justify-end">
-                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Deposit">
+                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Deposit">
                   <div class="flex items-center">
                     <img height="20" class="q-ml-md q-mr-xs" src="statics/staider/coins/usdc.svg" alt="">
                     <img height="20" src="statics/staider/coins/eth.svg" alt="">
@@ -119,7 +119,7 @@
                 <span class="apy"><b>N/A</b> Up to APY</span>
               </div>
               <div class="vault-wrapper__cta col flex justify-end">
-                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Deposit">
+                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Deposit">
                   <div class="flex items-center">
                     <img height="20" class="q-ml-md q-mr-xs" src="statics/staider/coins/usdc.svg" alt="">
                     <img height="20" class="q-mr-xs" src="statics/staider/coins/eth.svg" alt="">
@@ -140,8 +140,8 @@
         <div class="col-6 text-white q-mb-xl column">
           <p>You can filter strategies by assets, risk and performance, and find one that fits your profile.</p>
           <div class="cta-btns flex q-mt-xl">
-            <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Explore Funds" />
-            <q-btn flat color="white" class="q-ml-sm" no-caps text-color="white" to="/staider-new-prototype/vault" label="Connect Wallet" />
+            <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Explore Funds" />
+            <q-btn flat color="white" class="q-ml-sm" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" label="Connect Wallet" />
           </div>
         </div>
         <div class="col-6 text-white q-mb-xl column q-pl-xl">

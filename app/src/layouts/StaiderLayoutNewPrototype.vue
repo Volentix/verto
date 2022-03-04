@@ -20,7 +20,7 @@
       </q-scroll-area>
     </q-drawer>
 
-    <q-scroll-area style="height: calc(100vh - 180px)" class="scroll_area_wrapper" :class="{'height-auto': $q.screen.width < 768, 'site': appSiteMode === 'site'}" dark>
+    <q-scroll-area style="height: calc(100vh - 180px)" class="scroll_area_wrapper" :class="{'height-auto': $q.screen.width < 768, 'site': appSiteMode === 'app'}" dark>
       <q-scroll-observer @scroll="onScroll" />
       <q-page-container>
         <!-- This is where pages get injected -->

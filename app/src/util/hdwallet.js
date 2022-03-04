@@ -12,6 +12,14 @@ import { encode } from 'js-base64'
 // https://iancoleman.io/bip39/ used to validate the derived keys as per bip44 non-hardened addresses.
 class HD {
   constructor () {
+    this.paths = {
+      avax: "m/44'/9000'/0'/0/0",
+      sol: "m/44'/501'/0'",
+      eos: "m/44'/194'/0'/0/0",
+      btc: "m/44'/0'/0'/0/0",
+      eth: "m/44'/60'/0'/0/0"
+    }
+
     this.names = [{
       'value': 'btc',
       'label': 'Bitcoin'
@@ -62,7 +70,7 @@ class HD {
       'value': 'eos',
       'label': 'EOS'
     },
-    { 'icon': 'https://assets.website-files.com/611153e7af981472d8da199c/61117b476d11877a9638750e_Terra%20Opengraph.png',
+    { 'icon': '/statics/img/terra.png',
       'value': 'terra',
       'label': 'Terra'
     },
@@ -92,6 +100,7 @@ class HD {
         o.icon = 'https://files.coinswitch.co/public/coins/' + o.value + '.png'
       }
     })
+
     Lib.evms.forEach(o => {
       chains.unshift({
         icon: o.icon,
@@ -165,7 +174,7 @@ class HD {
       encodeWallet
     }
   }
-  Wallet = async (walletType, addressIndex = 0) => {
+  Wallet = async (walletType, addressIndex = 0, customPath = null) => {
     // const bip32 = require('bip32')
     // const util = require('ethereumjs-util')
     // const createHash = require('create-hash')
@@ -185,7 +194,7 @@ class HD {
         const keychain = xchain.keyChain()
 
         const HDKey = require('hdkey')
-        const path = "m/44'/9000'/0'/0/" + addressIndex.toString()
+        const path = customPath || "m/44'/9000'/0'/0/" + addressIndex.toString()
         const hdkey = HDKey.fromMasterSeed(seed)
         const key = hdkey.derive(path)
 
@@ -200,7 +209,7 @@ class HD {
       },
       sol () {
         const solanaWeb3 = require('@solana/web3.js')
-        const path = "m/44'/501'/" + addressIndex.toString() + "'"
+        const path = customPath || "m/44'/501'/" + addressIndex.toString() + "'"
         const derivedSeed = derivePath(path, seed).key
         const account = new solanaWeb3.Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey)
         const publicKey = account.publicKey.toString()
@@ -233,7 +242,7 @@ class HD {
         const wif = require('wif')
         const ecc = require('eosjs-ecc')
         const hdwallet = hdkey.fromMasterSeed(seed)
-        const eosPath = "m/44'/194'/0'/0/" + addressIndex.toString()
+        const eosPath = customPath || "m/44'/194'/0'/0/" + addressIndex.toString()
         const eosNode = hdwallet.derive(eosPath)
         const publicKey = ecc.PublicKey(eosNode._publicKey).toString()
         const privateKey = wif.encode(128, eosNode._privateKey, false)
@@ -294,14 +303,28 @@ let TerraWrapper = self.getTerraWrapper()
       },
       btc () {
         const bitcore = require('bitcore-lib')
-        const path = "m/44'/0'/0'/0/" + addressIndex.toString()
+        const path = customPath || "m/44'/0'/0'/0/" + addressIndex.toString()
         const network = bitcoin.networks.livenet
         const xpriv = bitcore.HDPrivateKey.fromSeed(seed, network) // BIP32 Root Key
         const extPrivKey = xpriv.derive(path) // BIP32 Extended Private Key
         const privKey = extPrivKey.privateKey
         const privateKey = privKey.toWIF()
         const pubKey = privKey.publicKey
-        const publicKey = bitcore.Address(pubKey, network).toString()
+
+        let publicKey = bitcore.Address(pubKey, network).toString()
+        if (path.includes('49')) {
+          const keyPair = bitcoin.ECPair.fromWIF(privateKey)
+          console.log(keyPair.publicKey.toString('hex'))
+          const pubkeys = [
+            keyPair.publicKey.toString('hex')
+          ].map(hex => Buffer.from(hex, 'hex'))
+          const { address } = bitcoin.payments.p2sh({
+            redeem: bitcoin.payments.p2wsh({
+              redeem: bitcoin.payments.p2ms({ m: 1, pubkeys })
+            })
+          })
+          publicKey = address
+        }
 
         return { publicKey, privateKey }
       },
@@ -321,7 +344,7 @@ let TerraWrapper = self.getTerraWrapper()
       eth () {
         const ethhdkey = require('ethereumjs-wallet/hdkey')
         const ethhdwallet = ethhdkey.fromMasterSeed(seed)
-        const ethPath = "m/44'/60'/0'/0/" + addressIndex.toString()
+        const ethPath = customPath || "m/44'/60'/0'/0/" + addressIndex.toString()
         const ethWallet = ethhdwallet.derivePath(ethPath).getWallet()
         const publicKey = ethWallet.getAddressString()
         const privateKey = ethWallet.getPrivateKeyString()
@@ -392,6 +415,13 @@ let TerraWrapper = self.getTerraWrapper()
         return { publicKey, privateKey }
       }
     }[walletType]
+    /*
+  let wallet = {}
+         if(keys){
+         wallet =  await keys()
+         }
+       return wallet
+       */
 
     if (bip39.validateMnemonic(mnemonic)) {
       return keys ? keys() : {}

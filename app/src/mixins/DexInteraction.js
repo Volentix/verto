@@ -162,7 +162,7 @@ export default {
       this.error = false
       let crosschain = ['eth', 'btc']
 
-      if (!this.destinationCoin || !this.depositCoin) return
+      if (!this.destinationCoin || !this.depositCoin || crosschain) return
 
       // let from = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       // let to = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
@@ -266,7 +266,7 @@ export default {
         isActive: true,
         isFiat: false,
         chain: 'eth',
-        logoUrl: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png',
+        logoUrl: 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png',
         name: 'ETH',
         symbol: 'eth'
       })

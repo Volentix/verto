@@ -1275,6 +1275,7 @@ export default {
         walletName: '',
         address: '',
         addressPriv: '',
+        privateKey: null,
         vertoPassword: '',
         vertoPasswordError: '',
         filePassword: '',
@@ -1305,6 +1306,7 @@ export default {
         if (t.encrypted_key) {
           key = TerraWrapper.decrypt(t.encrypted_key, this.terraStationPassword)
           if (key.toString().length) {
+            this.addWallet.privateKey = key
             this.chainKeyNext = true
             this.chainKeyInvalid = false
             this.addWallet.walletName = t.name
@@ -1512,21 +1514,13 @@ export default {
         if (Lib.evms.find(f => f.chain === this.currentChain.toLowerCase())) {
           chain = 'eth'
         }
-        console.log(
-          this.addWallet.walletName,
-          this.addWallet.vertoPassword,
-          null,
-          this.addWallet.address,
-          this.addWallet.addressPriv,
-          chain,
-          'import'
-        )
+        let key = this.addWallet.privateKey
         const result = await this.$configManager.saveWalletAndKey(
           this.addWallet.walletName,
           this.addWallet.vertoPassword,
           null,
           this.addWallet.address,
-          this.addWallet.addressPriv,
+          key || this.addWallet.addressPriv,
           chain,
           'import'
         )

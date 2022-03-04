@@ -448,7 +448,7 @@
                               <img
                                 height="20"
                                 width="20"
-                                src="https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png"
+                                src="https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png"
                                 alt="ETH"
                                 class="
                                   flex-none
@@ -992,14 +992,14 @@ export default {
         let web3 = null
         this.status = 'Submitted'
         this.spinnerVisible = true
-        console.log(this.user, 'y')
+     
         if (this.user.wallet === 'metamask') {
           await Moralis.enableWeb3()
           web3 = new Web3(Moralis.provider)
         } else {
           web3 = new Web3(this.provider)
         }
-        console.log(web3, this.txObject, this.user)
+        
         web3.eth.sendTransaction(this.txObject, async (error, hash) => {
           if (hash) {
             this.txHash = hash

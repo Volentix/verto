@@ -31,7 +31,74 @@ class Enzyme {
     this.comptrollerProxy = null
     this.fundData = null
   }
-  setFundAddress () {}
+  async assetChange24h () {
+    let assets = []
+    let data = JSON.stringify({
+      'operationName': 'AssetPrices',
+      'variables': {
+        'currency': 'usd',
+        'network': 'ethereum'
+      },
+      'query': 'query AssetPrices($network: Network!, $currency: Currency!) {\n  assetPrices(network: $network, currency: $currency) {\n    id\n    price\n    change24h\n    __typename\n  }\n}'
+    })
+
+    let config = {
+      method: 'post',
+      url: process.env[store.state.settings.network].CACHE + 'https://api.enzyme.finance/graphql',
+      headers: {
+        'content-type': 'application/json',
+        'Cookie': 'connect.sid=s%3Adb5qRxnTY4CRg0OYplu6nqO32DFbN_1O.bhtpWPqdjlKQHOu7t2%2BXH%2F7X0Wt9Gmpr1oeaZO5gEfY; csrf-token=2GWdhs89-NCXqYswr1f6p_1R-xVE7lLKM-YA'
+      },
+      data: data
+    }
+
+    axios(config)
+
+    let response = await axios(config)
+    if (response && response.data && response.data.data) {
+      assets = response.data.data.assetPrices
+    }
+    return assets
+  }
+  async getMonthlyReturns (fundAddress) {
+    let months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    let vaultMonthlyReturns = []
+    let data = JSON.stringify({
+      'operationName': 'VaultMonthlyReturns',
+      'variables': {
+        'currency': 'usd',
+        'network': 'ethereum',
+        'vault': fundAddress
+      },
+      'query': 'query VaultMonthlyReturns($currency: Currency!, $network: Network!, $vault: Address!) {\n  vaultMonthlyReturns(currency: $currency, network: $network, vault: $vault) {\n    yearMonth\n    year\n    month\n    monthlyReturn\n    valid\n    __typename\n  }\n}'
+    })
+
+    let config = {
+      method: 'post',
+      url: process.env[store.state.settings.network].CACHE + 'https://api.enzyme.finance/graphql',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: data
+    }
+
+    let response = await axios(config)
+    if (response && response.data && response.data.data && response.data.data.vaultMonthlyReturns) {
+      response.data.data.vaultMonthlyReturns.filter(o => o.valid).map(o => {
+        let i = vaultMonthlyReturns.findIndex(y => y.year === o.year)
+        console.log(i, 'i')
+        if (i === -1) {
+          i = vaultMonthlyReturns.length
+          vaultMonthlyReturns.push({ year: o.year })
+        }
+        console.log(i, 'i', vaultMonthlyReturns, o, months)
+        vaultMonthlyReturns[i][months[o.month - 1]] = o.monthlyReturn
+        console.log(vaultMonthlyReturns, 'vaultMonthlyReturns')
+      })
+    }
+
+    return vaultMonthlyReturns
+  }
   async getTokenData (address) {
     let response = await axios.get(
       process.env[store.state.settings.network].CACHE +
@@ -74,19 +141,20 @@ class Enzyme {
         return a + c.value
       }, 0)
       let tokens = await CrosschainDex.getCoinByChain('eth')
-
+      let assets = await this.assetChange24h()
       balance = response.data.data.vaultBalances
         .map(o => {
           let token = tokens.find(
             a => a.address.toLowerCase() === o.assetAddress.toLowerCase()
           )
           if (token) {
+            let a = assets.find(p => p.id === o.assetAddress)
             o.asset = token.value
             o.assetThicker = token.value
             o.assetName = token.label
 
             o.price = o.value / o.balance
-            o.dailyChange = 24
+            o.dailyChange = a && a.change24h ? a.change24h * 100 : 0
 
             o.allocation = (o.value / total) * 100
             o.currency = 'USD'
@@ -125,6 +193,7 @@ class Enzyme {
     let response = await axios(config)
     if (response && response.data.data) {
       let data = response.data.data.vault
+      this.comptrollerProxy = data.comptroller.id
       data.vaultIcon = 'statics/staider/sif_logo_white.svg'
       data.icon =
         'https://env.enzyme.finance/ethereum/assets/' +
@@ -133,12 +202,7 @@ class Enzyme {
       data.vault = data.name
       data.denominationCoin = data.comptroller.denomination.name
       data.investors = data.depositCount
-      data.assetsUnderManagment = '23 505.28'
-      data.sharePrice = '0.82'
-      data.apy = '-3.89%'
-      data.apyStyle = 'red'
-      data.dailyChange = '-3.80%'
-      data.dailyChangeStyle = 'red'
+
       data.network = 'Ethereum'
       this.fund = data
     }
@@ -305,6 +369,9 @@ class Enzyme {
       performance.apy = Format.formatNumber(performance.performanceYtd * 100, 2)
       performance.apyStyle = performance.performanceYtd < 0 ? 'red' : 'green'
       performance.sharePrice = Format.formatNumber(performance.netShareValue)
+      let change = performance.performance24h / performance.netShareValue * 100
+      performance.dailyChange = Format.formatNumber(change, 2) + '%'
+      performance.dailyChangeStyle = change < 0 ? 'red' : 'green'
     }
     return performance
   }
@@ -467,7 +534,7 @@ class Enzyme {
     }
     return fund
   }
-  async getUserVaults (investorAddress) {
+  async getUserVaults (investorAddress, fundAddress = null) {
     let vaults = []
 
     let data = JSON.stringify({
@@ -493,7 +560,7 @@ class Enzyme {
 
     if (response && response.data && response.data.data && response.data.data.accounts && response.data.data.accounts.length) {
       response.data.data.accounts.forEach(element => {
-        element.deposits.forEach(o => {
+        element.deposits.filter(x => !fundAddress || fundAddress === x.vault.id).forEach(o => {
           vaults.push(o)
         })
       })
@@ -501,8 +568,29 @@ class Enzyme {
     return vaults
   }
   async isInvestor (fundAddress, investorAddress) {
-    let vaults = await this.getUserVaults(investorAddress)
-    let found = vaults.map(o => o.vault.id).includes(fundAddress)
+    if (!this.comptrollerProxy) {
+      this.getVaultData(fundAddress)
+    }
+    let data = JSON.stringify({
+      'operationName': 'VaultPolicies',
+      'variables': {
+        'comptroller': this.comptrollerProxy
+      },
+      'query': 'query VaultPolicies($comptroller: ID!) {\n  comptroller(id: $comptroller) {\n    id\n    policies {\n      ...PolicyDetails\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment PolicyDetails on Policy {\n  __typename\n  id\n  policy\n  policyType\n  enabled\n  settings\n  ... on AdapterBlacklistPolicy {\n    ...AdapterBlacklistPolicyDetails\n    __typename\n  }\n  ... on AdapterWhitelistPolicy {\n    ...AdapterWhitelistPolicyDetails\n    __typename\n  }\n  ... on AllowedAdapterIncomingAssetsPolicy {\n    ...AllowedAdapterIncomingAssetsPolicyDetails\n    __typename\n  }\n  ... on AllowedAdaptersPolicy {\n    ...AllowedAdaptersPolicyDetails\n    __typename\n  }\n  ... on AllowedAssetsForRedemptionPolicy {\n    ...AllowedAssetsForRedemptionPolicyDetails\n    __typename\n  }\n  ... on AllowedDepositRecipientsPolicy {\n    ...AllowedDepositRecipientsPolicyDetails\n    __typename\n  }\n  ... on AllowedExternalPositionTypesPolicy {\n    ...AllowedExternalPositionTypesPolicyDetails\n    __typename\n  }\n  ... on AllowedSharesTransferRecipientsPolicy {\n    ...AllowedSharesTransferRecipientsPolicyDetails\n    __typename\n  }\n  ... on AssetBlacklistPolicy {\n    ...AssetBlacklistPolicyDetails\n    __typename\n  }\n  ... on AssetWhitelistPolicy {\n    ...AssetWhitelistPolicyDetails\n    __typename\n  }\n  ... on BuySharesCallerWhitelistPolicy {\n    ...BuySharesCallerWhitelistPolicyDetails\n    __typename\n  }\n  ... on CumulativeSlippageTolerancePolicy {\n    ...CumulativeSlippageTolerancePolicyDetails\n    __typename\n  }\n  ... on DepositorWhitelistPolicy {\n    ...DepositorWhitelistPolicyDetails\n    __typename\n  }\n  ... on GuaranteedRedemptionPolicy {\n    ...GuaranteedRedemptionPolicyDetails\n    __typename\n  }\n  ... on MaxConcentrationPolicy {\n    ...MaxConcentrationPolicyDetails\n    __typename\n  }\n  ... on MinMaxDepositPolicy {\n    ...MinMaxDepositPolicyDetails\n    __typename\n  }\n  ... on MinAssetBalancesPostRedemptionPolicy {\n    ...MinAssetBalancesPostRedemptionPolicyDetails\n    __typename\n  }\n  ... on UnknownPolicy {\n    ...UnknownPolicyDetails\n    __typename\n  }\n}\n\nfragment AdapterBlacklistPolicyDetails on AdapterBlacklistPolicy {\n  adapters\n  __typename\n}\n\nfragment AdapterWhitelistPolicyDetails on AdapterWhitelistPolicy {\n  adapters\n  __typename\n}\n\nfragment AllowedAdapterIncomingAssetsPolicyDetails on AllowedAdapterIncomingAssetsPolicy {\n  addressLists {\n    ...AddressList\n    __typename\n  }\n  __typename\n}\n\nfragment AddressList on AddressList {\n  id\n  createdAt\n  updatedAt\n  creator\n  owner\n  updateType\n  items\n  __typename\n}\n\nfragment AllowedAdaptersPolicyDetails on AllowedAdaptersPolicy {\n  addressLists {\n    ...AddressList\n    __typename\n  }\n  __typename\n}\n\nfragment AllowedAssetsForRedemptionPolicyDetails on AllowedAssetsForRedemptionPolicy {\n  addressLists {\n    ...AddressList\n    __typename\n  }\n  __typename\n}\n\nfragment AllowedDepositRecipientsPolicyDetails on AllowedDepositRecipientsPolicy {\n  addressLists {\n    ...AddressList\n    __typename\n  }\n  __typename\n}\n\nfragment AllowedExternalPositionTypesPolicyDetails on AllowedExternalPositionTypesPolicy {\n  externalPositionTypes\n  __typename\n}\n\nfragment AllowedSharesTransferRecipientsPolicyDetails on AllowedSharesTransferRecipientsPolicy {\n  addressLists {\n    ...AddressList\n    __typename\n  }\n  __typename\n}\n\nfragment AssetBlacklistPolicyDetails on AssetBlacklistPolicy {\n  assets\n  __typename\n}\n\nfragment AssetWhitelistPolicyDetails on AssetWhitelistPolicy {\n  assets\n  __typename\n}\n\nfragment BuySharesCallerWhitelistPolicyDetails on BuySharesCallerWhitelistPolicy {\n  callers\n  __typename\n}\n\nfragment CumulativeSlippageTolerancePolicyDetails on CumulativeSlippageTolerancePolicy {\n  tolerance\n  cumulativeSlippage\n  lastSlippageTimestamp\n  __typename\n}\n\nfragment DepositorWhitelistPolicyDetails on DepositorWhitelistPolicy {\n  depositors\n  updatedAt\n  __typename\n}\n\nfragment GuaranteedRedemptionPolicyDetails on GuaranteedRedemptionPolicy {\n  startTimestamp\n  duration\n  __typename\n}\n\nfragment MaxConcentrationPolicyDetails on MaxConcentrationPolicy {\n  maxConcentration\n  __typename\n}\n\nfragment MinMaxDepositPolicyDetails on MinMaxDepositPolicy {\n  minDepositAmount\n  maxDepositAmount\n  updatedAt\n  __typename\n}\n\nfragment MinAssetBalancesPostRedemptionPolicyDetails on MinAssetBalancesPostRedemptionPolicy {\n  assetBalances {\n    ...AssetBalance\n    __typename\n  }\n  __typename\n}\n\nfragment AssetBalance on AssetBalance {\n  id\n  asset {\n    ...Asset\n    __typename\n  }\n  amount\n  __typename\n}\n\nfragment Asset on Asset {\n  id\n  name\n  symbol\n  decimals\n  __typename\n}\n\nfragment UnknownPolicyDetails on UnknownPolicy {\n  enabled\n  __typename\n}'
+    })
+
+    let config = {
+      method: 'post',
+      url: process.env[store.state.settings.network].CACHE + 'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme-core',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: data
+    }
+
+    let res = await axios(config)
+
+    let found = res && res.data ? JSON.stringify(res.data).includes(investorAddress) : false
     return found ? 'whitelisted' : false
   }
   async getUserInvestments (userAddress) {
@@ -635,7 +723,6 @@ class Enzyme {
     return tx
   }
   async getErc20DepositData (userAddress, fromToken, sendAmount, toAddress) {
-    let address = '0x711f86e37307b32cbd558d4a157dd881af4bdb50'
     const ABI = `[
       {
           "constant": true,
@@ -660,12 +747,12 @@ class Enzyme {
           "type": "function"
       }
   ]`
-    console.log(userAddress, fromToken, sendAmount, toAddress)
-    const contract = new web3.eth.Contract(JSON.parse(ABI), address)
-    console.log(5)
+
+    const contract = new web3.eth.Contract(JSON.parse(ABI), toAddress)
+
     const txData = contract.methods
       .buyShares(
-        web3.utils.toHex(sendAmount * 10 ** fromToken.decimals),
+        web3.utils.toHex(sendAmount * (10 ** fromToken.decimals)),
         1
       )
       .encodeABI()
@@ -783,7 +870,7 @@ class Enzyme {
   }
   async isErc20ApprovalRequired (fromUserAddress, fromToken, amount, toAddress) {
     let transactionObject = {}
-    console.log(fromUserAddress, fromToken, amount, toAddress)
+
     let check = {
       required: false,
       error: false,
@@ -814,7 +901,7 @@ class Enzyme {
           nonce: nonce,
           value: 0
         }
-        console.log(transactionObject, 'transactionObject')
+
         let gas = await web3.eth.estimateGas(transactionObject)
         if (gas) {
           transactionObject.gas = gas

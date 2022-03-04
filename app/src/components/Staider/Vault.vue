@@ -44,13 +44,13 @@
           size="2em"
         />
           </span>
-            <q-btn  @click="trigger++" color="white" v-else-if="!investorStatus" class="q-mt-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Whitelist to deposit" />
+            <q-btn  @click="actionType = 'whitelistRequired'" color="white" v-else-if="!investorStatus" class="q-mt-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Whitelist to deposit" />
           </div>
 
           <div v-if="investorStatus == 'whitelisted'"  class="flex flex-center action-btn-wrapper">
 
-            <q-btn  @click="trigger++" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Deposit" />
-            <q-btn  @click="trigger++" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Withdraw" />
+            <q-btn  @click="actionType = 'deposit'" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Deposit" />
+            <q-btn  @click="actionType = 'withdraw'" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Withdraw" />
 
           </div>
         </div>
@@ -229,12 +229,10 @@
                 </div>
               </div>
             </q-tab-panel>
-            <q-tab-panel dark name="trades">
-              <div class="text-h6 q-mt-md">Trades</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <q-tab-panel dark name="trades" class="q-pa-md">
+             Coming soon...
             </q-tab-panel>
             <q-tab-panel dark name="deposits">
-              <div class="text-h6 q-mt-md">Deposits</div>
               <q-table
                 flat
                 dark
@@ -337,14 +335,112 @@
               </div>
             </q-tab-panel>
             <q-tab-panel dark name="monthly-returns">
-              <div class="text-h6 q-mt-md">Monthly Returns</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+             <q-table
+                flat
+                dark
+                table-style="box-shadow: none;"
+                title=""
+                :data="monthlyReturns"
+                :columns="MonthlyReturnscolumns"
+                :loading="loading"
+                row-key="tx"
+                bordered
+                v-if="$q.screen.width >= 768"
+                class="q-mt-lg bg-transparent vaults-table"
+              >
+                <template v-slot:body-cell-asset="props">
+                  <q-td :props="props" class="body-table-col">
+                    <div class="col-3 flex items-center">
+                      <span class="imgs desktop q-mr-lg flex flex-center">
+                        <!-- <span class="identicon" v-html="avatar(props.row.vault)" /> -->
+                        <img :src="props.row.icon" alt="">
+                      </span>
+                      <span class="column pairs justify-center">
+                        <span class="pair text-bold">{{props.row.amount}}</span>
+                      </span>
+                    </div>
+                  </q-td>
+                </template>
+                <template v-slot:body-cell-shares="props">
+                  <q-td :props="props" class="body-table-col">
+                    <div class="col-3 flex items-center">
+                      <span class="column pairs">
+                        <span class="pair text-bold">{{props.row.shares}}</span>
+                      </span>
+                    </div>
+                  </q-td>
+                </template>
+                <template v-slot:body-cell-sharePrice="props">
+                  <q-td :props="props" class="body-table-col">
+                    <div class="col-3 flex items-center">
+                      <span class="column pairs">
+                        <span class="pair text-bold">{{props.row.sharePrice}}</span>
+                      </span>
+                    </div>
+                  </q-td>
+                </template>
+                <template v-slot:body-cell-value="props">
+                  <q-td :props="props" class="body-table-col">
+                    <div class="col-3 flex items-center">
+                      <span class="column pairs">
+                        <span class="pair text-bold">{{props.row.value}}</span>
+                      </span>
+                    </div>
+                  </q-td>
+                </template>
+                <template v-slot:body-cell-apy="props">
+                  <q-td :props="props" class="body-table-col">
+                    <div class="col-3 flex items-center">
+                      <span class="column pairs">
+                        <span class="pair text-bold" :class="props.row.apyStyle">{{props.row.apy}}</span>
+                      </span>
+                    </div>
+                  </q-td>
+                </template>
+              </q-table>
+              <div v-else class="mobile-table full-width">
+                <div class="row q-pa-md" v-for="(deposit, index) in dataDeposits.filter( o => o.__typename == 'SharesBoughtEvent')" :key="'depositvault'+index">
+                  <!-- icon: 'statics/staider/coins/usdc.svg',
+                  vault: 'SIF USDC',
+                  denominationCoin: 'USDC',
+                  myshares: '19,774.25 $US',
+                  sharePrice: '0.78 $US',
+                  value: '15,451.85 $US',
+                  apy: '-14.48%',
+                  apyStyle: 'red' -->
+                  <div class="col-6 q-pt-md q-pb-md flex items-center">
+                    <span class="imgs q-mr-md flex flex-center">
+                      <img height="35" :src="deposit.icon" alt="">
+                    </span>
+                    <span class="column pairs vault-name justify-center">
+                      <span class="pair">{{deposit.denominationCoin}}</span>
+                      <span class="text-grey-5 value text-capitalize" v-if="false">{{deposit.denominationCoin}}</span>
+                    </span>
+                  </div>
+                  <div class="col-6 q-pt-md q-pb-md">x
+                    <span class="column pairs items-end">
+                      <span class="pair flex items-center net-label"><img width="11" :src="'statics/staider/networks/'+deposit.network+'.svg'" class="q-mr-sm" alt=""> Network</span>
+                      <span class="pair text-bold net-value">{{deposit.network}}</span>
+                    </span>
+                  </div>
+                  <div class="col-6 q-pb-sm"><span class="pair text-bold standard-label text-grey-5">Amount</span></div>
+                  <div class="col-6"><span class="column pairs items-end standard-value"><span class="pair">{{deposit.amount}}</span></span></div>
+                  <div class="col-6 q-pb-sm"><span class="pair text-bold standard-label text-grey-5">Share price</span></div>
+                  <div class="col-6"><span class="column pairs items-end standard-value"><span class="pair">{{deposit.price}}</span></span></div>
+                  <div class="col-6 q-pb-sm"><span class="pair text-bold standard-label text-grey-5">Shares</span></div>
+                  <div class="col-6"><span class="column pairs items-end standard-value"><span class="pair">{{deposit.shares}}</span></span></div>
+                  <div class="col-6 q-pb-sm"><span class="pair text-bold standard-label text-grey-5">Date</span></div>
+                  <div class="col-6"><span class="column pairs items-end standard-value"><span class="pair" >{{deposit.date}}</span></span></div>
+                         <div class="col-6 q-pb-sm"><span class="pair text-bold standard-label text-grey-5">Tx</span></div>
+                  <div class="col-6"><span class="column pairs items-end standard-value"><span class="pair" >{{deposit.tx}}</span></span></div>
+                </div>
+              </div>
             </q-tab-panel>
           </q-tab-panels>
         </div>
       </div>
     </div>
-   <DepositPopup :key="trigger" v-if="$store.state.currentwallet.user && currentVault && currentVault.comptroller && trigger" :vault="currentVault" :actionType="!investorStatus ? 'whitelistRequired' : 'deposit' " />
+   <DepositPopup @hide="actionType =  null" :key="actionType" v-if="$store.state.currentwallet.user && currentVault && currentVault.comptroller && actionType" :vault="currentVault" :actionType="actionType " />
   </div>
 </template>
 
@@ -367,7 +463,7 @@ export default {
     return {
       slippage: '3%',
       loading: true,
-      trigger: 0,
+      actionType: null,
       advancedSettings: false,
       termsConditionPopup: false,
       showInfo: false,
@@ -383,6 +479,22 @@ export default {
       toggleActive: false,
       upgrading: false,
       currentVault: {},
+      monthlyReturns: [],
+      MonthlyReturnscolumns: [
+        { name: 'year', align: 'left', label: 'Year', field: 'year', sortable: false },
+        { name: 'jan', align: 'left', label: 'Jan', field: 'jan', sortable: false, classes: val => val.jan < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'feb', align: 'left', label: 'Feb', field: 'feb', sortable: false, classes: val => val.feb < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'mar', align: 'left', label: 'Mar', field: 'mar', sortable: false, classes: val => val.mar < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'apr', align: 'left', label: 'Apr', field: 'apr', sortable: false, classes: val => val.apr < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'may', align: 'left', label: 'May', field: 'may', sortable: false, classes: val => val.may < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'jun', align: 'left', label: 'Jun', field: 'jun', sortable: false, classes: val => val.jun < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'jul', align: 'left', label: 'Jul', field: 'jul', sortable: false, classes: val => val.jul < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'aug', align: 'left', label: 'Aug', field: 'aug', sortable: false, classes: val => val.aug < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'sep', align: 'left', label: 'Sep', field: 'sep', sortable: false, classes: val => val.sep < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'oct', align: 'left', label: 'Oct', field: 'oct', sortable: false, classes: val => val.oct < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'nov', align: 'left', label: 'Nov', field: 'nov', sortable: false, classes: val => val.nov < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' },
+        { name: 'dec', align: 'left', label: 'Dec', field: 'dec', sortable: false, classes: val => val.dec < 0 ? 'text-red' : 'text-green', format: val => val ? this.formatNumber(val * 100, 2) + '%' : '-' }
+      ],
       columns: [
         { headerClasses: 'th-header-style', name: 'asset', align: 'left', label: 'Asset', field: row => row.name, sortable: true, format: val => `${val}` },
         { headerClasses: 'th-header-style', name: 'balance', align: 'left', label: 'Balance', field: row => row.name, sortable: true, format: val => `${val}` },
@@ -455,6 +567,7 @@ export default {
   watch: {
     '$store.state.currentwallet.user': {
       handler (val) {
+        console.log(val, 'val')
         if (val) {
           this.isInvestor()
         }
@@ -480,6 +593,8 @@ export default {
   mounted () {
   },
   async created () {
+    this.loading = true
+
     if (this.$store.state.settings.components[this.fundID]) {
       for (let i in this.$store.state.settings.components[this.fundID].$data) {
         this.$set(this, i, this.$store.state.settings.components[this.fundID].$data[i])
@@ -490,18 +605,22 @@ export default {
 
     this.datasCoins = balance.assets
     let data = await EnzymeV4.getVaultData(this.fundID)
+    this.isInvestor()
     let performance = await EnzymeV4.getVaultPerformance(this.fundID)
 
     data = { ...data, ...performance }
 
     // this.currentVault = data
     this.$set(this, 'currentVault', data)
-    this.loading = true
+
     this.dataDeposits = await EnzymeV4.getActivity(this.fundID, 'deposit')
-    this.isInvestor()
+
+    this.loading = false
+    this.monthlyReturns = await EnzymeV4.getMonthlyReturns(this.fundID)
   },
   methods: {
     async isInvestor () {
+      this.investorStatus = 'pending'
       if (this.$store.state.currentwallet.user && this.investorStatus === 'pending') { this.investorStatus = await EnzymeV4.isInvestor(this.fundID, this.$store.state.currentwallet.user.address) }
     },
     formatNumber (number, tofix) {

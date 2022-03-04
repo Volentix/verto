@@ -54,7 +54,7 @@
                   >
                 </q-item-section>
                 <q-item-section v-else-if="card.type == 'assets'">
-                  <q-item-label lines="1">{{ item.type.toUpperCase() }}</q-item-label>
+                  <q-item-label lines="1">{{ item.chain !== 'terra' ? item.type.toUpperCase() : item.type }}</q-item-label>
                    <q-item-label caption
                     >{{ formatNumber(item.amount, 2) }}</q-item-label
                   >

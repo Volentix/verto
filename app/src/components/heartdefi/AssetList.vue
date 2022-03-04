@@ -143,7 +143,7 @@ export default {
           protocol: 'L. loans'
         },
         {
-          icon: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png',
+          icon: 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png',
           type: 'ETH',
           protocol: 'Ether',
           id: 'ethereum',

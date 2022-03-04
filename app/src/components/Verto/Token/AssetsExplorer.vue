@@ -511,7 +511,7 @@
                     size="sm"
                     class="full-width"
                     label="Show"
-                    icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png"
+                    icon-right="qr_code"
                   />
                 </div>
                 <div v-if="showQr[chain.chain]" class="qr-code" style="width:134px:height:134px;">
@@ -885,7 +885,7 @@
                 </div>
                 <div>
                   <h6>
-                    {{ asset.type.toUpperCase()
+                    {{asset.chain !== 'terra' ?  asset.type.toUpperCase() :  asset.type
                     }} {{ asset.isStaked ? 'Staked' : ''}}
 
                     <svg
@@ -1623,10 +1623,11 @@ export default {
     async  getHexStakes () {
       let stakedAmounts = 0
       this.addPendingHexFetch()
-      let ethChain = this.setChains().find(a => a.chain === 'eth')
+      let accounts = this.$store.state.currentwallet.config.keys.filter(a => a.type === 'eth')
+      if (!accounts || !accounts.length) return
       let hexPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=hex&vs_currencies=usd')).data['hex'].usd
-      if (!ethChain || !ethChain.accounts) return
-      ethChain.accounts.forEach(async (f) => {
+      console.log(accounts, 'accounts')
+      accounts.forEach(async (f) => {
         let stakes = this.$store.state.currentwallet.userData.hexStakes
         if (!stakes || !stakes[f.key]) {
           stakedAmounts = await Lib.getHexStake(f.key)
@@ -1648,7 +1649,7 @@ export default {
             amount: stakedAmounts,
             icon: 'https://ethplorer.io/images/HEX2b591e99.png'
           }
-          let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex' /* && o.owner === f.key */)
+          let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex' && o.owner === f.key)
 
           let data = { hexStakes: (this.$store.state.currentwallet.userData.hexStakes || {}) }
           data.hexStakes[f.key] = a
@@ -1656,14 +1657,13 @@ export default {
 
           if (index >= 0) {
             let newVal = this.assetsOptions[1].data.eth[index]
-            console.log(newVal, 'newVal', a)
+
             newVal.usd += a.usd
             newVal.amount += a.amount
             newVal.pending = false
-            console.log(newVal, 'newVal', a, this.assetsOptions[1].data.eth)
+
             this.assetsOptions[1].data.eth.splice(index, 1)
             this.assetsOptions[1].data.eth.push(newVal)
-            console.log(newVal, 'newVal', a, this.assetsOptions[1].data.eth)
           } else {
             this.assetsOptions[1].data.eth.push(a)
           }

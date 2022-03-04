@@ -98,6 +98,25 @@ export const updateTokens = (state, updatedtokens) => {
     'walletPublicDatav2',
     JSON.stringify(Lib.removePrivateData(updatedtokens))
   )
+  /* let total = updatedtokens
+    .map(o => (isNaN(o.usd) ? 0 : +o.usd))
+    .reduce((a, c) => a + c, 0)
+  if (total && !isNaN(total)) state.portfolioTotal = total
+  const update = () => {
+    setTimeout(() => {
+      let date = new Date()
+      let diff = (date - new Date(state.lastUpdate)) / 1000
+
+      if (state.lastUpdate && diff >= 10) {
+        state.tokens = updatedtokens
+        state.lastUpdate = new Date()
+      } else {
+        // triggerUpdate()
+      }
+    }, state.tokens.length < 5 ? 0 : 5000)
+  }
+  if (!total) update()
+  */
 
   store.dispatch('tokens/getTokensMarketsData', state.tokens)
 }

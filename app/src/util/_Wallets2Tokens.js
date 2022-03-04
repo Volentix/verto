@@ -14,6 +14,10 @@ class Wallets2Tokens {
     let watchAccounts = localStorage.getItem('watchAccounts')
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
     watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || ![...store.state.currentwallet.config.keys].find(a => a.key === o.key.toLowerCase()))
+    watchAccounts.map(a => {
+      a.key = a.key.trim()
+      a.name = a.name.trim()
+    })
     let data = this.getWalletFromCache()
     let existingWallet = null
     let ethWallet = null
@@ -68,7 +72,7 @@ class Wallets2Tokens {
     )
 
     this.vtxPrice = 0
-    this.tableData = this.tableData.filter(o => o.origin !== 'eos_testnet')
+    // this.tableData = this.tableData.filter(o => o.origin !== 'eos_testnet')
 
     this.tableData.map(wallet => {
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
@@ -272,7 +276,7 @@ class Wallets2Tokens {
                   eth.key = wallet.key.toLowerCase()
                   eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
                   eth.tokenPrice = ethplorer.ETH.price.rate
-                  eth.icon = 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
+                  eth.icon = 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
                 })
               // let ethBalance = ethplorer.ETH.balance * ethplorer.ETH.price.rate
               // store.state.wallets.portfolioTotal += isNaN(ethBalance) ? 0 : ethBalance
@@ -367,7 +371,7 @@ class Wallets2Tokens {
 
   getCw20TokenBalanceQuery (tokens, userAddres) {
     let r = { variables: {}, query: {} }, str = '{'
-    Object.keys(tokens.mainnet).forEach(t => {
+    tokens.forEach(t => {
       // x.test = `   ` + t + `: WasmContractsContractAddressStore(     ContractAddress: "` + t + `"     QueryMsg: "{"balance":{"address":"` + userAddres + `"}}"  ) {     Height    Result     __typename   }`
       str += `\n  ` + t + `: WasmContractsContractAddressStore(\n    ContractAddress: "` + t + `"\n    QueryMsg: "{\\"balance\\":{\\"address\\":\\"` + userAddres + `\\"}}"\n  ) {\n    Height\n    Result\n    __typename\n  }`
     })
@@ -388,9 +392,13 @@ class Wallets2Tokens {
     let contr = this.cw20Pairs.find(o => o.asset_infos.find(a => a.token) && o.asset_infos.find(i => i.token).token.contract_addr === contract)
 
     if (contr) {
-      let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://fcd.terra.dev/wasm/contracts/' + contr.contract_addr + '/store?query_msg={"simulation":{"offer_asset":{"amount":"' + amount + '","info":{"native_token":{"denom":"' + contr.asset_infos.find(o => o.native_token).native_token.denom + '"}}}}}')
-      if (res.data && res.data.result) {
-        val = 1 / (res.data.result.return_amount / amount)
+      let asset = contr.asset_infos.find(o => o.native_token)
+      let token = contr.asset_infos.find(o => o.token && o.token.contract_addr !== contract)
+      if (asset) {
+        let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://fcd.terra.dev/wasm/contracts/' + contr.contract_addr + '/store?query_msg={"simulation":{"offer_asset":{"amount":"' + amount + '","info":{"' + (asset ? 'native_token' : 'token') + '":{"' + (asset ? 'denom' : 'contract_addr') + '":"' + (asset ? asset.native_token.denom : token.token.contract_addr) + '"}}}}}')
+        if (res.data && res.data.result) {
+          val = 1 / (res.data.result.return_amount / amount)
+        }
       }
     }
 
@@ -402,38 +410,45 @@ class Wallets2Tokens {
       axios.get(process.env[store.state.settings.network].CACHE + 'https://assets.terra.money/cw20/tokens.json').then(async resTokens => {
         let response = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://fcd.terra.dev/v1/bank/' + wallet.key))
         if (response.data && response.data.balance) {
-          let resEc20s = await axios.post('https://mantle.terra.dev/', this.getCw20TokenBalanceQuery(resTokens.data, wallet.key))
-          let tokensWIthBlance = Object.keys(resEc20s.data.data).filter(o => parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance))
-          tokensWIthBlance.map(async o => {
-            let tkData = resTokens.data.mainnet[Object.keys(resTokens.data.mainnet).find(x => resTokens.data.mainnet[x].token.toLowerCase() === o)]
-            let amount = parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance)
-            let decimals = tkData.decimals || 6
-            let usd = await this.getCw20TokenPrice(amount, o, decimals)
-            amount = amount / 10 ** decimals
-            let n = {
-              contract: o,
-              isCw20: true,
-              amount: amount,
-              icon: tkData.icon,
-              type: tkData.symbol,
-              name: wallet.name,
-              watch: wallet.watch,
-              tokenPrice: usd || 0,
-              key: wallet.key.toLowerCase(),
-              privateKey: wallet.privateKey,
-              usd: usd * amount,
-              decimals: tkData.decimals,
-              chain: 'terra'
-            }
+          let alltokens = Object.keys(resTokens.data.mainnet)
+          for (let i = 0, counter = 20; i <= alltokens.length; i = i + counter) {
+            let resEc20s = await axios.post('https://mantle.terra.dev/', this.getCw20TokenBalanceQuery(alltokens.slice(i, i + counter), wallet.key))
+            if (resEc20s && resEc20s.data && resEc20s.data.data) {
+              let tokensWIthBlance = Object.keys(resEc20s.data.data).filter(o => parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance))
+              tokensWIthBlance.map(async o => {
+                let tkData = resTokens.data.mainnet[Object.keys(resTokens.data.mainnet).find(x => resTokens.data.mainnet[x].token.toLowerCase() === o)]
+                let amount = parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance)
+                let decimals = tkData.decimals || 6
+                let usd = await this.getCw20TokenPrice(amount, o, decimals)
+                amount = amount / 10 ** decimals
+                let n = {
+                  contract: o,
+                  isCw20: true,
+                  amount: amount,
+                  icon: tkData.icon,
+                  type: tkData.symbol,
+                  name: wallet.name,
+                  watch: wallet.watch,
+                  tokenPrice: usd || 0,
+                  key: wallet.key.toLowerCase(),
+                  privateKey: wallet.privateKey,
+                  usd: usd * amount,
+                  decimals: tkData.decimals,
+                  chain: 'terra'
+                }
 
-            this.tableData.push(n)
-            this.updateWallet()
-          })
+                this.tableData.push(n)
+                this.updateWallet()
+              })
+            }
+          }
           response.data.balance.forEach(t => {
             let priceData = marketPrice.find(o => o.denom === t.denom)
 
             if (t.denom === 'uusd') {
               priceData = { swaprate: 1 }
+            } else {
+              priceData.swaprate = 1 / priceData.swaprate
             }
             let sym = t.denom === 'uluna' ? 'Luna' : t.denom.substring(1).toUpperCase().substring(0, t.denom.length - 2) + 'T'
             let data = {
@@ -461,6 +476,39 @@ class Wallets2Tokens {
         }
       })
     })
+    /*
+    let config = {
+      method: 'get',
+      url: process.env[store.state.settings.network].CACHE + 'https://api.apeboard.finance/wallet/terra/' + wallet.key,
+      headers: {
+        'accept': 'application/json, text/plain,',
+        'ape-secret': 'U2FsdGVkX1+oVNvU20qw1VOBRyzXTuprRlQFR0Babg2IIWNUNBIAW4cfzxoNbpjOMj9kQ0ZmklkFLHOfkwjcT4HYPq3ufVJiQ4HTzFQUA/nCCDchgwU/avzsXs9n+U0zpO/5GmZfvivjFH3icgOS6A==',
+        'passcode': 'A63uGa8775Ne89wwqADwKYGeyceXAxmHL'
+      }
+    }
+
+    axios(config).then(async res => {
+      res.data.filter(a => !a.isNative).map(async o => {
+        let n = {
+          contract: wallet.address,
+          isCw20: !o.isNative,
+          amount: o.balance,
+          icon: o.logo,
+          type: o.symbol,
+          name: wallet.name,
+          watch: wallet.watch,
+          tokenPrice: o.price || 0,
+          key: wallet.key.toLowerCase(),
+          privateKey: wallet.privateKey,
+          usd: o.price * o.balance,
+          decimals: o.decimals,
+          chain: 'terra'
+        }
+
+        this.tableData.push(n)
+      })
+      this.updateWallet()
+    }) */
   }
   async getVtxStakes (f) {
     if (!this.vtxPrice) {
@@ -867,7 +915,7 @@ class Wallets2Tokens {
             eth.amount = ethBalance.ammount
             eth.usd = ethBalance.usd
             eth.isEvm = true
-            eth.icon = 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
+            eth.icon = 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
           })
 
         res.data[wallet.key.toLowerCase()]
@@ -991,7 +1039,7 @@ class Wallets2Tokens {
   }
 }
 const initWallet = async (walletName, chains) => {
-  let wallet = await new Wallets2Tokens(walletName, chains)
+  let wallet = new Wallets2Tokens(walletName, chains)
   return wallet
 }
 export default initWallet

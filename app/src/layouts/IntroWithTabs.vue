@@ -114,6 +114,13 @@
                     ><span>Exchange</span></router-link
                   >
                 </li>
+                <li :class="{ active: $route.path == '/verto/farms' }">
+                  <router-link to=""
+                    ><i class="fas fa-rocket"></i><span>Farms <br/><span style="margin-left:50px" class="text-deep-purple-12 text-caption">Coming soon</span></span>
+
+                      </router-link
+                  >
+                </li>
                 <li :class="{ active: $route.path == '/verto/history' }">
                   <router-link to="/verto/history"
                     ><i class="fas fa-stream change-c"></i
@@ -356,7 +363,7 @@ export default {
         }]
       },
       icons: {
-        eth: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png',
+        eth: 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png',
         eos: 'https://files.coinswitch.co/public/coins/eos.png'
       },
       drawer: false,
@@ -548,7 +555,7 @@ h2 {
   padding: 10px 20px;
 }
 
-.left ul li a i {
+.left ul li a i , .left ul li.tools /deep/ .q-icon {
   margin-right: 30px;
   color: #7e838d;
   font-size: 22px;

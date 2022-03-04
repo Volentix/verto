@@ -1,9 +1,9 @@
 <template>
   <div>
-    <q-dialog dark v-model="alert">
+    <q-dialog dark v-model="alert" @hide="$emit('hide')">
       <q-card dark class="deposit-withdraw-popup-wrapper">
         <q-card-section class="row items-center q-pb-none">
-          <div class="popup-title q-pl-sm">Deposit</div>
+          <div class="popup-title q-pl-sm text-uppercase">{{actionType}}</div>
           <q-space />
           <q-btn
             icon="close"
@@ -15,7 +15,22 @@
             v-close-popup
           />
         </q-card-section>
-         <div class="q-pa-md" v-if="whitelistRequired">
+           <div v-if="actionType == 'withdraw' && pendingAction == 'pending'" class=" flex flex-center">
+            <q-circular-progress
+              indeterminate
+              size="100px"
+              color="white"
+              class="q-ma-md"
+            />
+
+           </div>
+           <div v-else-if="actionType == 'withdraw' && pendingAction" class="text-body1 q-pa-lg bg-black q-mt-lg" >
+          This vault requires you to hold your shares for at least
+          {{ pendingAction.time }} before
+          {{ actionType == "deposit" ? "depositing" : "withdrawing" }}. You will
+          be able to {{ actionType }} {{ pendingAction.timer }}.
+        </div>
+         <div class="q-pa-md" v-else-if="whitelistRequired">
           <p class="text-body1 vault_operates_text" :class="{ 'text-white': $store.state.settings.lightMode === 'true' }">
             This vault operates a depositor whitelist and your wallet address
             ({{ user.address }}) is not on it. If you want your address to be
@@ -113,6 +128,43 @@
             >{{ formatNumber(gas.usd, 0) }} $US</span
           >
         </q-card-section>
+
+        <q-card-section v-else-if="actionType == 'withdraw'" align="left">
+          <div class="row">
+            <div class="col-10 column q-pa-sm">
+              <span class="instruction">Your current Balance</span>
+              <div class="deposit-amount-component column">
+                <span class="label flex justify-between text-grey-7 q-mb-sm">
+                  <span>{{shares}} shares</span>
+                </span>
+                <span class="hint text-grey-6 q-mt-md flex text-bold"
+                  >Quantity of shares</span
+                >
+                <div class="input-wrapper q-mt-xs">
+                  <q-input
+                    dark
+                    outlined
+                    v-model="amount"
+                    class="amount-input"
+                  />
+                  <span class="hint text-grey-6 q-mt-sm flex"
+                    >The number of the shares you would like to withdraw.</span
+                  >
+                  <div class="max-wrapper withdraw flex items-center">
+                    <q-btn
+                    @click="amount = shares"
+                      color="yellow"
+                      unelevated
+                      text-color="black"
+                      class="max-btn yellow"
+                      label="Max"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-card-section>
         <q-card-section v-else align="left">
           <div class="row depositPopup">
             <div
@@ -126,7 +178,7 @@
                 >Choose Amount and Token to deposit</span
               >
               <div class="deposit-amount-component column q-mt-md">
-                <span class="label flex justify-between text-grey-6 q-mb-sm">
+                <span   @click="amount = maxDeposit; getTransactionObject()" class="cursor-pointer label flex justify-between text-grey-6 q-mb-sm">
                   <span>Amount</span>
                   <span
                     >{{
@@ -282,6 +334,7 @@
                       v-if="selected && selected.type.toLowerCase() !== 'eth'"
                       color="transparent"
                       unelevated
+                      @click="amount = maxDeposit;  getTransactionObject()"
                       text-color="white"
                       class="max-btn"
                       label="Max"
@@ -369,9 +422,9 @@
             label="Go back"
           />
           <q-btn
-
+            v-if="!whitelistRequired && [null,'pending'].includes(pendingAction)"
             color="white"
-            class="q-pl-lg q-pr-lg"
+            class="q-pl-lg q-pr-lg text-uppercase"
             no-caps
             text-color="white"
             :disable="!termsConditions || !txObject"
@@ -379,90 +432,12 @@
             :loading="spinnerVisible"
             outline
             rounded
-            :label="reviewStep ? 'Submit' : (approvalRequired ? 'Approve '+ this.selected.type.toUpperCase() : 'Deposit')"
+            :label="reviewStep ? 'Submit' : (approvalRequired ? 'Approve '+ this.selected.type.toUpperCase() : actionType)"
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-dialog dark v-model="withdrawPopup">
-      <q-card dark class="deposit-withdraw-popup-wrapper">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="popup-title q-pl-sm">Withdraw</div>
-          <q-space />
-          <q-btn
-            icon="close"
-            @click="withdrawPopup = false"
-            size="sm"
-            flat
-            round
-            dense
-            v-close-popup
-          />
-        </q-card-section>
-        <q-card-section align="left">
-          <div class="row">
-            <div class="col-10 column q-pa-sm">
-              <span class="instruction">Your current Balance</span>
-              <div class="deposit-amount-component column">
-                <span class="label flex justify-between text-grey-7 q-mb-sm">
-                  <span>206.422185828859854 shares</span>
-                </span>
-                <span class="hint text-grey-6 q-mt-md flex text-bold"
-                  >Quantity of shares</span
-                >
-                <div class="input-wrapper q-mt-xs">
-                  <q-input
-                    dark
-                    outlined
-                    v-model="amount"
-                    class="amount-input"
-                  />
-                  <span class="hint text-grey-6 q-mt-sm flex"
-                    >The number of the shares you would like to withdraw.</span
-                  >
-                  <div class="max-wrapper withdraw flex items-center">
-                    <q-btn
-                      color="yellow"
-                      unelevated
-                      text-color="black"
-                      class="max-btn yellow"
-                      label="Max"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </q-card-section>
-        <q-card-actions
-          align="right"
-          class="action-label q-mr-md q-mb-md q-mt-lg"
-        >
-          <q-btn
-            color="white"
-            class="q-pl-lg q-pr-lg cancel"
-            no-caps
-            text-color="grey-6"
-            @click="withdrawPopup = false"
-            v-close-popup
-            unelevated
-            rounded
-            label="Cancel"
-          />
-          <q-btn
-            color="white"
-            class="q-pl-lg q-pr-lg"
-            no-caps
-            text-color="white"
-            @click="withdrawPopup = false"
-            v-close-popup
-            outline
-            rounded
-            label="Continue"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+
     <q-dialog dark v-model="termsConditionPopup">
       <q-card dark class="deposit-withdraw-popup-wrapper">
         <q-card-section class="row items-center q-pb-none">
@@ -1142,42 +1117,41 @@ export default {
       }, 100)
     },
     async getDeposits () {
-      let deposits = await EnzymeV4.getDeposits(this.$route.params.fundID)
-
-      if (deposits) {
-        deposits = deposits.filter(
-          (o) =>
-            o.__typename === 'SharesBoughtEvent' ||
-            o.__typename === 'SharesRedeemedEvent'
-        )
-
-        this.currentUserDeposits = deposits.filter(
-          (o) => o.investor.id.toLowerCase() === this.user.address.toLowerCase()
-        )
-        if (this.currentUserDeposits && this.currentUserDeposits.length) {
-          const getLatestAction = (o) => {
-            let now = new Date()
-            return (now.getTime() - parseFloat(o.timestamp) * 1000) / 1000
-          }
-          let pending = this.currentUserDeposits.find(
-            (o) =>
-              getLatestAction(o) <
-              parseFloat(this.EnzymeData.fundData.accessor.sharesActionTimelock)
-          )
-          if (pending) {
-            let i =
-              parseFloat(
-                this.EnzymeData.fundData.accessor.sharesActionTimelock
-              ) - getLatestAction(pending)
-            let days =
-              this.EnzymeData.fundData.accessor.sharesActionTimelock / 3600
-
-            this.pendingAction = {
-              time: days + ' hours',
-              timer: this.secondsTotime(i, true)
-            }
-          }
+      let deposits = await EnzymeV4.getActivity(this.vault.id, 'deposit', this.$store.state.currentwallet.user.address)
+      if (deposits.length) {
+        const getLatestAction = (o) => {
+          let now = new Date()
+          return (now.getTime() - parseFloat(o.timestamp) * 1000) / 1000
         }
+        let pending = deposits.find(
+          (o) =>
+            getLatestAction(o) <
+              parseFloat(this.vault.comptroller.sharesActionTimelock)
+        )
+        if (pending) {
+          let i = parseFloat(
+            this.vault.comptroller.sharesActionTimelock
+          ) - getLatestAction(pending)
+          let days =
+              this.vault.comptroller.sharesActionTimelock / 3600
+
+          this.pendingAction = {
+            time: days + ' hours',
+            timer: this.secondsTotime(i, true)
+          }
+          // this.pendingAction = null
+        } else {
+          this.pendingAction = null
+        }
+      } else {
+        this.pendingAction = null
+      }
+    },
+    async initWithdrawal () {
+      this.getDeposits()
+      let data = await EnzymeV4.getUserVaults(this.$store.state.currentwallet.user.address, this.vault.id)
+      if (data && data.length) {
+        this.shares = data[0].shares
       }
     },
     getUserBalance () {
@@ -1215,7 +1189,7 @@ export default {
                 : 0,
               price: data ? data.tokenInfo.price.rate : 0
             })
-            console.log(this.tokens, ' this.tokens')
+
             if (this.actionType === 'deposit') {
               this.selected =
                 this.tokens[0].amount === 0 ? this.tokens[1] : this.tokens[0]
@@ -1238,17 +1212,7 @@ export default {
               : 0)
           : 0
       } else if (this.actionType === 'withdraw' && this.currentUserDeposits) {
-        let totalDeposits = this.currentUserDeposits
-          .filter((o) => o.__typename === 'SharesBoughtEvent')
-          .reduce(function (a, b) {
-            return a + parseFloat(b['shares'])
-          }, 0)
-        let totalRedeems = this.currentUserDeposits
-          .filter((o) => o.__typename === 'SharesRedeemedEvent')
-          .reduce(function (a, b) {
-            return a + parseFloat(b['shares'])
-          }, 0)
-        amount = totalDeposits - totalRedeems
+        amount = this.shares
       }
       return amount
     }
@@ -1269,6 +1233,7 @@ export default {
   data () {
     return {
       alert: true,
+      shares: 0,
       slippage: '3%',
       reviewStep: false,
       showInfoSlippage: false,
@@ -1282,7 +1247,7 @@ export default {
       approvalRequired: false,
       confirmWindow: false,
       status: null,
-      pendingAction: null,
+      pendingAction: 'pending',
       txObject: null,
       whitelistRequired: false,
       message: '',
@@ -1318,8 +1283,13 @@ export default {
       this.sharesActionTimelock.toString() +
       ' day' +
       (this.sharesActionTimelock > 1 ? 's' : '')
-      this.getUserBalance()
+
       this.spinnerVisible = false
+      if (this.actionType === 'withdraw') {
+        this.initWithdrawal()
+      } else {
+        this.getUserBalance()
+      }
     }
   }
 }

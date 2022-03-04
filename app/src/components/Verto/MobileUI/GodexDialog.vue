@@ -32,23 +32,30 @@
 </div>
 
               </div>
-             <span  v-if="reviewStep"> <span class="text-h6 cursor-pointer" @click="reviewStep = false"><q-icon name="chevron_left"/> Back |</span><span class="text-h6 text-bold "> Please review your transaction</span></span>
-              <div class="flex row q-mt-md" :class="{'on-review': reviewStep}">
+             <span  v-if="reviewStep"> <span class="text-h6 cursor-pointer" @click="isApproval &&  txHash ? getSwapInfo() : null ; reviewStep = false; txHash = false; loadingState = false"><q-icon name="chevron_left"/> Back |</span>
+             <span class="text-h6 text-bold " v-if="!txHash"> Please review your transaction</span>
+               <span class="text-h6 text-bold " v-else> Transaction submited</span>
+             </span>
+              <div v-if="!txHash" class="flex row q-mt-md" :class="{'on-review': reviewStep, 'approval' : isApproval && reviewStep}">
               <div class="fromBlk col-md-5"  v-if="depositCoin">
-              <span v-if="reviewStep" class="text-h6">You send</span>
+              <span v-if="reviewStep" class="text-h6">
+            <span v-if="isApproval">Approve {{currentPathData.approval.entity}}</span>
+             <span v-else>You send</span>
+
+              </span>
                   <p  style="color:#6c86ad;"><span class="drpn"><span v-show="networksDir == 'crosschain'" class="cursor-pointer" @click="fromSelected = true ; toSelect = 'chains' ; showHeader = false; ">From - {{currentPath.fromChain.label}} <q-icon  name="keyboard_arrow_down"  size="xs"/></span></span><span v-if="!reviewStep" >Balance: {{formatNumber(depositCoin.amount, 5)}} {{depositCoin.value.toUpperCase()}}<span class="max" @click="swapData.fromAmount = depositCoin.amount ; getSwapInfo()" v-if="depositCoin.amount">Max</span></span></p>
                   <h5 class="drpn"><span  @click="toSelect = 'deposit' ; showHeader = false; "><img  :key="depositCoin.value" :src="depositCoin.image" alt=""> {{depositCoin.value}}  </span> <input type="text" :class="{'bg-input': !reviewStep}"  v-model="swapData.fromAmount" @input="getSwapInfo()"></h5>
                   <p v-if="!reviewStep"><span >{{depositCoin.label}}</span> <span v-if="currentPathData && currentPathData.toUsdTotal">${{formatNumber(currentPathData.fromUsdTotal, 2)}}</span></p>
-               <ul class="rates q-pt-md" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':''">
+               <ul class="rates q-mt-md q-py-sm" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':''">
               <li v-if="currentPathData && !reviewStep">
 
-                  <span>1 {{currentPathData.fromToken.toUpperCase()}} = {{formatNumber(currentPathData.toAmount/currentPathData.fromAmount,6)}} {{currentPathData.toToken.toUpperCase()}} {{currentPathData.fromUsd ? ' = $'+formatNumber(currentPathData.fromUsd, 2) : '' }}
+                  <span>1 {{currentPathData.fromToken.toUpperCase()}} = {{formatNumber(currentPathData.toAmount/currentPathData.fromAmount,4)}} {{currentPathData.toToken.toUpperCase()}} {{currentPathData.fromUsd ? ' = $'+formatNumber(currentPathData.fromUsd, 2) : '' }}
 
                   </span>
               </li>
                <li v-if="currentPathData && !reviewStep">
 
-                  <span>1 {{currentPathData.toToken.toUpperCase()}} = {{formatNumber(currentPathData.fromAmount/currentPathData.toAmount, 6)}} {{currentPathData.fromToken.toUpperCase()}}  {{currentPathData.toUsd ? ' = $'+formatNumber(currentPathData.toUsd,2) : '' }}
+                  <span>1 {{currentPathData.toToken.toUpperCase()}} = {{formatNumber(currentPathData.fromAmount/currentPathData.toAmount, 4)}} {{currentPathData.fromToken.toUpperCase()}}  {{currentPathData.toUsd ? ' = $'+formatNumber(currentPathData.toUsd,2) : '' }}
 
                   </span>
               </li>
@@ -58,20 +65,26 @@
 
                   </span>
               </li>
+               <li v-else-if="currentPathData &&  currentPathData.fee && currentPathData.fee.usd">
+
+                  <span>Fee = ${{formatNumber(currentPathData.fee.usd,2)}}
+
+                  </span>
+              </li>
 
             </ul>
             </div>
-              <div class="col-md-2 flex flex-center"> <q-img src="https://cdn-icons-png.flaticon.com/512/2026/2026657.png" style="width:50px" /> </div>
+              <div class="col-md-2 flex flex-center switcher"> <q-img class="cursor-pointer" @click="switchAmounts()" src="https://cdn-icons-png.flaticon.com/512/2026/2026657.png" style="width:50px" /> </div>
               <div class="toBlk col-md-5" v-if="destinationCoin">
               <span v-if="reviewStep" class="text-h6">You receive</span>
                   <div v-if="false" class="top_arrow_icon"  @click="switchAmounts()" ><svg xmlns="http://www.w3.org/2000/svg" id="swap-direction-arrow" width="12" height="11" viewBox="0 0 12 11" fill="none"><path d="M6 1L6 10M6 10L11 5M6 10L1 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
                   <p ><span  class="drpn"><span v-show="networksDir == 'crosschain'" class="cursor-pointer" @click="fromSelected = false ; toSelect = 'chains' ; showHeader = false; ">To - {{currentPath.toChain.label}} <q-icon name="keyboard_arrow_down"  size="xs"/></span></span> <span v-if="!reviewStep">Balance: {{formatNumber(destinationCoin.amount,2)}} {{destinationCoin.value.toUpperCase()}}<br><span v-if="currentAccount.to !== currentAccount.from">{{getAccountLabel(currentAccount.to)}}</span></span></p>
                   <h5 class="drpn" ><span @click="toSelect = 'destination'; showHeader = false;"><img  :key="depositCoin.value" :src="destinationCoin.image"  alt=""> {{ destinationCoin.value }} </span>
-                  <input v-if="currentPathData" type="text" readonly :value="formatNumber(currentPathData.toAmount, 2)" >
+                  <input v-if="currentPathData" type="text" readonly :value="formatNumber(currentPathData.toAmount, 4)" >
                   <q-spinner-dots
                   v-else
-          color="primary"
-          size="2em"
+
+           size="2em"
         />
         </h5>
                   <!-- <div class="cash-blk primari active">
@@ -85,7 +98,25 @@
                   </div>
               </div>
 </div>
-              <button type="button" class="theme-btn" @click="reviewStep = true" :disabled="paths.length < 1">{{!reviewStep ? 'Review' : 'Submit transaction'}}</button>
+<div v-if="txHash" class=" q-py-md q-pt-lg text-body1">
+<br/>
+Click to view on explorer<br/>
+<div class="hash-status">
+<a :href="txExplorerLink" target="_blank" class="text-green q-mt-md">{{getKeyFormat(txHash, 20 )}}</a> <q-btn  @click="
+                                copyToClipboard(
+                                  txHash,
+                                  'Tx Hash'
+                                )" flat icon="content_copy"/>
+</div>
+</div>
+<p v-if="txError" class="text-red text-body1 q-mt-sm"><br/>{{txError}}</p>
+              <button v-if="!txHash" type="button" class="theme-btn" @click="reviewStep ? pushTransaction() : reviewStep = true" :disabled="paths.length < 1">{{!reviewStep ? (isApproval ? 'Approve '+currentPathData.approval.entity : 'Review') : 'Submit transaction'}}
+                 <q-spinner-dots
+                v-if="loadingState"
+          color="white"
+          size="2em"
+        />
+        </button>
             </div>
 
           </div>
@@ -1526,7 +1557,7 @@ function ChangeTheme () {
   try {
     let switchs = document.querySelector('.switch input')
     switchs.addEventListener('change', (e) => {
-      if (e.target.checked) {
+      if (window.localStorage.getItem('skin') === 'true') {
         localStorage.setItem('theme', 'dark')
         fnccc()
       } else {
@@ -1585,11 +1616,15 @@ import Formatter from '@/mixins/Formatter'
 export default {
   mixins: [Formatter],
   name: 'GodexDialogMobile',
-  props: ['step', 'setMinimum', 'isPathInvalid', 'getSwapInfo', 'hideDeposit', 'filterDepositCoin', 'swapData', 'spinner', 'setPathTransaction', 'paths', 'getDepositTxData', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'currentDex', 'hideDestination', 'switchAmounts',
+  props: ['step', 'setMinimum', 'isPathInvalid', 'getSwapInfo', 'hideDeposit', 'filterDepositCoin', 'swapData', 'spinner', 'setPathTransaction', 'paths', 'getDepositTxData', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'currentDex', 'hideDestination',
     'createTransaction', 'error', 'path', 'splitterModel', 'tab', 'setPathData', 'innerStep', 'chainData', 'approvalCheckRun', 'fromAccountSelected', 'setSelectedGas', 'processApproval', 'swapTokens', 'toAccountSelected', 'setTransactionStatus', 'setTab', 'exchangeDetails', 'showSendComponent', 'validStatus' ],
   components: { GasSelector, SendComponent, AccountSelector },
   data () {
     return {
+      txHash: null,
+      txExplorerLink: null,
+      txError: null,
+      loadingState: false,
       depositCoinOptions: [],
       reviewStep: false,
       depositCoin: null,
@@ -1652,7 +1687,7 @@ export default {
   created () {
     this.chains = this.setChains()
     this.currentPath.fromChain = this.chains.find(o => o.chain === (this.$route.params.asset ? this.$route.params.asset.chain : 'eth'))
-    console.log(this.currentAccount, this.currentPath, this.$route.params)
+
     this.setTokens(this.currentPath.fromChain.chain)
     this.currentPath.toChain = this.currentPath.fromChain
     this.currentAccount.from = this.$store.state.investment.defaultAccount
@@ -1677,14 +1712,21 @@ export default {
     this.tabLocal = this.tab
   },
   watch: {
+    '$store.state.settings.lightMode': function (val) {
+      if (val === 'true') {
+        UpdateTheme()
+      } else {
+        UpdateTheme(true)
+      }
+    },
     async paths () {
-      console.log(this.paths, 'this.paths')
+      this.txError = false
       if (this.paths.length) {
         this.$set(this, 'currentPathData', this.paths[0])
-        console.log(this.currentPathData, 'this.currentPathData')
+
         if (!this.currentPathData.toUsd) {
           let usd = await Lib.getCoinGeckoPrice({ address: this.destinationCoin.address, chain: this.currentPath.toChain, type: this.destinationCoin.value.toLowerCase() })
-          console.log(usd, 'toUsd')
+
           if (usd) {
             this.$set(this.currentPathData, 'toUsd', usd)
             this.$set(this.currentPathData, 'toUsdTotal', usd * this.currentPathData.toAmount)
@@ -1693,7 +1735,7 @@ export default {
 
         if (!this.currentPathData.fromUsd) {
           let usd = await Lib.getCoinGeckoPrice({ address: this.depositCoin.address, chain: this.currentPath.toChain, type: this.depositCoin.value.toLowerCase() })
-          console.log(usd, 'fromUsd')
+
           if (usd) {
             this.$set(this.currentPathData, 'fromUsd', usd)
             this.$set(this.currentPathData, 'fromUsdTotal', usd * this.currentPathData.fromAmount)
@@ -1736,20 +1778,59 @@ export default {
       }
     }
   },
+  computed: {
+    isApproval () {
+      return this.currentPathData && this.currentPathData.approval && this.currentPathData.approval.required
+    }
+  },
   methods: {
+    pushTransaction () {
+      this.loadingState = true
+      Lib.send(
+        this.currentPathData.fromChain,
+        this.currentPathData.fromToken,
+        this.$store.state.investment.defaultAccount.chain !== 'eos' ? this.$store.state.investment.defaultAccount.key : this.$store.state.investment.defaultAccount.name,
+        this.currentPathData.txParams && this.currentPathData.txParams.to ? this.currentPathData.txParams.to : null,
+        0,
+        { gasData: this.currentPathData.txParams, txData: this.currentPathData.txParams }
+      ).then(result => {
+        if (result.success) {
+          this.txHash = result.transaction_id
+          this.txExplorerLink = result.message
+        } else if (result.message) {
+          this.txError = result.message
+        } else {
+          this.txError = 'Transaction failed'
+        }
+      }).catch((error) => {
+        console.log(error)
+        if (typeof error === 'object' && error.message) {
+          this.txError = error.message
+        } else {
+          this.txError = 'Transaction failed'
+        }
+
+        setTimeout(() => {
+          this.reviewStep = false
+        }, 3000)
+        this.loadingState = false
+      })
+    },
     async setTokens (fromChain = 'eth', toChain = null) {
       if (fromChain) {
         if (!toChain) toChain = fromChain
         this.depositCoinOptions = await CrosschainDex.getCoinByChain(fromChain)
-        this.depositCoinUnfilter = this.depositCoinOptions.map(o => {
-          let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+        this.depositCoinUnfilter = this.depositCoinOptions = this.depositCoinOptions.map(o => {
+          let token = this.$store.state.investment.accountTokens.find(t => t.type.toLowerCase() === o.value.toLowerCase())
           if (token) {
             o.usd = token.usd
             o.amount = token.amount
             o.tokenPrice = token.tokenPrice
+          } else {
+            o.usd = 0
           }
           return o
-        })
+        }).sort((a, b) => b.usd - a.usd)
         this.depositCoin = this.$route.params.action === 'sell' && this.$route.params.asset.chain === fromChain ? this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$route.params.asset.type.toLowerCase()) : (this.$route.params.action === 'buy' ? this.depositCoinOptions.find(o => o.value.toLowerCase() !== this.$route.params.asset.type.toLowerCase()) : this.depositCoinOptions[0])
         this.$emit('update:depositCoin', this.depositCoin)
       }
@@ -1758,14 +1839,16 @@ export default {
         this.destinationCoinUnfilter = this.depositCoinOptions
       } else if (toChain) {
         this.destinationCoinOptions = this.destinationCoinUnfilter = (await CrosschainDex.getCoinByChain(toChain)).map(o => {
-          let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+          let token = this.$store.state.investment.accountTokens.find(t => t.type.toLowerCase() === o.value.toLowerCase())
           if (token) {
             o.usd = token.usd
             o.amount = token.amount
             o.tokenPrice = token.tokenPrice
+          } else {
+            o.usd = 0
           }
           return o
-        })
+        }).sort((a, b) => b.usd - a.usd)
       }
 
       if (toChain) {
@@ -1782,6 +1865,14 @@ export default {
     },
     changeDepositCoin () {
       this.$emit('update:depositCoin', this.depositCoinLocal)
+    },
+    switchAmounts () {
+      let depositCoinVar = this.depositCoin
+      this.depositCoin = this.destinationCoin
+      this.destinationCoin = depositCoinVar
+      this.$emit('update:depositCoin', this.depositCoin)
+      this.$emit('update:destinationCoin', this.destinationCoin)
+      this.getSwapInfo()
     },
     closeDialog () {
       this.dialog = false
@@ -1874,7 +1965,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.dark-theme .switcher {
+    filter: invert(1);
+}
+a {
+    text-decoration: none;
+    padding-top: 10px !important;
+    text-transform: lowercase;
+}
 .exchange-header {
 margin-bottom: 50px !important;
 }
@@ -2235,7 +2334,7 @@ h5.drpn span:first-child:after {
     right: 14px;
     width: 7px;
     height: 7px;
-    border: 2px solid var(--bodyColor);
+    border: 2px solid #002d69;
     transform: translateY(-50%) rotate(45deg);
     border-top: none;
     border-left: none;
@@ -2596,7 +2695,9 @@ body.active_limit_popup .block-contents
     color: var(--bodyColor);
     cursor: pointer;
 }
-
+.approval .toBlk , .approval .col-md-2.flex.flex-center, .approval.toBlk{
+    display: none;
+}
 .popup-content  ul {
     display: flex;
     align-items: center;
@@ -3262,6 +3363,10 @@ body.lighTheme .hiddenCnt ul li:hover span, .hiddenCnt ul li.active span {
 .bg-input {
     background: #dee3ec !important
 }
+
+.dark-theme .bg-input{
+    background: #121d2a !important;
+    }
 .fromBlk h5.drpn input {
     border-radius: 10px;
     padding-right: 10px;
@@ -3271,5 +3376,15 @@ body.lighTheme .hiddenCnt ul li:hover span, .hiddenCnt ul li.active span {
 }
 .on-review h5.drpn span:first-child:after{
     display: none
+}
+.hash-status a {
+ text-decoration: none !important;
+}
+.hash-status{
+      background: #f0f0f0;
+    padding: 10px;
+
+    width: max-content;
+    margin-top: 20px;
 }
 </style>

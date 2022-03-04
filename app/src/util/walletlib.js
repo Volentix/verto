@@ -102,6 +102,10 @@ class Lib {
       this.evms = evms
     }
   }
+  async getEtherereumPriceGas () {
+    let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://ethgas.watch/api/gas')
+    return res.data.fast.gwei
+  }
   async hexStake (address) {
     let locked = 0
     let res = await axios.post('https://cpu.volentix.io/api/global/hexStats', { address: address })
@@ -1238,8 +1242,8 @@ class Lib {
 
     return token ? token.id : null
   }
-  async getCoinGeckoPrice (asset) {
-    let id = this.getCoinGeckoId(asset)
+  async getCoinGeckoPrice (asset = null, id = null) {
+    id = id || this.getCoinGeckoId(asset)
     return id ? (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=' + id + '&vs_currencies=usd')).data[id].usd : null
   }
   isEthValidAddress (rawInput) {
@@ -1440,15 +1444,16 @@ class Lib {
             console.log(coins)
             if (coins) return
             */
+            key = !key ? store.state.currentwallet.config.keys.find(o => o.type === 'terra' && from === o.key).privateKey : key
             const wallet = terra.wallet(new RawKey(Buffer.from(key, 'hex')))
             decimals = decimals || 6
             let send = null
-            if (contract.length > 6) {
+            if (typeof memo === 'object' && memo.txData) {
+              send = memo.txData
+              memo = null
+            } else if (contract.length > 6) {
               const amount = toAmount(value, { decimals })
               const execute_msg = { transfer: { recipient: to, amount } }
-              console.log(wallet.key.accAddress,
-                contract,
-                execute_msg)
 
               send = new MsgExecuteContract(
                 wallet.key.accAddress,
@@ -1467,8 +1472,8 @@ class Lib {
 
             wallet
               .createAndSignTx({
-                msgs: [send],
-                memo: memo
+                msgs: [send]
+                // memo: memo
               })
               .then(async tx => {
                 let data = await terra.tx.broadcast(tx)
@@ -1546,7 +1551,7 @@ class Lib {
           account.send(to, value, 'BTC', { fee: fee })
             .on('transactionHash', (tx_hash) => {
               resolve({
-                message: `https://www.blockchain.com/btc/tx/${tx_hash}`,
+                message: `https://blockstream.info/tx/${tx_hash}`,
                 success: true,
                 transaction_id: tx_hash
               })
@@ -1848,9 +1853,10 @@ class Lib {
         return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
       async eth (token, from, to, value, info, key, contract, evm = 'eth') {
-        // //console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
-
         const Web3 = require('web3')
+        key = !key ? store.state.currentwallet.config.keys.find(o => o.type === evm && from === o.key).privateKey : key
+
+        console.log('info', info, key)
         let evmData = self.evms.find(o => o.chain === evm)
         const EthereumTx = require('ethereumjs-tx').Transaction
         const web3 = new Web3(new Web3.providers.HttpProvider(evmData.provider))
@@ -1880,11 +1886,10 @@ class Lib {
           sendTo = contract
           web3Value = '0x0'
         } else if (info && info.txData) {
-          data = info.txData
+          data = typeof info === 'object' ? info.txData.data : info.txData
         }
 
         web3Value = '0x0'
-        data = '0xf9f585dd000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000915f86d27e4e4a58e93e59459119faaf610b5be10000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000f032000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000d344d470cb9397'
 
         let rawTx = {
           from,

@@ -1953,7 +1953,7 @@ export default {
       destinationCoin: {
         label: 'ETH',
         value: 'eth',
-        image: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
+        image: 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
       },
       destinationCoinOptions: [],
       transactions: [],
@@ -2559,7 +2559,8 @@ export default {
               let data = await CrosschainDex.getPair(
                 from.toLowerCase(),
                 to.toLowerCase(),
-                amount
+                amount,
+                chain
               )
 
               if (data && data.pair && data.pair.amount) {
@@ -2567,6 +2568,8 @@ export default {
                   .filter((j) => data.pair.fromChains.includes(j))
                   .forEach((b) => {
                     path.push({
+                      fee: data.pair.fee,
+                      approval: data.pair.approval,
                       dex: c.dex,
                       fromChain: b,
                       toChain: b,

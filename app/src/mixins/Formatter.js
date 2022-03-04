@@ -2,7 +2,7 @@ import HD from '@/util/hdwallet'
 import Lib from '@/util/walletlib'
 import { scroll, openURL } from 'quasar'
 import { toSvg } from 'jdenticon'
-
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   computed: {
     fundTotal () {
@@ -236,17 +236,22 @@ export default {
         position: 'top'
       })
     },
-    deleteWatchAccount (key, value) {
-      let watchAccounts = localStorage.getItem('watchAccounts')
-      watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-      watchAccounts = watchAccounts.filter(o => o[key].toLowerCase() !== value.toLowerCase())
-      localStorage.setItem('watchAccounts', JSON.stringify(watchAccounts))
+    deleteVertoAccount (key, value, account) {
+      console.log(key, value, account)
+      if (account.watch) {
+        let watchAccounts = localStorage.getItem('watchAccounts')
+        watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
+        watchAccounts = watchAccounts.filter(o => o[key].toLowerCase() !== value.toLowerCase())
+        localStorage.setItem('watchAccounts', JSON.stringify(watchAccounts))
+      }
 
       let data = localStorage.getItem('walletPublicDatav2')
       data = data ? JSON.parse(data) : []
       data = data.filter(o => o[key].toLowerCase() !== value.toLowerCase())
       localStorage.setItem('walletPublicDatav2', JSON.stringify(data))
+
       this.$store.state.wallets.tokens = this.$store.state.wallets.tokens.filter(o => o[key].toLowerCase() !== value.toLowerCase())
+      initWallet()
     },
     getRandomColor () {
       const randomNumber = (min, max) => {
@@ -339,7 +344,7 @@ export default {
 
       chains.map(o => {
         let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
-        o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
+        o.chainTotal = accounts.filter(g => g.usd).reduce((a, b) => +(a || 0) + (isNaN(b.usd) ? 0 : +b.usd), 0)
         let evmChain = Lib.evms.find(a => a.chain === o.chain)
         let c = chainsData.find(p => p.chain === o.chain)
         o.icon = c.icon
