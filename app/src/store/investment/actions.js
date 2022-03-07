@@ -255,7 +255,7 @@ export const getTransactions = (context, payload) => {
 export const getETHTransactions = async (context, address) => {
   let transactions = []
 
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/transactions/' + address + '?api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa'
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/transactions/' + address + '?api_key=cbaadb5b-92d2-4479-9a96-ee804989e27a'
   let result = (await axios.get(transactionEndpoint, config)
     .catch(error => {
       console.log(error, 'Cannot get transactions')

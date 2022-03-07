@@ -32,6 +32,12 @@
 </div>
 
               </div>
+ <div class="text-body1 text-red" v-if="!['terra','eth'].includes($store.state.investment.defaultAccount.chain)">
+
+     The exchange is only available for the Ethereum and Terra chains. More chains coming soon...
+
+    </div>
+
              <span  v-if="reviewStep"> <span class="text-h6 cursor-pointer" @click="isApproval &&  txHash ? getSwapInfo() : null ; reviewStep = false; txHash = false; loadingState = false"><q-icon name="chevron_left"/> Back |</span>
              <span class="text-h6 text-bold " v-if="!txHash"> Please review your transaction</span>
                <span class="text-h6 text-bold " v-else> Transaction submited</span>

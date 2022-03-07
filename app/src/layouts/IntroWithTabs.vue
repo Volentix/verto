@@ -99,19 +99,19 @@
                     <q-icon :name="path.icon"/><span>{{path.title}}</span></router-link
                   >
                 </li>
-                <li :class="{ active: $route.path == '/verto/dashboard' }">
+                <li @click="trigger++" :class="{ active: $route.path == '/verto/dashboard' }">
                   <router-link to="/verto/dashboard">
                     <i class="fas fa-columns change-c"></i
                     ><span>Dashboard</span></router-link
                   >
                 </li>
                 <li
-                  v-if="false"
+                  @click="setAccountGoTo('/verto/crosschain-exchange', 'eth')"
                   :class="{ active: $route.path == '/verto/crosschain-exchange' }"
                 >
-                  <router-link to="/verto/crosschain-exchange"
+                  <a href="javascript:void(0)"
                     ><i class="fas fa-exchange-alt change-c"></i
-                    ><span>Exchange</span></router-link
+                    ><span>Exchange</span></a
                   >
                 </li>
                 <li :class="{ active: $route.path == '/verto/farms' }">
@@ -121,10 +121,10 @@
                       </router-link
                   >
                 </li>
-                <li :class="{ active: $route.path == '/verto/history' }">
-                  <router-link to="/verto/history"
+                <li @click="setAccountGoTo('/verto/history', 'eth')" :class="{ active: $route.path == '/verto/history' }">
+                  <a href="javascript:void(0)"
                     ><i class="fas fa-stream change-c"></i
-                    ><span>History</span></router-link
+                    ><span>History</span></a
                   >
                 </li>
                 <li
@@ -269,7 +269,8 @@
           />
           <q-breadcrumbs-el v-else class="text-capitalize" :class="{'text-white': $store.state.settings.lightMode === 'true'}" :label="$route.name" />
         </q-breadcrumbs>
-        <router-view class="main-container" :key="$route.path" v-if="toggleView " />
+
+        <router-view class="main-container" :key="$route.path+trigger" v-if="toggleView " />
       </q-page-container>
 
       <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus && false" elevated class=" text-white">
@@ -319,6 +320,7 @@ export default {
   data () {
     return {
       version: {},
+      trigger: 0,
       toggleView: true,
       keys: {
         send: 1
@@ -387,7 +389,7 @@ export default {
       this.loadingIndicator = true
       setTimeout(() => {
         this.loadingIndicator = false
-      }, 3000)
+      }, 5000)
     },
     '$store.state.settings.defaultChainData': function () {
       if (this.$store.state.settings.defaultChainData) {
@@ -434,6 +436,12 @@ export default {
         }
       })
       this.toggleView = true
+    },
+    setAccountGoTo (path, chain) {
+      if (!this.$store.state.investment.defaultAccount) {
+        this.setDefaultWallet(chain)
+      }
+      this.$router.push(path)
     },
     goToAccounts (tab = 'receive') {
       this.$store.state.settings.accountTab = tab

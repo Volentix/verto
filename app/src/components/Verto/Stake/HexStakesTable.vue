@@ -1,6 +1,7 @@
 <template>
   <q-table
     flat
+    :dark="$store.state.settings.lightMode === 'true'"
     title="Breakdown"
     :data="stakeData"
     :loading="stakeData.length == 0"

@@ -145,7 +145,8 @@
                               />
                             </template>
                           </q-select>
-                          <div class="row current-stake-balanca">
+                          <br/>
+                          <div class="row current-stake-balanca q-mt-md">
                             <div class="">
                               <span class="--title row text-h6">
                                 Liquid Balance
@@ -1132,6 +1133,7 @@ export default {
                 this.transactionId +
                 '" target="_blank">Block explorer</a>'
               this.status = 'success'
+              this.$store.state.currentwallet.userData.hexStakes = {}
             } else {
               this.showMessage =
                 'Transaction submitted. Current status: Failed. <a href="https://etherscan.io/tx/' +

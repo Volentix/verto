@@ -4,85 +4,57 @@ import Lib from '@/util/walletlib'
 import CW20s from '@/statics/json/cw20.json'
 
 import EosWrapper from '@/util/EosWrapper'
-
+/*
+refresParams = {
+  chains:[]
+  acount:null
+}
+*/
 class Wallets2Tokens {
-  constructor (walletName = null, chains = null) {
-    if (walletName) {
-      walletName = null
-      localStorage.removeItem('walletPublicDatav2')
+  constructor (refresParams = null) {
+    if (!refresParams || typeof refresParams === 'string') {
+      refresParams = {
+        chains: [],
+        acount: null
+      }
     }
+
+    if (!refresParams.chains) {
+      refresParams.chains = []
+    }
+    this.refresParams = refresParams
+    this.tableDataCache = []
+    this.tableData = []
+    this.cw20Pairs = CW20s
+    this.eos = new EosWrapper()
+    this.vtxPrice = 0
+
+    this.initWallet()
+  }
+  isFoundInCache (wallet, cacheData = []) {
+    return cacheData.find(o => o.key.toLowerCase() === wallet.key.toLowerCase() && o.name.toLowerCase() === wallet.name.toLowerCase() && o.type.toLowerCase() === wallet.type.toLowerCase())
+  }
+  initWallet () {
     let watchAccounts = localStorage.getItem('watchAccounts')
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-    watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || ![...store.state.currentwallet.config.keys].find(a => a.key === o.key.toLowerCase()))
+    watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || !store.state.currentwallet.config.keys.find(a => a.key === o.key.toLowerCase()))
     watchAccounts.map(a => {
       a.key = a.key.trim()
       a.name = a.name.trim()
     })
-    let data = this.getWalletFromCache()
-    let existingWallet = null
-    let ethWallet = null
-    this.tableDataCache = []
-    this.tableData = []
-    this.cw20Pairs = CW20s
-
-    // store.state.wallets.portfolioTotal = 0
-    /*
-    store.state.currentwallet.config.keys.push({
-      chain: 'eth',
-      type: 'eth',
-      name: 'test',
-      key: '0x508f51c6fe10E5117caaEF3306fd2126A161825a'
-    })
-    store.state.currentwallet.config.keys.push({
-      chain: 'eth',
-      type: 'eth 2',
-      name: 'test',
-      key: '0xf4dcb9ca53b74e039f5fcfccd4f0548547a25772'
-    })
-    */
-
-    if (data) {
-      walletName = walletName ? walletName.toLowerCase() : walletName
-
-      existingWallet = store.state.wallets.tokens.find(w => w.name.toLowerCase() === walletName)
-      // Refresh ETh wallet if refresh is requested for an evm wallet
-      if (existingWallet && existingWallet.isEvm) {
-        ethWallet = store.state.wallets.tokens.find(w => w.key.toLowerCase() === existingWallet.key.toLowerCase() && w.chain === 'eth' && w.type === 'eth')
-      }
-
-      this.tableDataCache = data.filter(
-        w => ((!walletName || (w.name.toLowerCase() !== walletName && !ethWallet)) || (ethWallet && w.key.toLowerCase() !== ethWallet.key.toLowerCase()))
-      )
-
-      if (!walletName) {
-        this.updateWallet()
-        return
-      }
-    }
-
-    this.eos = new EosWrapper()
+    let accounts = (store.state.currentwallet.config.keys || []).concat(watchAccounts).filter(c => !this.refresParams.chains.length || this.refresParams.chains.includes(c.type))
+    this.tableDataCache = this.getWalletFromCache()
     const self = this
-    self.eosUSD = 0
-    this.getEosUSD()
-    let accounts = [...store.state.currentwallet.config.keys].concat(watchAccounts)
-    this.fetchCustomTokens(accounts)
-    // if (accounts) return
-    this.tableData = accounts.filter(
-      w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase())
+
+    this.tableData = !this.refresParams.account && !this.refresParams.chains.length && !this.refresParams.fromCache ? accounts : accounts.filter(
+      w => !this.isFoundInCache(w, this.tableDataCache)
     )
-
-    this.vtxPrice = 0
-    // this.tableData = this.tableData.filter(o => o.origin !== 'eos_testnet')
-
+    this.tableData.sort(function (a, b) {
+      return a.type === 'eth' ? -1 : 1
+    })
+    this.fetchCustomTokens(this.tableData)
+    console.log(this.tableData, ' this.tableData', store.state.currentwallet.config.keys, this.tableDataCache)
     this.tableData.map(wallet => {
-      // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
-      // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
-
-      // let vespucciScore = 0
-      // this.getCoinScore(coinSlug.slug).then(result => {
-      //   vespucciScore = result.vespucciScore
-      //   wallet.vespucciScore = vespucciScore
-      // })
       if (!wallet.hasOwnProperty('type')) {
         wallet.type = 'verto'
       }
@@ -91,6 +63,9 @@ class Wallets2Tokens {
       }
 
       if (wallet.type === 'eos') {
+        self.eosUSD = 0
+        this.getEosUSD()
+
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon =
             'https://files.coinswitch.co/public/coins/' +
@@ -162,13 +137,7 @@ class Wallets2Tokens {
       }
     })
 
-    store.state.currentwallet.config.keys
-      .concat(watchAccounts).filter(w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase()))
-      .filter(
-        o =>
-          store.state.settings.network === 'mainnet' &&
-          o.origin !== 'eos_testnet'
-      )
+    this.tableData
       .map(async wallet => {
         if (wallet.type.toLowerCase() === 'eos') {
           // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
@@ -202,9 +171,8 @@ class Wallets2Tokens {
           }
           this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
-          // wallet.key = '0x181717bab64928669f606ee8b266502aaa2f6608'
           Lib.evms.filter(m =>
-            ![1, 940].includes(m.network_id) && (!chains || chains.includes(m.chain)) // Until eth is integrated into covalent api
+            ![1, 940].includes(m.network_id) && ((!this.refresParams.chains.length || this.refresParams.chains.includes(m.chain)) && (!this.refresParams.account || this.refresParams.account.isEvm)) // Until eth is integrated into covalent api
           ).forEach(e => {
             axios
               .get(
@@ -299,7 +267,7 @@ class Wallets2Tokens {
                       ethplorer.tokens
                         .filter(t => t.balance > 0 && t.tokenInfo.symbol)
                         .map(async (t, index) => {
-                          t.tokenInfo.image = 'https://token.enzyme.finance//' + t.tokenInfo.address
+                          t.tokenInfo.image = 'https://tokens.1inch.io/' + t.tokenInfo.address + '.png'
 
                           let usd = t.tokenInfo.symbol ? Lib.findInExchangeList('eth', t.tokenInfo.symbol.toLowerCase(), t.tokenInfo.address) : false
                           let amount =
@@ -368,7 +336,6 @@ class Wallets2Tokens {
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
-
   getCw20TokenBalanceQuery (tokens, userAddres) {
     let r = { variables: {}, query: {} }, str = '{'
     tokens.forEach(t => {
@@ -836,13 +803,21 @@ class Wallets2Tokens {
         this.getEOSTokensV2(wallet, balances, true)
       })
   }
+  isRefreshable (account) {
+    let toBeRefreshed = true
+    if ((this.refresParams.chains.includes(account.chain) || !this.refresParams.chains.length) &&
+     (!this.refresParams.account || (this.refresParams.account.name.toLowerCase() === account.name.toLowerCase() && this.refresParams.account.chain === account.chain))) {
+      toBeRefreshed = false
+    }
+    return toBeRefreshed
+  }
   getWalletFromCache () {
     let data = localStorage.getItem('walletPublicDatav2')
 
     if (data) {
       data = JSON.parse(data)
 
-      data.map(o => {
+      data.filter(o => !this.isRefreshable(o)).map(o => {
         let wallet = (store.state.currentwallet.config.keys || []).find(
           a => a.key === o.key
         )
@@ -869,7 +844,7 @@ class Wallets2Tokens {
       })
     }
 
-    return data
+    return data || []
   }
   async getEosUSD () {
     await axios

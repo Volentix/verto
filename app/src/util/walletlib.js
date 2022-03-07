@@ -222,7 +222,7 @@ class Lib {
 
       // let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
       // interest = Number((interest) / BigInt(10 ** 8))
-      console.log(stake, 'stake')
+
       stakeData.push({
         startDate: parseInt(stake.lockedDay) + 1,
         endDate: parseInt(stake.lockedDay) + parseInt(stake.stakedDays) + 1,
@@ -258,15 +258,17 @@ class Lib {
     return (store.state.currentwallet.config.keys ? [...store.state.currentwallet.config.keys] : []).concat(watchAccounts).filter(o => o.chain === chain || !chain)
   }
   async fetchNfts (address) {
-    /// address = '0x60e4d786628fea6478f785a6d7e704777c86a7c6'
-    let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa&newBalances=true'
-    let res = await axios.get(url)
     let nfts = []
-    if (res.data && res.data[address] && res.data[address].products.length) {
-      nfts = res.data[address].products[0].assets
-      nfts = nfts.map(n => {
-        if (n.tokens[0].assets[0] && n.tokens[0].assets[0].assetImg.length) { return n.tokens[0].assets[0] }
-      }).filter(o => o)
+    if (!address) {
+      let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa&newBalances=true'
+      let res = await axios.get(url)
+
+      if (res.data && res.data[address] && res.data[address].products.length) {
+        nfts = res.data[address].products[0].assets
+        nfts = nfts.map(n => {
+          if (n.tokens[0].assets[0] && n.tokens[0].assets[0].assetImg.length) { return n.tokens[0].assets[0] }
+        }).filter(o => o)
+      }
     }
     return nfts
   }
@@ -391,7 +393,7 @@ class Lib {
     return direction
   }
 
-  removeExpiredData (days = 1) {
+  removeExpiredData (days = 3) {
     const keepData = [
       'skin',
       'hideEosSetup',
@@ -1886,7 +1888,7 @@ class Lib {
           sendTo = contract
           web3Value = '0x0'
         } else if (info && info.txData) {
-          data = typeof info === 'object' ? info.txData.data : info.txData
+          data = typeof info.txData === 'object' ? info.txData.data : info.txData
         }
 
         web3Value = '0x0'
@@ -1913,7 +1915,7 @@ class Lib {
           let gas = await web3.eth.estimateGas(rawTx)
           rawTx.gas = gas
         }
-        console.log(rawTx, 'rawTx')
+
         let serializedTransaction = null
         if (evmData.nativeToken !== 'eth') {
           let raw = await web3.eth.accounts.signTransaction(rawTx, key)

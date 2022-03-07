@@ -493,7 +493,7 @@
                     tab == 'privateKeys'
                   "
                 >
-                  <h6 v-if="!(tab == 'receive' || tab == 'privateKeys')">
+                  <h6  v-if="!(tab == 'receive' || tab == 'privateKeys')">
                     ${{
                       nFormatter2(getChainTotal(chain), getChainTotal(chain) > 10 ? 0 : 2)
                     }}
@@ -1626,52 +1626,52 @@ export default {
       let accounts = this.$store.state.currentwallet.config.keys.filter(a => a.type === 'eth')
       if (!accounts || !accounts.length) return
       let hexPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=hex&vs_currencies=usd')).data['hex'].usd
-      console.log(accounts, 'accounts')
+      let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex' && !o.pending /* && o.owner === f.key */)
+      if (index >= 0) this.assetsOptions[1].data.eth.splice(index, 1)
+
+      let stakes = this.$store.state.currentwallet.userData.hexStakes
       accounts.forEach(async (f) => {
-        let stakes = this.$store.state.currentwallet.userData.hexStakes
         if (!stakes || !stakes[f.key]) {
           stakedAmounts = await Lib.getHexStake(f.key)
         } else {
           stakedAmounts = stakes[f.key].amount
         }
 
-        if (stakedAmounts) {
-          let a = {
-            usd: hexPrice * stakedAmounts,
-            rateUsd: hexPrice,
-            type: 'hex',
-            chain: 'eth',
-            poolsCount: false,
-            pending: false,
-            owner: f.key,
-            poolName: 'Staked',
-            isStaked: true,
-            amount: stakedAmounts,
-            icon: 'https://ethplorer.io/images/HEX2b591e99.png'
-          }
-          let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex' && o.owner === f.key)
-
-          let data = { hexStakes: (this.$store.state.currentwallet.userData.hexStakes || {}) }
-          data.hexStakes[f.key] = a
-          this.$store.commit('currentwallet/setUserData', data)
-
-          if (index >= 0) {
-            let newVal = this.assetsOptions[1].data.eth[index]
-
-            newVal.usd += a.usd
-            newVal.amount += a.amount
-            newVal.pending = false
-
-            this.assetsOptions[1].data.eth.splice(index, 1)
-            this.assetsOptions[1].data.eth.push(newVal)
-          } else {
-            this.assetsOptions[1].data.eth.push(a)
-          }
-
-          this.$set(this, 'assetsOptions', this.assetsOptions)
-          this.updateTotals()
-          this.uniqueKey++
+        let a = {
+          usd: hexPrice * stakedAmounts,
+          rateUsd: hexPrice,
+          type: 'hex',
+          chain: 'eth',
+          poolsCount: false,
+          pending: false,
+          owner: f.key,
+          poolName: 'Staked',
+          isStaked: true,
+          amount: stakedAmounts,
+          icon: 'https://ethplorer.io/images/HEX2b591e99.png'
         }
+        let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex' /* && o.owner === f.key */)
+
+        let data = { hexStakes: (this.$store.state.currentwallet.userData.hexStakes || {}) }
+        data.hexStakes[f.key] = a
+        this.$store.commit('currentwallet/setUserData', data)
+        if (!stakedAmounts) return
+        if (index >= 0) {
+          let newVal = Object.assign({}, this.assetsOptions[1].data.eth[index])
+
+          newVal.usd += a.usd
+          newVal.amount += a.amount
+          newVal.pending = false
+
+          this.assetsOptions[1].data.eth.splice(index, 1)
+          this.assetsOptions[1].data.eth.push(newVal)
+        } else {
+          this.assetsOptions[1].data.eth.push(a)
+        }
+
+        this.$set(this, 'assetsOptions', this.assetsOptions)
+        this.updateTotals()
+        this.uniqueKey++
       })
     },
     async getVTXStakingInvestment () {

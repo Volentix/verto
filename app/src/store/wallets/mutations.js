@@ -13,9 +13,12 @@ const getWalletIndex = wallet => {
 let multitokens = ['terra', 'eos', 'dot', 'ksm', 'sol', 'avax']
 
 export const updateTokens = (state, updatedtokens) => {
+  state.portfolioTotal = 0
   if (!updatedtokens) {
     updatedtokens = []
   }
+  updatedtokens = updatedtokens.filter((o, idx, all) => all.findIndex(t => t.chain === o.chain && t.type === o.type && t.name === o.name && t.key === o.key) === idx)
+
   updatedtokens = updatedtokens.map((o) => {
     o.index = getWalletIndex(o)
     return o
@@ -43,7 +46,7 @@ export const updateTokens = (state, updatedtokens) => {
     } else {
       o.multitoken = multitokens.includes(o.chain)
     }
-    if (o.type === 'eos') {
+    /*  if (o.type === 'eos') {
       // console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
       o.total = parseFloat(
         updatedtokens
@@ -51,7 +54,7 @@ export const updateTokens = (state, updatedtokens) => {
           .map(v => (isNaN(v.usd) ? 0 : +v.usd))
           .reduce((a, b) => a + b, 0)
       )
-    }
+    } */
     if (typeof window !== 'undefined') {
       var url = new URL(window.location.href)
       var connect = url.searchParams.get('url')
@@ -74,6 +77,7 @@ export const updateTokens = (state, updatedtokens) => {
 
     return o
   })
+
   updatedtokens.filter((o, idx, all) => o.isEvm && all.findIndex(t => t.chain === o.chain && t.key === o.key && t.isEvm) === idx)
     .forEach(account => {
       let accountIndex = updatedtokens.findIndex(
@@ -118,7 +122,7 @@ export const updateTokens = (state, updatedtokens) => {
   if (!total) update()
   */
 
-  store.dispatch('tokens/getTokensMarketsData', state.tokens)
+  // store.dispatch('tokens/getTokensMarketsData', state.tokens)
 }
 export const setLoadingState = (state, value) => {
   state.loaded.eos = value.hasOwnProperty('eos') ? value.eos : state.loaded.eos
