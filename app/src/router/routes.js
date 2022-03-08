@@ -63,6 +63,10 @@ if (process.env.QMODE !== 'bex') {
         {
           path: '/staider-new-prototype/landing',
           component: () => import('pages/StaiderPrototype/Landing.vue')
+        },
+        {
+          path: '/staider-new-prototype/landing/:currentSection',
+          component: () => import('pages/StaiderPrototype/Landing.vue')
         }
       ]
     },

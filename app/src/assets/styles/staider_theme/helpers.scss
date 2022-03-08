@@ -14,6 +14,9 @@ body {
     max-width: calc(100% - 40px);
   }
 }
+.hide{
+  opacity: 0;
+}
 .shadow1{
   box-shadow: $shadow1;
 }
@@ -27,6 +30,17 @@ body {
   font-weight: 200 !important;
   padding-left: 10px;
   padding-right: 10px;
+}
+/deep/ .initial{
+  &.q-btn.q-btn-item{
+    min-height: unset !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    padding-left: 0px;
+    padding-right: 0px;
+    transform: scale(.7);
+  }
 }
 .text-shadow1{
   text-shadow: $textShadow1;
@@ -49,4 +63,9 @@ body {
 }
 .green{
   color: $MainGreen;
+}
+.rmv-br{
+  /deep/ br{
+    display: none !important;
+  }
 }

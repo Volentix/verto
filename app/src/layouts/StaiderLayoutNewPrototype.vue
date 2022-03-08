@@ -6,8 +6,8 @@
     </q-header>
 
     <div class="animation_simulation_wrapper flex justify-center items-center">
-      <img v-if="true" src="statics/staider/var1.png" alt="">
-      <canvas v-else id="abstract_aniamtion"></canvas>
+      <canvas v-if="false" id="abstract_aniamtion"></canvas>
+      <img v-else src="statics/staider/var1.png" alt="">
     </div>
 
     <q-drawer
@@ -20,7 +20,7 @@
       </q-scroll-area>
     </q-drawer>
 
-    <q-scroll-area style="height: calc(100vh - 180px)" class="scroll_area_wrapper" :class="{'height-auto': $q.screen.width < 768, 'site': appSiteMode === 'site'}" dark>
+    <q-scroll-area id="scroll_area_wrapper" ref="scrollAreaWrapper" style="height: calc(100vh - 180px)" class="scroll_area_wrapper" :class="{'height-auto': $q.screen.width < 768, 'site': appSiteMode === 'site'}" dark>
       <q-scroll-observer @scroll="onScroll" />
       <q-page-container>
         <!-- This is where pages get injected -->
@@ -36,6 +36,8 @@
 import HeaderSection2 from 'components/StaiderPrototype/HeaderSection2'
 import FooterSection2 from 'components/StaiderPrototype/FooterSection2'
 import { QScrollArea, QScrollObserver } from 'quasar'
+import init, { toggleDarkMode, transateAnimationTo } from '../animation/abstract1'
+
 export default {
   components: {
     // Faqs
@@ -48,7 +50,7 @@ export default {
   },
   data () {
     return {
-      appSiteMode: 'site',
+      appSiteMode: 'app',
       leftDrawer: false,
       currentPage: '',
       backdrop: false,
@@ -64,11 +66,32 @@ export default {
       ]
     }
   },
+  updated () {
+    // this.scrollToSection()
+    // this.$refs.mainScrollArea.setScrollPosition('vertical', scrollTop)
+    // scrollAreaRef.value.setScrollPosition('vertical', position.value)
+    // console.log('scrollTop', scrollTop, sectionScrollName, this.$refs.mainScrollArea)
+  },
+  mounted () {
+    // rendered_done
+    init('dark')
+    setTimeout(() => {
+      toggleDarkMode('dark')
+      if (this.$q.screen.width <= 768) {
+        transateAnimationTo(11, 'dark')
+      } else {
+        transateAnimationTo(10, 'dark')
+      }
+    }, 2000)
+  },
   created () {
   },
   methods: {
+    animate (index) {
+      transateAnimationTo(index)
+    },
     onScroll (info) {
-      if (info.position >= 230) {
+      if (info.position >= 100) {
         this.backdrop = true
       } else {
         this.backdrop = false
@@ -82,6 +105,9 @@ export default {
 <style>
   body {overflow: hidden !important;}
   .q-menu{z-index: 99999 !important;}
+  #abstract_aniamtion{
+    width: 100%;
+  }
 </style>
 <style lang="scss" scoped>
   @import "assets/styles/staider_theme/helpers.scss";
@@ -180,9 +206,18 @@ export default {
     z-index: 1;
     width: 100%;
     height: 100%;
-    background: #040404 !important;
+    background: #16161A !important;
+    // background: #040404 !important;
+    canvas{
+      mix-blend-mode: color-dodge;
+    }
     img{
       width: 100%;
+      @media screen and (max-width: 768px) {
+        width: auto;
+        max-width: unset;
+        height: 100%;
+      }
     }
   }
 </style>

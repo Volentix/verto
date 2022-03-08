@@ -1,31 +1,31 @@
 <template>
   <div class="landing-page">
-    <div class="fluid-container">
+    <div class="fluid-container" id="home">
       <div class="row section1">
         <div class="col-12 col-sm-12 col-md-6 col-lg-6 text-white flex flex-center">
-          <div class="column justify-center items-start">
+          <div class="column justify-center items-start full-width" :class="{'rmv-br q-pl-lg q-pr-lg': $q.screen.width < 768}">
             <h1>Your portfolio <br>on autopilot</h1>
             <h2>Retain full custody of your assets</h2>
             <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Launch app" />
           </div>
         </div>
         <div class="col-12 col-sm-12 col-md-6 col-lg-6 flex flex-center staider3d">
-          <img src="statics/staider/staider3d.png" alt="" class="">
+          <img src="statics/staider/staider3d.png" alt="" class="hide">
         </div>
       </div>
       <div class="row section2 section-backdrop">
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">What is Staider?</h2>
-            <p>Staider is an on-chain asset management portal <br>
-            Optimized strategies used to easly invest in decentralised finance (DeFi) <br>
-            Simply said: Staider puts your crypto portfolio on autopilot</p>
+            <p>Staider is an on-chain asset management portal </p>
+            <p>Optimized strategies used to easly invest in decentralised finance (DeFi) </p>
+            <p>Simply said: Staider puts your crypto portfolio on autopilot</p>
         </div>
       </div>
       <div class="row section3 section-backdrop q-mb-xl q-pb-xl">
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">How to use Staider ?</h2>
             <div class="row full-width steps-row">
-              <div class="col-6 steps-col">
+              <div class="steps-col" :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
                 <div class="steps step1 shadow2">
                   <span class="step-number">1</span>
                   <span class="step-number stroked">1</span>
@@ -33,7 +33,7 @@
                   <p>Browse the list of vaults available to interact with</p>
                 </div>
               </div>
-              <div class="col-6 steps-col">
+              <div class="steps-col" :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
                 <div class="steps step2 shadow2">
                   <span class="step-number">2</span>
                   <span class="step-number stroked">2</span>
@@ -41,7 +41,7 @@
                   <p>Use Verto, Metamask or any wallet of choice with WalletConnect support</p>
                 </div>
               </div>
-              <div class="col-6 steps-col">
+              <div class="steps-col" :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
                 <div class="steps step3 shadow2">
                   <span class="step-number">3</span>
                   <span class="step-number stroked">3</span>
@@ -49,7 +49,7 @@
                   <p>Your vault tokens can be “withdrawn” at the market share price at anytime</p>
                 </div>
               </div>
-              <div class="col-6 steps-col">
+              <div class="steps-col" :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
                 <div class="steps step4 shadow2">
                   <span class="step-number">4</span>
                   <span class="step-number stroked">4</span>
@@ -63,20 +63,31 @@
       <div class="row section4 section-backdrop q-mb-xl q-pb-xl">
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">Advantage of Staider</h2>
-            <img src="statics/staider/advantage.svg" class="full-width q-mt-xl" alt="">
+            <img v-if="$q.screen.width > 768" src="statics/staider/advantage.svg" class="full-width q-mt-xl" alt="">
+            <img v-else src="statics/staider/advantage_v.svg" class="full-width q-mt-xl" alt="">
         </div>
       </div>
-      <div class="row section5 section-backdrop q-pl-lg q-pr-lg q-pt-xl q-pb-xl">
+      <div class="row section5 section-backdrop q-pl-lg q-pr-lg q-pt-xl q-pb-xl" id="vaults">
         <div class="col-12 text-white q-mb-xl">
           <h2 class="text-shadow1">Come discover our Vaults and their performance</h2>
           <p>Discover and follow the best yield farmers with just one click. Historical APY, farming philosophy, risk appetite; You can see it all.</p>
         </div>
-        <div class="col-6">
-          <div class="vault-wrapper shadow2 text-white">
+        <div :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
+          <div class="vault-wrapper vault1 shadow2 text-white">
+            <div class="Info-sif-usdc info-wrapper column justify-between" v-if="showInfoSIFUSDC">
+              <span class="title flex justify-between items-center">SIF USDC Vault
+                <q-btn round color="white" dense icon="close" @click="showInfoSIFUSDC = false" size="xs" class="initial" flat />
+              </span>
+              <div class="desc">Digital assets that have critical and adopted solutions for DeFi such as REN for bridges, yield generation protocols like AAVE, and exchange solutions like Loopring LRC, among others.</div>
+              <div class="more">
+                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vaults/sif-usdc/about" outline rounded label="Learn more" />
+              </div>
+            </div>
             <div class="row justify-between items-center full-width">
               <div class="vault-wrapper__logo col flex items-center">
                 <img width="60" src="statics/staider/sif_logo_white.svg" alt="">
                 <span class="q-ml-sm txt text-capitalize">SIF USDC</span>
+                <span class="info" @click="showInfoSIFUSDC = true">?</span>
               </div>
               <div class="vault-wrapper__network col column pairs items-end">
                 <span class="flex items-center label">
@@ -100,12 +111,22 @@
             </div>
           </div>
         </div>
-        <div class="col-6 flex justify-end">
+        <div class="flex justify-end" :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
           <div class="vault-wrapper shadow2 text-white full-width">
+            <div class="spf-pulsechain info-wrapper column justify-between" v-if="showInfoPulseChain">
+              <span class="title flex justify-between items-center">SPF PulseChain Vault
+                <q-btn round color="white" dense icon="close" @click="showInfoPulseChain = false" size="xs" class="initial" flat />
+              </span>
+              <div class="desc">This pool will hold Pulse, PulseX, Hex, Hedron, LiquidLoans and other strategic assets on the Pulse Chain. The fund will remain open until the launch of PulseChain or 100 days, whichever comes first Assets deposited until that time receive a prorated portion of the pool.</div>
+              <div class="more">
+                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vaults/sif-usdc/about" outline rounded label="Learn more" />
+              </div>
+            </div>
             <div class="row justify-between items-center full-width">
               <div class="vault-wrapper__logo col flex items-center">
-                <img width="50" src="statics/staider/coins/pulsechain.svg" alt="">
+                <img width="50" src="statics/staider/coins/pulsechain.svg" class="q-pa-xs" alt="">
                 <span class="q-ml-sm q-pb-sm txt text-capitalize">SPF PulseChain</span>
+                <span class="info info2" @click="showInfoPulseChain = true">?</span>
               </div>
               <div class="vault-wrapper__network col column pairs items-end">
                 <span class="flex items-center label">
@@ -115,10 +136,10 @@
               </div>
             </div>
             <div class="row justify-between items-center full-width q-mt-xl q-pt-xl">
-              <div class="vault-wrapper__apy col">
+              <div class="vault-wrapper__apy col-4">
                 <span class="apy"><b>N/A</b> Up to APY</span>
               </div>
-              <div class="vault-wrapper__cta col flex justify-end">
+              <div class="vault-wrapper__cta col-8 flex justify-end">
                 <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Deposit">
                   <div class="flex items-center">
                     <img height="20" class="q-ml-md q-mr-xs" src="statics/staider/coins/usdc.svg" alt="">
@@ -130,39 +151,43 @@
             </div>
           </div>
         </div>
-        <div class="col-12 q-mb-xl q-pb-xl"></div>
+        <div v-if="$q.screen.width > 768" class="col-12 q-mb-xl q-pb-xl"></div>
       </div>
       <div class="row section6 section-backdrop q-pl-lg q-pr-lg q-pt-xl q-pb-xl">
-        <div class="col-6 text-white q-mb-md">
+        <div v-if="$q.screen.width > 768" class="col-6 text-white q-mb-md">
           <h2 class="text-shadow1">Monitor & manage your digital portfolio</h2>
         </div>
         <div class="col-12"></div>
-        <div class="col-6 text-white q-mb-xl column">
+        <div class="text-white q-mb-xl column" :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
           <p>You can filter strategies by assets, risk and performance, and find one that fits your profile.</p>
           <div class="cta-btns flex q-mt-xl">
             <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Explore Funds" />
             <q-btn flat color="white" class="q-ml-sm" no-caps text-color="white" to="/staider-new-prototype/vault" label="Connect Wallet" />
           </div>
         </div>
-        <div class="col-6 text-white q-mb-xl column q-pl-xl">
+        <div class="text-white column" :class="{'col-6 q-mb-xl q-pl-xl': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
           <div class="coins-wrapper flex flex-center items-center">
-            <span v-for="(coin, index) in coins" :key="'coin_'+index" class="coin-item q-mr-md q-ml-md q-mb-lg">
+            <span v-for="(coin, index) in coins" :key="'coin_'+index" class="coin-item" :class="{'q-mr-md q-ml-md q-mb-lg': $q.screen.width > 768, 'q-mr-md q-ml-md q-mb-md': $q.screen.width < 768}">
               <img :src="'statics/staider/coins/' + coin + '.svg'" width="59px" alt="">
             </span>
           </div>
         </div>
-      </div>
-      <div class="row section7 section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg">
-        <div class="col-12 text-white column flex-center">
-            <h2 class="text-shadow1">Timeline</h2>
-            <img src="statics/staider/timeline.svg" class="full-width q-mt-xl" alt="">
+        <div v-if="$q.screen.width < 768" class="col-12 text-white q-mb-md">
+          <h2 class="text-shadow1">Monitor & manage your digital portfolio</h2>
         </div>
       </div>
-      <div class="row section8 text-white section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg">
+      <div class="row section7 section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg" id="timeline">
+        <div class="col-12 text-white column flex-center">
+            <h2 class="text-shadow1">Timeline</h2>
+            <img v-if="$q.screen.width > 768" src="statics/staider/timeline.svg" class="full-width q-mt-xl" alt="">
+            <img v-else src="statics/staider/timeline_v.svg" class="full-width q-mt-xl" alt="">
+        </div>
+      </div>
+      <div class="row section8 text-white section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg" id="team">
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">Team</h2>
         </div>
-        <div class="col-2 column items-center">
+        <div class="column items-center" :class="{'col-3': $q.screen.width > 768, 'col-6': $q.screen.width < 768}">
           <div class="img-user flex flex-center q-mb-md">
             <img src="statics/staider/team/user1_bg.jpg" class="bg q-mt-xl" alt="">
             <img src="statics/staider/team/user1.svg" class="user q-mt-xl" alt="">
@@ -170,7 +195,7 @@
           <span class="role">SIF Manager</span>
           <span class="name">Nemr Hallak</span>
         </div>
-        <div class="col-2 column items-center">
+        <div class="column items-center" :class="{'col-3': $q.screen.width > 768, 'col-6': $q.screen.width < 768}">
           <div class="img-user flex flex-center q-mb-md">
             <img src="statics/staider/team/user2_bg.jpg" class="bg q-mt-xl" alt="">
             <img src="statics/staider/team/user2.svg" class="user q-mt-xl" alt="">
@@ -178,7 +203,7 @@
           <span class="role">SIF Manager</span>
           <span class="name">Marwan Ayoub</span>
         </div>
-        <div class="col-2 column items-center">
+        <div v-if="false" class="column items-center" :class="{'col-2': $q.screen.width > 768, 'col-6': $q.screen.width < 768}">
           <div class="img-user flex flex-center q-mb-md">
             <img src="statics/staider/team/user3_bg.jpg" class="bg q-mt-xl" alt="">
             <img src="statics/staider/team/user3.svg" class="user q-mt-xl" alt="">
@@ -186,7 +211,7 @@
           <span class="role">Advisor</span>
           <span class="name">Fadi Hallak</span>
         </div>
-        <div class="col-2 column items-center">
+        <div class="column items-center" :class="{'col-3': $q.screen.width > 768, 'col-6': $q.screen.width < 768}">
           <div class="img-user flex flex-center q-mb-md">
             <img src="statics/staider/team/user4_bg.jpg" class="bg q-mt-xl" alt="">
             <img src="statics/staider/team/user3.svg" class="user q-mt-xl" alt="">
@@ -194,7 +219,7 @@
           <span class="role">Advisor</span>
           <span class="name">Sergio Tanguma</span>
         </div>
-        <div class="col-2 column items-center">
+        <div class="column items-center" :class="{'col-3': $q.screen.width > 768, 'col-6': $q.screen.width < 768}">
           <div class="img-user flex flex-center q-mb-md">
             <img src="statics/staider/team/user5_bg.jpg" class="bg q-mt-xl" alt="">
             <img src="statics/staider/team/user3.svg" class="user q-mt-xl" alt="">
@@ -202,7 +227,7 @@
           <span class="role">Advisor</span>
           <span class="name">Mark Sleiman</span>
         </div>
-        <div class="col-2 column items-center">
+        <div v-if="false" class="column items-center" :class="{'col-2': $q.screen.width > 768, 'col-6': $q.screen.width < 768}">
           <div class="img-user flex flex-center q-mb-md">
             <img src="statics/staider/team/user6_bg.jpg" class="bg q-mt-xl" alt="">
             <img src="statics/staider/team/user3.svg" class="user q-mt-xl" alt="">
@@ -211,13 +236,13 @@
           <span class="name">Ihab Yassine</span>
         </div>
       </div>
-      <div class="row section9 section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg">
+      <div class="row section9 section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg" id="faqs">
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">Frequently Ask Question</h2>
         </div>
         <div class="col-12">
           <div class="row">
-            <div v-for="(item, index) in FAQData" :key="'faq_' + index" class="col-6">
+            <div v-for="(item, index) in FAQData" :key="'faq_' + index" :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
               <div class="faq-wrapper q-pa-md">
                 <q-btn color="white" class="faq-wrapper__btn full-width" :class="{'shadow1 activate' : item.selected}" @click="item.selected = !item.selected" no-caps text-color="white" outline rounded :label="item.question" :icon-right="item.selected ? 'expand_less':'expand_more'" />
                 <div class="faq-wrapper__detail q-pa-lg text-white" :class="{'activate' : item.selected}" v-html="item.answer" />
@@ -231,13 +256,14 @@
 </template>
 
 <script>
-
 export default {
   name: 'LandingPage',
   components: {
   },
   data () {
     return {
+      showInfoPulseChain: false,
+      showInfoSIFUSDC: false,
       FAQData: [
         {
           index: 1,
@@ -271,7 +297,7 @@ export default {
         },
         {
           index: 6,
-          question: 'How can I use Enzyme as a Depositor?',
+          question: 'How can I use Staider as a Depositor?',
           answer: 'Open up the app, connect your wallet and whitelist your address to start interacting in Staider.',
           selected: false
         },
@@ -336,7 +362,14 @@ export default {
     margin-left: auto;
     margin-right: auto;
     margin-top: 100px;
+    @media screen and (max-width: 768px) {
+      max-width: 100%;
+      // margin-top: 0px;
+    }
     .section6{
+      @media screen and (max-width: 768px) {
+        flex-direction: column-reverse;
+      }
       h2{
         font-family: $MainFont;
         font-weight: 700;
@@ -352,14 +385,28 @@ export default {
         font-size: 30px;
         line-height: 50px;
         margin: 0px;
+        @media screen and (max-width: 768px) {
+          font-size: 14px;
+          line-height: 30px;
+        }
       }
       .coins-wrapper{
+        @media screen and (max-width: 768px) {
+          margin-left: -25px;
+          margin-right: -25px;
+        }
         img{
           margin: 0px;
+          @media screen and (max-width: 768px) {
+            width: 40px;
+          }
         }
       }
     }
     .section5{
+      @media screen and (max-width: 768px) {
+        flex-direction: column;
+      }
       .vault-wrapper{
         border: 3px solid #1D1D21;
         padding: 25px 40px;
@@ -369,6 +416,41 @@ export default {
         cursor: default;
         transition: border ease .3s;
         max-width: 570px;
+        .info-wrapper{
+          position: absolute;
+          left: 0px;
+          top: 0px;
+          background: #1D1D21;
+          outline: 4px solid $MainYellow;
+          width: 100%;
+          height: 100%;
+          z-index: 9;
+          border-radius: 15px;
+          padding: 25px 40px;
+          .title{
+            font-size: 18px;
+            font-family: $MainFont;
+            font-weight: 700;
+          }
+          .desc{
+            font-size: 14px;
+            line-height: 22px;
+            font-family: $MainFont;
+            font-weight: 200;
+            // margin-bottom: 20px;
+            // margin-top: 20px;
+          }
+          .more{}
+        }
+        @media screen and (max-width: 768px) {
+          padding: 10px 20px;
+          margin-bottom: 20px;
+        }
+        &.vault1{
+          @media screen and (max-width: 768px) {
+            border-color: $MainYellow;
+          }
+        }
         &:hover{
           border-color: $MainYellow;
         }
@@ -378,6 +460,34 @@ export default {
           font-family: $MainFont;
           font-weight: 700;
           margin-top: -7px;
+          .info{
+            background: #FFF;
+            display: inline-flex;
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+            justify-content: center;
+            color: #333;
+            font-family: $MainFont;
+            font-size: 13px;
+            align-items: center;
+            font-weight: 700;
+            margin-left: 10px;
+            margin-top: 9px;
+            &.info2{
+              margin-top: 4px;
+            }
+            cursor: pointer;
+            &:hover{
+              background: $MainYellow;
+            }
+          }
+          @media screen and (max-width: 768px) {
+            font-size: 14px;
+            img{
+              width: 50px !important;
+            }
+          }
           .txt{
             margin-top: 10px;
           }
@@ -389,23 +499,40 @@ export default {
             font-size: 16px;
             font-family: $MainFont;
             font-weight: 200;
+            @media screen and (max-width: 768px) {
+              font-size: 12px;
+            }
           }
           .value{
             font-family: $MainFont;
             font-size: 20px;
             font-weight: 700;
+            @media screen and (max-width: 768px) {
+              font-size: 16px;
+            }
           }
         }
         &__apy{
           font-size: 16px;
           font-family: $MainFont;
           font-weight: 200;
+          @media screen and (max-width: 768px) {
+            font-size: 12px;
+          }
           b{
             font-size: 20px;
             font-weight: 700;
+            @media screen and (max-width: 768px) {
+              font-size: 16px;
+            }
           }
         }
-        &__cta{}
+        &__cta{
+          @media screen and (max-width: 768px) {
+            transform: scale(.8);
+            margin-right: -20px;
+          }
+        }
       }
       h2{
         font-family: $MainFont;
@@ -415,6 +542,10 @@ export default {
         margin: 0px;
         margin-bottom: 60px;
         max-width: 466px;
+        @media screen and (max-width: 768px) {
+          font-size: 20px;
+          line-height: 35px;
+        }
       }
       p{
         font-family: $MainFont;
@@ -423,6 +554,10 @@ export default {
         line-height: 30px;
         margin: 0px;
         max-width: 811px;
+        @media screen and (max-width: 768px) {
+          font-size: 14px;
+          line-height: 30px;
+        }
       }
     }
     .section8{
@@ -462,6 +597,10 @@ export default {
           height: 52px;
           font-size: 20px !important;
           opacity: .5;
+          @media screen and (max-width: 768px) {
+            font-size: 16px !important;
+            line-height: 20px;
+          }
           &.activate, &:hover{
             opacity: 1;
           }
@@ -480,6 +619,10 @@ export default {
           padding: 0px;
           transform: translateY(-10px);
           visibility: hidden;
+          @media screen and (max-width: 768px) {
+            font-size: 14px;
+            line-height: 20px;
+          }
           &.activate{
             opacity: 1;
             height: auto;
@@ -500,6 +643,10 @@ export default {
         margin: 0px;
         margin-bottom: 60px;
         text-align: center;
+        @media screen and (max-width: 768px) {
+          font-size: 30px;
+          line-height: 40px;
+        }
       }
     }
     .section3{
@@ -511,6 +658,10 @@ export default {
         margin: 0px;
         margin-bottom: 60px;
         text-align: center;
+        @media screen and (max-width: 768px) {
+          font-size: 30px;
+          line-height: 40px;
+        }
       }
       .steps-row{}
       .steps-col{
@@ -541,6 +692,9 @@ export default {
           transform: translate(-50%,-50%);
           transition: color ease .3s;
           color: #FFF;
+          @media screen and (max-width: 768px) {
+            font-size: 46px;
+          }
           &.stroked{
             text-shadow: 1px 0 0 #fff, -1px 0 0 #fff, 0 1px 0 #fff, 0 -1px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
             transform: translate(-65%,-55%);
@@ -548,16 +702,33 @@ export default {
             z-index: -1;
             font-size: 160px;
             opacity: .2;
+            @media screen and (max-width: 768px) {
+              font-size: 90px;
+            }
+          }
+        }
+        &.step1{
+          @media screen and (max-width: 768px) {
+            border-color: $MainYellow;
           }
         }
         &.step2{
           margin-top: 170px;
+          @media screen and (max-width: 768px) {
+            margin-top: 10px;
+          }
         }
         &.step3{
           margin-top: -120px;
+          @media screen and (max-width: 768px) {
+            margin-top: 10px;
+          }
         }
         &.step4{
           margin-top: 60px;
+          @media screen and (max-width: 768px) {
+            margin-top: 10px;
+          }
         }
         h4{
           font-family: $MainFont;
@@ -566,6 +737,10 @@ export default {
           line-height: 54px;
           margin: 0px;
           margin-bottom: 30px;
+          @media screen and (max-width: 768px) {
+            font-size: 16px;
+            line-height: 19px;
+          }
         }
         p{
           font-family: $MainFont;
@@ -573,12 +748,22 @@ export default {
           font-size: 28px;
           line-height: 54px;
           margin: 0px;
+          @media screen and (max-width: 768px) {
+            font-size: 15px;
+            line-height: 28px;
+          }
         }
       }
     }
     .section2{
       @media screen and (min-width: 768px) {
         min-height: 95vh;
+      }
+      @media screen and (max-width: 768px) {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 100px;
+        padding-top: 50px;
       }
       h2{
         font-family: $MainFont;
@@ -588,6 +773,10 @@ export default {
         margin: 0px;
         margin-bottom: 60px;
         text-align: center;
+        @media screen and (max-width: 768px) {
+          font-size: 30px;
+          line-height: 40px;
+        }
       }
       p{
         font-family: $MainFont;
@@ -596,14 +785,32 @@ export default {
         line-height: 54px;
         margin: 0px;
         text-align: center;
+        margin-bottom: 40px;
+        @media screen and (max-width: 768px) {
+          font-size: 18px;
+          line-height: 30px;
+          margin-bottom: 40px;
+        }
       }
     }
     .section1{
       @media screen and (min-width: 768px) {
         min-height: 75vh;
       }
+      @media screen and (max-width: 768px) {
+        min-height: 100vh;
+        flex-direction: column-reverse;
+        justify-content: flex-end;
+      }
       .staider3d{
         position: relative;
+        img{
+          @media screen and (max-width: 768px) {
+            width: 180px;
+            margin-top: 70px;
+            margin-bottom: 30px;
+          }
+        }
         &:before{
           content: '';
           width: 1px;
@@ -621,6 +828,10 @@ export default {
         font-size: 63px;
         line-height: 75px;
         margin: 0px;
+        @media screen and (max-width: 768px) {
+          font-size: 41px;
+          line-height: 55px;
+        }
       }
       h2{
         font-family: $MainFont;
@@ -632,6 +843,15 @@ export default {
         margin-top: 25px;
         margin-bottom: 60px;
         margin-left: 3px;
+        @media screen and (max-width: 768px) {
+          font-size: 16px;
+          letter-spacing: 1.5px;
+        }
+      }
+      /deep/ a{
+        @media screen and (max-width: 768px) {
+          background: $solidBackground !important;
+        }
       }
     }
     .main-title{
