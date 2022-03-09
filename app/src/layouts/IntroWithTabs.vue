@@ -115,7 +115,7 @@
                   >
                 </li>
                 <li :class="{ active: $route.path == '/verto/farms' }">
-                  <router-link to=""
+                  <router-link to="/verto/farms"
                     ><i class="fas fa-rocket"></i><span>Farms <br/><span style="margin-left:50px" class="text-deep-purple-12 text-caption">Coming soon</span></span>
 
                       </router-link
@@ -269,8 +269,8 @@
           />
           <q-breadcrumbs-el v-else class="text-capitalize" :class="{'text-white': $store.state.settings.lightMode === 'true'}" :label="$route.name" />
         </q-breadcrumbs>
-
-        <router-view class="main-container" :key="$route.path+trigger" v-if="toggleView " />
+         <AssetsExplorer class="main-container"  v-show="$route.path == '/verto/dashboard' " />
+        <router-view class="main-container" :key="$route.path+trigger" v-if="toggleView" />
       </q-page-container>
 
       <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus && false" elevated class=" text-white">

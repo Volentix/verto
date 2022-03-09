@@ -1417,6 +1417,34 @@ class Lib {
     store.state.currentwallet.loggedIn = true
     initWallet('init')
   }
+  async getUstState (key = 'exchange_rate') {
+    let s = await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.anchorprotocol.com/api/v1/market/ust'), val = 0
+    if (s && s.data && s.data[key]) {
+      val = parseFloat(s.data[key])
+    }
+    return val
+  }
+  getCw20TokenBalanceQuery (tokens, userAddres) {
+    let r = { variables: {}, query: {} }, str = '{'
+    tokens.forEach(t => {
+      // x.test = `   ` + t + `: WasmContractsContractAddressStore(     ContractAddress: "` + t + `"     QueryMsg: "{"balance":{"address":"` + userAddres + `"}}"  ) {     Height    Result     __typename   }`
+      str += `\n  ` + t + `: WasmContractsContractAddressStore(\n    ContractAddress: "` + t + `"\n    QueryMsg: "{\\"balance\\":{\\"address\\":\\"` + userAddres + `\\"}}"\n  ) {\n    Height\n    Result\n    __typename\n  }`
+    })
+    str += '}'
+    r.query = str /// .replace(/\\"/g, '\\\\\\')
+
+    return r
+  }
+  async getCw20TokensBalance (tokens, key) {
+    let resEc20s = await axios.post('https://mantle.terra.dev/', this.getCw20TokenBalanceQuery(tokens, key)), v = {}
+    if (resEc20s && resEc20s.data && resEc20s.data.data) {
+      tokens = Object.keys(resEc20s.data.data).map(o => {
+        v[o] = parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance) / (10 ** 6)
+        return v
+      })
+    }
+    return v
+  }
   setWallets (wallets) {
     store.commit('currentwallet/updateConfig', {
       keys: wallets

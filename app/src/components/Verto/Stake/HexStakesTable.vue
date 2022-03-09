@@ -48,7 +48,7 @@ export default {
           name: 'stakeshares',
           label: 'Shares',
           field: 'stakeshares',
-          format: (val) => this.formatNumber(val, 2)
+          format: (val) => this.nFormatter2(val, 2)
         },
         {
           name: 'index',

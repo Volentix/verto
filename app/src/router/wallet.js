@@ -47,6 +47,7 @@ if (process.env.MODE === 'bex' || window.screen.width < 500) {
       component: () => import('pages/Verto/RestoreWallet.vue'),
       meta: {}
     },
+
     {
       name: 'landing',
       path: '/verto/landing',
@@ -135,6 +136,14 @@ export default [
     path: '/verto',
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
+      {
+        name: 'farms',
+        path: '/verto/farms',
+        component: () => import('components/Verto/Defi/LiquidityPoolsTable.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
       {
         name: 'import-private-key',
         path: '/verto/import-private-key/eos',
