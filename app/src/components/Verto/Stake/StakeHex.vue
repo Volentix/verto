@@ -138,7 +138,7 @@
                                       : currentAccount.key,
                                     'Account name'
                                   );
-                                  changeSlider();
+
                                 "
                                 @click.stop
                                 icon="o_file_copy"
@@ -1070,7 +1070,7 @@ export default {
     },
     sliderToPercent (percent) {
       this.slider = percent
-      this.changeSlider()
+      // this.changeSlider()
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)

@@ -317,6 +317,32 @@ export default {
       let c = chainsData.find(p => p.chain === chain)
       return c ? c.icon : 'statics/empty-token.png'
     },
+    exchangeToken (token, action = 'buy', experience = 'exchange') {
+      this.setDefaultWallet(token.chain)
+      token.type = token.type.toUpperCase()
+      setTimeout(() => {
+        this.$router.push({
+          name: 'crosschain-exchange',
+          params: { asset: token, after_experience: experience === 'exchange' ? token.after_experience : null, action: action, experience: experience }
+        })
+      }, 100)
+    },
+    triggerTokenAction (token) {
+      let found = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === token.type.toLowerCase() && o.chain === token.chain.toLowerCase())
+      if (!found) {
+        this.error.data.token = token
+        this.error.msg = 'You seems very excited to ' + token.action.toLowerCase() + ' ' + token.type + '. However your wallet balance for this token is zero.'
+
+        return
+      }
+
+      if (token.actionTrigger && token.actionTrigger.type === 'link') {
+        this.setDefaultWallet(token.chain)
+        this.$router.push(token.actionTrigger.path)
+      } else if (token.experience === 'deposit_ust') {
+        this.exchangeToken(token, 'sell', token.experience)
+      }
+    },
     setChains () {
       let walletData = {
         tokensCount: this.$store.state.wallets.tokens.length,

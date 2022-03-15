@@ -4,7 +4,7 @@ export function someAction (context) {
 */
 import { Notify } from 'quasar'
 import axios from 'axios'
-import initWallet from '@/util/_Wallets2Tokens'
+// import initWallet from '@/util/_Wallets2Tokens'
 import parseDb from '@/util/Staider/ParseWrapper'
 import {
   version
@@ -57,7 +57,7 @@ export const getSettings = ({ commit }, data) => {
     }
 
     commit('setGlobalSettings', settings)
-    initWallet()
+    // initWallet({ fromCache: true })
   })
 }
 

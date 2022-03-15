@@ -190,7 +190,7 @@
                             rounded
                             outlined
                             class="select-input"
-                            @input="changeAccount()"
+                            @input="changeAccount(); checkGas() ;"
                             v-model="currentToken"
                             :options="options.filter( o => o.value == currentAccount.chain)"
                         >
@@ -238,24 +238,25 @@
                       </div>
                       <div class="col col-4" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}">
                         <span class="lab-input"  >Amount...</span>
-                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? ( miniMode ?  sendAmount :  parseFloat(currentToken.amount) ) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+                        <!-- sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? ( miniMode ?  sendAmount :  parseFloat(currentToken.amount) ) : parseFloat(sendAmount) ;-->
+                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input=" checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
                               <span class="tokenID">{{ currentToken.type }}</span>
-                              <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="Max" />
+                              <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded class="mt-5" @click="checkGas() ;getMaxBalance()" outlined unelevated flat :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="Max" />
                             </div>
                           </template>
                         </q-input>
                       </div>
                     </div>
-                    <div class="row" v-if="parseFloat(sendAmount) || !miniMode">
+                    <div class="row" >
                       <div class="col col-12">
                         <span class="lab-input">To</span>
                         <q-input
                           :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                           ref="sendTo"
                           v-model="sendTo"
-                          @input="checkTo()"
+                          @input="checkTo() ; checkGas();"
                           class="input-input pr80" outlined rounded color="purple"
                           type="text"
                           bottom-slots
@@ -270,10 +271,11 @@
                             </div>
                           </template>
                         </q-input>
+                       <q-checkbox v-if="!(currentToken.chainID && !currentAccount.isEvm &&  !['btc','sol'].includes(currentAccount.chain))" val="true" v-model="useMemo" label="Use memo" />
                       </div>
-                      <div class="col col-12" v-if="currentToken.chainID && !currentAccount.isEvm &&  !['btc','sol'].includes(currentAccount.chain)">
-                        <span v-if="currentToken.chainID && !currentAccount.isEvm" class="lab-input">Memo</span>
-                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && !currentAccount.isEvm" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                      <div class="col col-12" v-if="useMemo || (currentToken.chainID && !currentAccount.isEvm &&  !['btc','sol'].includes(currentAccount.chain))">
+                        <span  class="lab-input">Memo</span>
+                        <q-input :disable="disableMemoEdit"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo() ;  checkGas();" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
                     </div>
                   </div>
@@ -344,7 +346,7 @@
                 </span>
                 <q-linear-progress v-if="!params.sendTransaction && sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
                  <div class="standard-content--footer q-mb-lg" v-if="!params.sendTransaction && (!isExchange || !transSuccessDialog)">
-                   <q-btn flat :loading="openModalProgress" class="action-link next q-mb-lg" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !(currentAccount.isEvm || currentAccount.chain == 'btc') ) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="(currentAccount.isEvm || currentAccount.chain == 'btc' )  && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
+                   <q-btn flat :loading="openModalProgress" class="action-link next q-mb-lg" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || !sendToResolved" color="black" @click="(!miniMode || !(currentAccount.isEvm || currentAccount.chain == 'btc') ) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="(currentAccount.isEvm || currentAccount.chain == 'btc' )  && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
                 </div>
               </div>
             </div>
@@ -442,6 +444,7 @@ export default {
     return {
       osName: '',
       progressValue: 20,
+      useMemo: false,
       miniStep: 1,
       gasOptions: [],
       gasPriceGwei: null,
@@ -712,9 +715,9 @@ export default {
       if (evmData.nativeToken === this.currentToken.type) {
         let ethValue = Web3.utils.fromWei(Math.round(((+this.gasPriceGwei) * 1000000000 * (+this.gasLimit))).toString(), 'ether')
 
-        this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
+        // this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
         if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
-          this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
+          // this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
 
           if (this.sendAmount <= 0) {
             this.ErrorMessage = 'Insufficient balance'
@@ -818,7 +821,7 @@ export default {
     },
     checkGas () {
       try {
-        if (this.sendAmount && this.sendToResolved && this.currentAccount.isEvm) {
+        if (this.sendToResolved && this.currentAccount.isEvm) {
           Lib.getRawETHTransaction(
             this.currentToken.type,
             this.currentAccount.key,
@@ -829,8 +832,12 @@ export default {
             'mnemonic',
             this.currentAccount.chain
           ).then((tx) => {
+            if (this.sendMemo && this.sendMemo.trim().length) {
+              tx.data = this.sendMemo.trim()
+            }
             Lib.gas(this.currentAccount.chain, tx, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
               this.gasOptions = res
+              console.log(res, 'res')
               if (!this.gasSelected) {
                 this.gasSelected = res[0]
               }
@@ -854,11 +861,11 @@ export default {
       this.transStatus = 'Transaction in progress'
 
       // Pass gas details in memo
-
+      let memo = this.sendMemo
       if (this.currentAccount.isEvm) {
-        this.sendMemo = {
+        memo = {
           gasData: this.customGas ? this.customGas : this.gasSelected,
-          txData: null
+          txData: this.sendMemo?.trim()
         }
       } else if (this.currentAccount.chain === 'btc') {
         this.sendMemo = {
@@ -872,7 +879,7 @@ export default {
         this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name,
         this.sendToResolved,
         this.sendAmount,
-        this.sendMemo,
+        memo,
         this.privateKey.key,
         this.currentToken.contract,
         this.currentToken.decimals

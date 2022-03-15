@@ -291,14 +291,9 @@ export default {
           : this.customSlider
       }, 12000)
     }
-
-    if (!this.$store.state.wallets.tokens.length) {
+    if (this.$route.params.walletToRefresh) {
       setTimeout(() => {
-        initWallet()
-      }, 500)
-    } else if (this.$route.params.walletToRefresh) {
-      setTimeout(() => {
-        initWallet(this.$route.params.walletToRefresh)
+        initWallet(this.$route.params.walletToRefresh || { fromCache: true })
       }, 500)
     }
 

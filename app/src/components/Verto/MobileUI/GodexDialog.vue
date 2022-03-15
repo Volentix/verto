@@ -109,7 +109,8 @@
               approval: isApproval && reviewStep
             }"
           >
-            <div class="fromBlk col-md-5" v-if="depositCoin">
+            <div class=" col-md-5" v-if="depositCoin">
+             <div class="fromBlk">
               <span v-if="reviewStep" class="text-h6">
                 <span v-if="isApproval"
                   >Approve {{ currentPathData.approval.entity }}</span
@@ -231,6 +232,31 @@
                 </li>
               </ul>
             </div>
+             <div   v-if="!txHash" class="q-pt-md">
+
+          <div v-if="experience.type == 'deposit_ust' && !reviewStep">
+          <br/>
+          <q-btn  :disabled="(paths.length < 1 && experience.type == 'exchange') || !parseFloat(swapData.fromAmount)"  @click="action = 'deposit' ; reviewStep ? pushTransaction() : (reviewStep = true)" class="q-mr-md" size="lg" outline rounded label="Deposit" />
+          <q-btn v-if="experienceData && experienceData.amount"  :disabled="(paths.length < 1 && experience.type == 'exchange') || !parseFloat(swapData.fromAmount)"   @click="action = 'withdraw' ; reviewStep ? pushTransaction() : (reviewStep = true)" size="lg" outline rounded label="Withdraw" />
+          </div>
+          <button
+           v-else-if="experience.type == 'exchange' || reviewStep"
+            type="button"
+            class="theme-btn"
+            @click="reviewStep ? pushTransaction() : (reviewStep = true)"
+            :disabled="(paths.length < 1 && experience.type == 'exchange') || !parseFloat(swapData.fromAmount)"
+          >
+            {{
+              !reviewStep
+                ? isApproval
+                  ? "Approve " + currentPathData.approval.entity
+                  : "Review"
+                : "Submit transaction"
+            }}
+            <q-spinner-dots v-if="loadingState" color="white" size="2em" />
+          </button>
+            </div>
+            </div>
             <div
               v-if="experience.type == 'exchange'"
               class="col-md-2 flex flex-center switcher"
@@ -317,12 +343,31 @@
                 </h5>
               </div>
             </div>
-            <div class="toBlk col-md-5 offset-md-2" v-if="destinationCoin && experience.type == 'deposit_ust'">
+            <div  :class="{'move_top' : experience.type == 'deposit_ust'}" class="toBlk col-md-5 offset-md-2" v-if="destinationCoin && experience.type == 'deposit_ust'">
                <div class="text-center q-pt-md">
                   <span class="text-h6">  Total Deposit</span><br/><br/>
                    <span class="text-h4 text-bold" v-if="experienceData"> {{experienceData.balance}}</span>
                    <span class="text-h4 text-bold" v-else>       <q-spinner-dots  color="white" size="2em" /></span>
                    <div class="text-h6 flex flex-center q-mt-md"  v-if="experienceData">1 <small class="q-px-">&nbsp;aUST&nbsp;</small> <img width="30" src="https://app.anchorprotocol.com/assets/aust.dcee0811.svg"> <small class="q-px-md"> ≈ </small> {{experienceData.price}}&nbsp; <small>UST&nbsp;</small> <img width="30"  src="https://app.anchorprotocol.com/assets/ust.7fef9ca5.svg"></div>
+                  <q-separator inset dark class="q-my-md " /><br/>
+                  <span class="text-h6"> Interest</span><br/>
+                   <span class="text-h4 text-bold text-green" > 19.41%</span>
+                   <br/><br/>
+                   <q-btn-toggle
+        v-model="apySelector"
+        outline
+         toggle-color="green"
+        :options="[
+          {label: 'Year', value: '1'},
+          {label: 'Month', value: '12'},
+          {label: 'Week', value: '52'},
+           {label: 'Day', value: '365'},
+        ]"
+      /><br/><br/>
+      Expected interest  <br/>
+        <span class="text-h6 text-bold" v-if="experienceData">
+        {{formatNumber(experienceData.ustValue * 0.1941 /apySelector, 3)}} <span class="text-body1">UST</span>
+        </span>
                </div>
             </div>
           </div>
@@ -354,30 +399,7 @@
           <p v-if="txError" class="text-red text-body1 q-mt-sm">
             <br />{{ txError }}
           </p>
-          <div   v-if="!txHash" class="q-pt-md">
 
-          <div v-if="experience.type == 'deposit_ust' && !reviewStep">
-          <br/>
-          <q-btn  :disabled="(paths.length < 1 && experience.type == 'exchange') || !parseFloat(swapData.fromAmount)"  @click="action = 'deposit' ; reviewStep ? pushTransaction() : (reviewStep = true)" class="q-mr-md" size="lg" outline rounded label="Deposit" />
-          <q-btn v-if="experienceData && experienceData.amount"  :disabled="(paths.length < 1 && experience.type == 'exchange') || !parseFloat(swapData.fromAmount)"   @click="action = 'withdraw' ; reviewStep ? pushTransaction() : (reviewStep = true)" size="lg" outline rounded label="Withdraw" />
-          </div>
-          <button
-           v-else-if="experience.type == 'exchange' || reviewStep"
-            type="button"
-            class="theme-btn"
-            @click="reviewStep ? pushTransaction() : (reviewStep = true)"
-            :disabled="(paths.length < 1 && experience.type == 'exchange') || !parseFloat(swapData.fromAmount)"
-          >
-            {{
-              !reviewStep
-                ? isApproval
-                  ? "Approve " + currentPathData.approval.entity
-                  : "Review"
-                : "Submit transaction"
-            }}
-            <q-spinner-dots v-if="loadingState" color="white" size="2em" />
-          </button>
-            </div>
         </div>
       </div>
       <!-- SEARCH PANEL  openWallet() -->
@@ -2384,6 +2406,7 @@ export default {
         fromChain: null,
         toChain: null
       },
+      apySelector: '365',
       fromSelected: null,
       currentPathData: null,
       destinationCoin: null,
@@ -2601,6 +2624,7 @@ export default {
           let price = await Lib.getUstState() || 0
           data.price = this.formatNumber(price, 3)
           data.amount = balances['terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu']
+          data.ustValue = data.amount * price
           data.balance = this.nFormatter2(data.amount * price, 3) + ' UST'
           console.log(data, 'data', balances)
         }
@@ -3291,6 +3315,9 @@ h5.drpn span:first-child:hover {
 }
 .cash-blk.active .withArr span.arrow {
   border-color: #fff;
+}
+.move_top {
+    margin-top:-50px;
 }
 .cash-blk.primari:after {
   content: "primary";
