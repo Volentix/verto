@@ -46,8 +46,7 @@ class Enzyme {
       method: 'post',
       url: process.env[store.state.settings.network].CACHE + 'https://app.enzyme.finance/api/graphql',
       headers: {
-        'Content-type': 'application/json',
-        'Cookie': 'connect.sid=s%3Adb5qRxnTY4CRg0OYplu6nqO32DFbN_1O.bhtpWPqdjlKQHOu7t2%2BXH%2F7X0Wt9Gmpr1oeaZO5gEfY; csrf-token=2GWdhs89-NCXqYswr1f6p_1R-xVE7lLKM-YA'
+        'Content-type': 'application/json'
       },
       data: data
     }
