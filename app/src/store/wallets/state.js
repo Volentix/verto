@@ -5,6 +5,7 @@ export default {
   tx: {
 
   },
+  lastUpdate: null,
   customTotal: {
     label: null,
     usd: 0,

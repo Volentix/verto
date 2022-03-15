@@ -330,7 +330,8 @@ export default {
 <style lang="scss" scoped>
   @import "assets/styles/staider_theme/helpers.scss";
   .main-header{
-    padding-top: 26px;
+    padding-top: 15px;
+    padding-bottom: 15px;
     @media screen and (max-width: 768px) {
       padding-bottom: 20px;
     }

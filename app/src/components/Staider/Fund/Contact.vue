@@ -58,4 +58,7 @@ export default {
   #hubspotForm {
     color: #CCC !important;
   }
+   .hs-richtext {
+    color:white !important
+    }
 </style>

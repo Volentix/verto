@@ -107,7 +107,7 @@ import {
   version
 } from '../../../package.json'
 import Lib from '@/util/walletlib'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import DexInteraction from '../../mixins/DexInteraction'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
@@ -217,7 +217,7 @@ export default {
       const results = await configManager.login(this.password)
       if (results.success) {
         this.$store.commit('settings/temporary', this.password)
-        if (this.$route.params.nextUrl && this.$route.params.nextUrl.includes('dashboard')) initWallet()
+        if (this.$route.params.nextUrl && this.$route.params.nextUrl.includes('dashboard')) initWallet({ fromCache: true })
         setTimeout(() => {
           this.$store.dispatch('investment/getMarketDataVsUSD')
           // always redirect to dashboard for now : pending issue

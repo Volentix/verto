@@ -100,7 +100,7 @@
 <script>
 import Formatter from '@/mixins/Formatter'
 import HD from '@/util/hdwallet'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   props: ['chain'],
   mixins: [Formatter],

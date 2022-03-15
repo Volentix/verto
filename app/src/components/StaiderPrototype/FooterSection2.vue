@@ -74,7 +74,7 @@ export default {
   name: 'Footer',
   data () {
     return {
-      appSiteMode: 'site',
+      // appSiteMode: 'site',
       footerNav3: [
         { to: '/funds', title: 'Explore funds' },
         { to: '/team', title: 'Team' },
@@ -95,6 +95,11 @@ export default {
   mounted () {
   },
   created () {
+  },
+  computed: {
+    appSiteMode () {
+      return this.$route.meta.site ? 'site' : 'app'
+    }
   },
   methods: {
     scrollToSection (sectionScrollName) {

@@ -57,7 +57,7 @@
 // import FileSelect from '@/components/FileSelect.vue'
 import configManager from '@/util/ConfigManager'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   name: 'SyncWalletFromExtension.vue',
   components: {

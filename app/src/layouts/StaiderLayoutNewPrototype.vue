@@ -6,8 +6,7 @@
     </q-header>
 
     <div class="animation_simulation_wrapper flex justify-center items-center">
-      <canvas v-if="false" id="abstract_aniamtion"></canvas>
-      <img v-else src="statics/staider/var1.png" alt="">
+      <img src="statics/staider/var1.png" class="bg_fixed_animated animate__heartBeat" alt="">
     </div>
 
     <q-drawer
@@ -36,7 +35,6 @@
 import HeaderSection2 from 'components/StaiderPrototype/HeaderSection2'
 import FooterSection2 from 'components/StaiderPrototype/FooterSection2'
 import { QScrollArea, QScrollObserver } from 'quasar'
-import init, { toggleDarkMode, transateAnimationTo } from '../animation/abstract1'
 
 export default {
   components: {
@@ -50,7 +48,7 @@ export default {
   },
   data () {
     return {
-      appSiteMode: 'app',
+      // appSiteMode: 'site',
       leftDrawer: false,
       currentPage: '',
       backdrop: false,
@@ -72,24 +70,18 @@ export default {
     // scrollAreaRef.value.setScrollPosition('vertical', position.value)
     // console.log('scrollTop', scrollTop, sectionScrollName, this.$refs.mainScrollArea)
   },
+  computed: {
+    appSiteMode () {
+      return this.$route.meta.site ? 'site' : 'app'
+    }
+  },
   mounted () {
-    // rendered_done
-    init('dark')
-    setTimeout(() => {
-      toggleDarkMode('dark')
-      if (this.$q.screen.width <= 768) {
-        transateAnimationTo(11, 'dark')
-      } else {
-        transateAnimationTo(10, 'dark')
-      }
-    }, 2000)
+    console.log('mounted () => this.$route.currentRoute', this.$route.meta.site)
   },
   created () {
+    console.log('created () => this.$route.currentRoute', this.$route.meta.site)
   },
   methods: {
-    animate (index) {
-      transateAnimationTo(index)
-    },
     onScroll (info) {
       if (info.position >= 100) {
         this.backdrop = true
@@ -219,6 +211,29 @@ export default {
         height: 100%;
       }
     }
+  }
+  @-webkit-keyframes heartBeat{
+    0%{opacity: 1;}
+    50%{opacity: .7;}
+    100%{opacity: 1;}
+  }
+  @keyframes heartBeat{
+    0%{opacity: 1;}
+    50%{opacity: .7;}
+    100%{opacity: 1;}
+  }
+  .animate__heartBeat{
+    -webkit-animation-name:heartBeat;
+    animation-name:heartBeat;
+    -webkit-animation-duration:5s;
+    animation-duration:5s;
+    -webkit-animation-duration:5s;
+    animation-duration:5s;
+    -webkit-animation-timing-function:ease-in-out;
+    animation-timing-function:ease-in-out;
+
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
   }
 </style>
 <style>

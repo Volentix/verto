@@ -533,12 +533,7 @@
                           class="header-wallet full-width flex justify-between"
                         >
                           <q-item-section class="item-name">
-                            <span
-                              class="item-name--name"
-                              v-if="item && item.isEvm"
-                            >
-                              {{ getAccountLabel(item) }}</span
-                            >
+
                             <span
                               >No {{ tokChain.chain.toUpperCase() }} account
                               found</span
@@ -710,7 +705,9 @@ export default {
             a.name.toLowerCase() ===
               this.$store.state.currentwallet.wallet.name.toLowerCase()
         )
-      } else */ if (
+      } else */
+
+      if (
         !this.withTokenBalance &&
         this.$store.state.investment.defaultAccount &&
         this.$store.state.investment.defaultAccount !== undefined &&
@@ -767,6 +764,7 @@ export default {
           : !this.showPortfolio
       }
       // console.log(this.accountOptions, this.accountOption, this)
+
       if (!this.showPortfolio) {
         this.setAccount()
       }
@@ -787,7 +785,7 @@ export default {
             let tokens = this.$store.state.wallets.tokens.filter(
               (w) =>
                 w.chain === this.accountOption.chain &&
-                w.key === this.accountOption.key &&
+                w.key.toLowerCase() === this.accountOption.key.toLowerCase() &&
                 (this.accountOption.chain !== 'eos' ||
                   w.name.toLowerCase() ===
                     this.accountOption.name.toLowerCase())

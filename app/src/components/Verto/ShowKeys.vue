@@ -29,8 +29,8 @@
             </div>
             <div class="flex">
               <q-btn dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="o_file_copy" @click="copyToClipboard(account[field])" />
-              <q-btn dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="img:https://image.flaticon.com/icons/png/512/107/107072.png" />
-              <q-btn v-if="account.watch" dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="close" @click="deleteAccount(account)" />
+              <q-btn dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="qr_code" />
+              <q-btn dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="close" @click="deleteAccount(account)" />
                <div class="qr_code_wrapper column justify-center items-center" :class="{ 'min-size': !$q.platform.is.mobile, 'show' : (account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
                 <div class="flex flex-center account_name_text">{{account.name}}</div>
                 <q-btn class="close_qr_code_popup" dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="close" />
@@ -63,6 +63,40 @@
             </q-input>
           </div>
         </q-card-section>
+        <q-card-section v-if="passwordRequiredAccount" >
+        <div class="q-px-md">
+        <span class="text-caption"
+          >Enter your Verto password to access this section</span
+        >
+        <q-input
+          @keyup.enter="verifyPassword"
+          :dark="$store.state.settings.lightMode == 'true'"
+          error-message="Invalid password"
+          @input="verifyPassword"
+          v-model="password"
+          label="Enter Verto password"
+          class="q-pt-md"
+          filled
+          type="password"
+          :label-color="$store.state.settings.lightMode === 'true' ? 'white' : ''"
+          :bg-color="$store.state.settings.lightMode === 'true' ? 'grey' : ''"
+
+        >
+          <template v-slot:append>
+
+            <q-btn
+              @click="deleteAccount(passwordRequiredAccount)"
+              round
+              :disable="!passwordValid"
+              dense
+              flat
+              icon="delete"
+              :class="{'text-white': $store.state.settings.lightMode === 'true'}"
+            />
+          </template>
+        </q-input>
+        </div>
+        </q-card-section>
       </q-scroll-area>
     </q-card>
   </q-dialog>
@@ -79,9 +113,13 @@ export default {
   data () {
     return {
       alert: true,
+      password: '',
+      passwordRequiredAccount: false,
+      passwordValid: false,
       showQr: {
 
       },
+
       deletedAccountNames: [],
       showPrivateKeys: {
 
@@ -104,7 +142,18 @@ export default {
     avatar (name) {
       return toSvg(name, 30)
     },
+    async verifyPassword () {
+      this.passwordValid = false
+      const results = await this.$configManager.login(this.password)
+      if (results.success) {
+        this.passwordValid = true
+      }
+    },
     deleteAccount (acc) {
+      if (!acc.watch && !this.passwordValid) {
+        this.passwordRequiredAccount = acc
+        return
+      }
       this.$q.dialog({
         title: 'Confirm',
         message: 'Do you really want to remove account ' + acc.name + ' from Verto?',
@@ -114,11 +163,24 @@ export default {
           label: 'Yes',
           tabindex: 1
         }
-      }).onOk(() => {
-        if (acc.watch) {
-          this.deletedAccountNames.push(acc.name)
-          this.deleteWatchAccount('name', acc.name)
+      }).onOk(async () => {
+        let deleteAcc = acc.watch
+        if (!acc.watch) {
+          const result = await this.$configManager.deleteAccount(
+
+            this.password,
+            acc.name
+          )
+
+          if (result && result.success) {
+            deleteAcc = true
+          }
         }
+        if (deleteAcc) {
+          this.deletedAccountNames.push(acc.name)
+          this.deleteVertoAccount('name', acc.name, acc)
+        }
+        this.passwordRequiredAccount = false
       })
     },
     showKeys (index) {

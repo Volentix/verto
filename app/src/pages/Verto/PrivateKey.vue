@@ -303,7 +303,7 @@ import sjcl from 'sjcl'
 import FileSelect from '@/components/FileSelect.vue'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import Wallets from '../../components/Verto/Wallets'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   components: {
     FileSelect,

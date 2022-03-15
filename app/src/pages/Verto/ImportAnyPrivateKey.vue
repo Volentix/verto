@@ -224,6 +224,25 @@
                                   :label="'Enter '+(currentChain == 'EOS' ? 'Account name' : 'Public key')"
                                 />
                                 <q-input
+                                  v-if="terraStationPKDetected"
+                                  :dark="
+                                    $store.state.settings.lightMode === 'true'
+                                  "
+                                  :light="
+                                    $store.state.settings.lightMode === 'false'
+                                  "
+                                  type="password"
+                                  class="q-mt-md"
+                                  debounce="500"
+                                  rounded
+                                  outlined
+                                  color="purple"
+                                  v-model="terraStationPassword"
+                                  @input="decryptTerraStationConfig()"
+                                  @keyup.enter="decryptTerraStationConfig"
+                                  label="Enter terra station password"
+                                />
+                                <q-input
                                   style="max-width: 300px"
                                   class="q-mt-md"
                                   v-if="
@@ -247,7 +266,7 @@
                                 />
                               </span>
                               <div
-                                v-show="chainKeyInvalid && !watch"
+                                v-show="chainKeyInvalid && !watch && !terraStationPKDetected"
                                 class="text-h6 text-red"
                               >
                                 Key invalid
@@ -1209,8 +1228,10 @@
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import Formatter from '@/mixins/Formatter'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import Lib from '@/util/walletlib'
+import HD from '@/util/hdwallet'
+import { RawKey } from '@terra-money/terra.js'
 const Web3 = require('web3')
 let web3 = new Web3(
   'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'
@@ -1225,6 +1246,8 @@ export default {
   data () {
     return {
       screenSize: 0,
+      terraStationPKDetected: false,
+      terraStationPassword: null,
       step: 1,
       watchStatus: null,
       watch: false,
@@ -1252,6 +1275,7 @@ export default {
         walletName: '',
         address: '',
         addressPriv: '',
+        privateKey: null,
         vertoPassword: '',
         vertoPasswordError: '',
         filePassword: '',
@@ -1270,6 +1294,29 @@ export default {
     if (this.currentChain === 'ETH') this.watch = true
   },
   methods: {
+    decryptTerraStationConfig () {
+      let TerraWrapper = HD.getTerraWrapper()
+      let key = null
+      try {
+        let t = JSON.parse(Buffer.from(
+          this.addWallet.addressPriv.trim(),
+          'base64'
+        ).toString('utf8'))
+
+        if (t.encrypted_key) {
+          key = TerraWrapper.decrypt(t.encrypted_key, this.terraStationPassword)
+          if (key.toString().length) {
+            this.addWallet.privateKey = key
+            this.chainKeyNext = true
+            this.chainKeyInvalid = false
+            this.addWallet.walletName = t.name
+          }
+        }
+      } catch (e) {
+
+      }
+      return key
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
@@ -1373,7 +1420,7 @@ export default {
         async btc () {
           try {
             const bitcoin = require('bitcoinjs-lib')
-            const keyPair = bitcoin.ECPair.fromWIF(self.addWallet.addressPriv)
+            const keyPair = bitcoin.ECPair.fromWIF(self.addWallet.addressPriv.trim())
             publicKey = keyPair.publicKey.toString('hex')
 
             const CryptoAccount = require('send-crypto').default
@@ -1388,40 +1435,56 @@ export default {
             return publicKey
           }
         },
-        async bsc () {
-          let value = await allChains.eth()
-          return value
-        },
-        async ftm () {
-          let value = await allChains.eth()
-          return value
-        },
-        async matic () {
-          let value = await allChains.eth()
-          return value
-        },
-        async avaxc () {
-          let value = await allChains.eth()
-          return value
-        },
         async eth () {
           try {
             let account = await web3.eth.accounts.privateKeyToAccount(
-              self.addWallet.addressPriv
+              self.addWallet.addressPriv.trim()
             )
             if (account && account.address) {
               publicKey = account.address
             }
             return publicKey
           } catch (e) {
-            console.log(e, 'e')
+            return publicKey
+          }
+        },
+        async terra () {
+          try {
+            let key = self.addWallet.addressPriv.trim()
+            if (self.terraStationPassword && self.terraStationPassword.length) {
+              key = self.decryptTerraStationConfig()
+              console.log(key, 'key key')
+            }
+
+            const rk = new RawKey(Buffer.from(key, 'hex'))
+            if (rk && rk.accAddress) {
+              publicKey = rk.accAddress
+            }
+            return publicKey
+          } catch (e) {
+            console.log(e)
+            try {
+              let t = JSON.parse(Buffer.from(
+                self.addWallet.addressPriv.trim(),
+                'base64'
+              ).toString('utf8'))
+              if (t.encrypted_key) {
+                self.terraStationPKDetected = true
+              }
+            } catch (error) {
+              console.log('e', error)
+            }
             return publicKey
           }
         }
       }
 
-      let allChains = pubKeyFromPrivate
-      let pubKey = await pubKeyFromPrivate[this.currentChain.toLowerCase()]()
+      let pubKey = null
+      if (Lib.isEvm(this.currentChain.toLowerCase())) {
+        pubKey = await pubKeyFromPrivate['eth']()
+      } else if (pubKeyFromPrivate[this.currentChain.toLowerCase()]) {
+        pubKey = await pubKeyFromPrivate[this.currentChain.toLowerCase()]()
+      }
 
       if (pubKey) {
         this.chainKeyNext = true
@@ -1451,17 +1514,18 @@ export default {
         if (Lib.evms.find(f => f.chain === this.currentChain.toLowerCase())) {
           chain = 'eth'
         }
+        let key = this.addWallet.privateKey
         const result = await this.$configManager.saveWalletAndKey(
           this.addWallet.walletName,
           this.addWallet.vertoPassword,
           null,
           this.addWallet.address,
-          this.addWallet.addressPriv,
+          key || this.addWallet.addressPriv,
           chain,
           'import'
         )
 
-        if (result.success) {
+        if (result && result.success) {
           this.$router.push('/verto/dashboard/' + this.addWallet.walletName)
         } else {
           this.submitKey = false

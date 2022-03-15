@@ -140,6 +140,10 @@ export default {
         'value': 'xlm',
         'label': 'Stellar Lumens'
       },
+      { 'icon': 'https://assets.website-files.com/611153e7af981472d8da199c/61117b476d11877a9638750e_Terra%20Opengraph.png',
+        'value': 'terra',
+        'label': 'Terra'
+      },
       {
         'value': 'xtz',
         'label': 'Tezos'
@@ -155,7 +159,6 @@ export default {
   },
   computed: {},
   methods: {
-
     async backupConfig () {
       try {
         await this.$configManager.backupConfig()
@@ -181,14 +184,15 @@ export default {
       const self = this
       let count = this.names.length
       let i = 0
-
+      let data = this.$route.params.chains || []
       for (const name of this.names) {
         i++
         this.progress = Math.round(i / count * 10000) / 100
 
         this.status = name
         name.label = name.value === 'eth' ? 'Account 1' : name.label
-        await HD.Wallet(name.value).then(async keys => {
+        let customParams = data.find(o => o.value === name.value)
+        await HD.Wallet(name.value, 0, customParams ? customParams.path : null).then(async keys => {
           return self.$configManager.saveWalletAndKey(name.label, self.vertoPassword, null, keys.publicKey, keys.privateKey, name.value, 'mnemonic')
         })
       }

@@ -33,7 +33,7 @@ export const getTokensMarketsData = ({ commit, state }, tokens) => {
         o =>
           t.symbol.toLowerCase() === o.type &&
           (!o.contract || (JSON.stringify(t.platforms).includes('0x') && JSON.stringify(t.platforms).includes(o.contract)) ||
-            !o.isEvm)
+          (JSON.stringify(t.platforms).includes(o.chain)))
       ) &&
       !state.walletTokensData.find(a => a.id === t.id)
   )

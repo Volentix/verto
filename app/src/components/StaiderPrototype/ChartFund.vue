@@ -2,7 +2,7 @@
   <div id="fund_chart" class="fund_chart full-width">
       <div class="option-toggle">
         <q-btn-group outline>
-            <q-btn dark text-color="white" unelevated label="1H" @click="getSharePriceEndpoint('1h')" :class="{'active': currentOption === '1h' }" size="md" />
+
             <q-btn dark text-color="white" unelevated label="1D" @click="getSharePriceEndpoint('1d')" :class="{'active': currentOption === '1d' }" size="md" />
             <q-btn dark text-color="white" unelevated label="1W" @click="getSharePriceEndpoint('1w')" size="md" :class="{'active': currentOption === '1w' }" />
             <q-btn dark text-color="white" unelevated label="1M" @click="getSharePriceEndpoint('1m')" size="md" :class="{'active': currentOption === '1m' }" />
@@ -29,6 +29,8 @@ function formatNumber2 (number, tofix) {
   const val = (number / 1).toFixed(tofix).replace(',', ' ')
   return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
+let currency = window.localStorage.getItem('currency')
+currency = currency || 'USD'
 export default {
   name: 'ChartFund',
   components: {
@@ -72,9 +74,9 @@ export default {
             // console.log(dateTime.toLocaleDateString('en-US'))
             const timeStamp = new Date(unixTime * 1000)
             const hour = date.formatDate(timeStamp, 'DD MMMM YYYY HH:mm')
-            let sign = window.localStorage.getItem('currency').toUpperCase() !== 'USD' ? '' : '$'
+            let sign = currency.toUpperCase() !== 'USD' ? '' : '$'
             return (
-              '<div class="arrow_box_tooltip q-pa-md"><span class="' + (window.localStorage.getItem('skin') === 'dark' ? 'text-grey-5' : 'text-grey') + '">' + hour + '</span><br> <span class="text-h6 ' + (window.localStorage.getItem('skin') === 'dark' ? 'text-white' : '') + '"> Share Price: ' + sign + formatNumber2(series[0][dataPointIndex], 3) + ' ' + window.localStorage.getItem('currency').toUpperCase() + '</span>' + '</div>'
+              '<div class="arrow_box_tooltip q-pa-md"><span class="' + (window.localStorage.getItem('skin') === 'dark' ? 'text-grey-5' : 'text-grey') + '">' + hour + '</span><br> <span class="text-h6 ' + (window.localStorage.getItem('skin') === 'dark' ? 'text-white' : '') + '"> Share Price: ' + sign + formatNumber2(series[0][dataPointIndex], 3) + ' ' + currency.toUpperCase() + '</span>' + '</div>'
             )
           }
         },
@@ -149,8 +151,8 @@ export default {
           },
           labels: {
             formatter: function (value) {
-              let sign = window.localStorage.getItem('currency').toUpperCase() !== 'USD' ? '' : '$'
-              return sign + formatNumber2(value, 0) + ' ' + window.localStorage.getItem('currency').toUpperCase()
+              let sign = currency.toUpperCase() !== 'USD' ? '' : '$'
+              return sign + formatNumber2(value, 0) + ' ' + currency.toUpperCase()
             }
           }
         }
@@ -170,16 +172,25 @@ export default {
   methods: {
     getSharePriceEndpoint (param) {
       this.currentOption = param
-      let SharePriceEndPoint = 'https://services.enzyme.finance/api/enzyme/fund/metrics/range?address=' + this.fundID + '&range=' + param
+      // let SharePriceEndPoint = 'https://services.enzyme.finance/api/enzyme/fund/metrics/range?address=' + this.fundID + '&range=' + param
+      let SharePriceEndPoint = 'https://app.enzyme.finance/api/time-series/vault?vault=' + this.fundID + '&period=' + param.toUpperCase() + '&currency=USD&network=1'
       // https://services.enzyme.finance/api/enzyme/fund/metrics/range?address=0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a&range=1d
       this.getSharePrice(SharePriceEndPoint)
     },
+    /* async getvaultHistoricalData(){
+    let data = []
+     let res = await this.$axios.post('https://app.enzyme.finance/api/time-series/vault?vault=' + this.fundID + '&period=1W&currency=USD&network=1')
+     if(res && res.data){
+       data = res.data
+     }
+     return data
+    }, */
     getSharePrice (endPoint) {
-      let self = this
+      // let self = this
       this.$axios.get(endPoint)
         .then(response => {
           // console.log('response', response)
-          let sharePrice = response.data.data
+          let sharePrice = response.data
 
           let dataSharePrice = []
           for (let price of sharePrice) {
@@ -188,20 +199,15 @@ export default {
             // const hour = date.formatDate(timeStamp, 'HH')
             // console.log('timeStamp', timeStamp, 'hour', hour)
             // this.formatNumber(, 2)
-            if (Object.keys(price.calculations).length > 0) {
-              dataSharePrice.push(
-                {
-                  'x': unixTime,
-                  'y': price.calculations[self.currentCurrency].price.toFixed(3)
-                }
-              )
-              // console.log('self.currentCurrency', self.currentCurrency)
-              // console.log('price.calculations[USD].price', price.calculations['USD'].price)
-            } else {
-              dataSharePrice.push(
-                { 'x': unixTime, 'y': 0 }
-              )
-            }
+
+            dataSharePrice.push(
+              {
+                'x': unixTime,
+                'y': price.netShareValue
+              }
+            )
+            // console.log('self.currentCurrency', self.currentCurrency)
+            // console.log('price.calculations[USD].price', price.calculations['USD'].price)
           }
           // console.log('this.series', this.series)
           this.series[0].data = dataSharePrice

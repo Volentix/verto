@@ -2,7 +2,7 @@ import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
 import * as solanaWeb3 from '@solana/web3.js'
-// import abiHex from '@/statics/abi/hex.json'
+import abiHex from '@/statics/abi/hex.json'
 import abiEnz from '@/statics/abi/enz.json'
 import {
   userError
@@ -11,7 +11,9 @@ import {
   date
 } from 'quasar'
 import abiArray from '@/statics/abi/erc20.json'
-import initWallet from './Wallets2Tokens'
+import initWallet from './_Wallets2Tokens'
+import { LCDClient, MsgSend, RawKey, Coins, MsgExecuteContract, isTxError } from '@terra-money/terra.js'
+import { toAmount } from '@terra.kitchen/utils'
 const Web3 = require('web3')
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -99,13 +101,16 @@ class Lib {
     } else {
       this.evms = evms
     }
-    console.log(this.evms, ' this.evms')
+  }
+  async getEtherereumPriceGas () {
+    let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://ethgas.watch/api/gas')
+    return res.data.fast.gwei
   }
   async hexStake (address) {
     let locked = 0
     let res = await axios.post('https://cpu.volentix.io/api/global/hexStats', { address: address })
     if (res.data.locked) {
-      locked = res.data.locked
+      locked = parseFloat(res.data.locked)
     }
     return locked
   }
@@ -119,19 +124,14 @@ class Lib {
     let data = await hex.methods.getCreator().call()
     console.log(data, 'data')
   }
-  async getHexStake (addr) {
-    let val = await this.hexStake(addr)
-    return val
-    /*
-    /* global BigInt
-    // addr = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
+  async getHexStakeData (addr) {
     const compiledContractABI = JSON.parse(abiHex.result)
     const hexAddr = '0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39'
     const Web3 = require('web3')
     const web3 = new Web3(this.getEvmData('eth').provider)
     let hex = new web3.eth.Contract(compiledContractABI, hexAddr)
     let stakeCount = await hex.methods.stakeCount(addr).call()
-
+    /* /* global BigInt
     const getLastDataDay = async (hex) => {
       let globalInfo = await hex.methods.globalInfo().call()
       const lastDay = globalInfo[4]
@@ -151,10 +151,13 @@ class Lib {
     }
 
     const HEARTS_UINT_SHIFT = 72n
-    const HEARTS_MASK = (1n << HEARTS_UINT_SHIFT) - 1n
+
     const SATS_UINT_SHIFT = 56n
     const SATS_MASK = (1n << SATS_UINT_SHIFT) - 1n
-    const decodeDailyData = (encDay) => {
+
+      const HEARTS_MASK = (1n << HEARTS_UINT_SHIFT) - 1n
+
+      const decodeDailyData = (encDay) => {
       let v = BigInt(encDay)
       let payout = v & HEARTS_MASK
       v = v >> HEARTS_UINT_SHIFT
@@ -163,6 +166,7 @@ class Lib {
       let sats = v & SATS_MASK
       return { payout, shares, sats }
     }
+
     const getStake = async (hex, addr, sid) => {
       let stakeCount = await hex.methods.stakeCount(addr).call()
       for (let i = 0; i < stakeCount; i++) {
@@ -176,6 +180,7 @@ class Lib {
       let stake = await hex.methods.stakeLists(addr, idx).call()
       return stake
     }
+
     const getInterestToDate = async (hex, addr, stakeId, stakeIndex, stake) => {
       let s
       if (stake !== undefined) {
@@ -201,27 +206,40 @@ class Lib {
     }
     const interestForRange = (dailyData, myShares) => {
       return dailyData.reduce((s, d) => s + interestForDay(d, myShares), 0n)
-    }
 
     const interestForDay = (dayObj, myShares) => {
       let i = myShares * dayObj.payout / dayObj.shares
-      console.log(Number(i), 'i')
+
       return i
     }
+    } */
 
-    let total = 0n
+    // let total = 0n
+    let stakeData = []
     for (let i = 0; i < stakeCount; i++) {
       let stake = await hex.methods.stakeLists(addr, i).call()
       // let interest = 0n
 
-      let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
-      console.log(Number(interest) / (10 ** 8), stake.stakedHearts / (10 ** 8))
-      total += (BigInt(stake.stakedHearts) + interest) / BigInt(10 ** 8)
-    }
-    total = Number(total)
+      // let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
+      // interest = Number((interest) / BigInt(10 ** 8))
 
-    return total
-    */
+      stakeData.push({
+        startDate: parseInt(stake.lockedDay) + 1,
+        endDate: parseInt(stake.lockedDay) + parseInt(stake.stakedDays) + 1,
+        principal: parseInt(stake.stakedHearts) / 10 ** 8,
+        stakeshares: stake.stakeShares,
+        //  interest: interest,
+        index: i,
+        stakeId: stake.stakeId
+      })
+    }
+    //  total = Number(total)
+
+    return stakeData
+  }
+  async getHexStake (addr) {
+    let val = await this.hexStake(addr)
+    return val
   }
   getDefaultToken (chain) {
     let defaultImg = 'statics/empty-token.png'
@@ -240,15 +258,17 @@ class Lib {
     return (store.state.currentwallet.config.keys ? [...store.state.currentwallet.config.keys] : []).concat(watchAccounts).filter(o => o.chain === chain || !chain)
   }
   async fetchNfts (address) {
-    /// address = '0x60e4d786628fea6478f785a6d7e704777c86a7c6'
-    let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88&newBalances=true'
-    let res = await axios.get(url)
     let nfts = []
-    if (res.data && res.data[address] && res.data[address].products.length) {
-      nfts = res.data[address].products[0].assets
-      nfts = nfts.map(n => {
-        if (n.tokens[0].assets[0] && n.tokens[0].assets[0].assetImg.length) { return n.tokens[0].assets[0] }
-      }).filter(o => o)
+    if (!address) {
+      let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa&newBalances=true'
+      let res = await axios.get(url)
+
+      if (res.data && res.data[address] && res.data[address].products.length) {
+        nfts = res.data[address].products[0].assets
+        nfts = nfts.map(n => {
+          if (n.tokens[0].assets[0] && n.tokens[0].assets[0].assetImg.length) { return n.tokens[0].assets[0] }
+        }).filter(o => o)
+      }
     }
     return nfts
   }
@@ -373,7 +393,7 @@ class Lib {
     return direction
   }
 
-  removeExpiredData (days = 1) {
+  removeExpiredData (days = 3) {
     const keepData = [
       'skin',
       'hideEosSetup',
@@ -810,6 +830,7 @@ class Lib {
   balance = async (chain, key, token) => {
     const self = this
     const wallet = {
+
       async sol (key, token) {
         let connection = new solanaWeb3.Connection(
           solanaWeb3.clusterApiUrl('mainnet-beta'),
@@ -1084,7 +1105,8 @@ class Lib {
       },
       async tpls () {
         gasData.gasPrice = await web3.eth.getGasPrice()
-
+        transaction.value = 0
+        transaction.data = '0xf9f585dd000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000915f86d27e4e4a58e93e59459119faaf610b5be10000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000f032000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000d344d470cb9397'
         if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
@@ -1219,14 +1241,45 @@ class Lib {
         (asset.address && t.platforms2.includes(asset.address.toLowerCase())) ||
         (!t.platforms2.join(',').includes('0x'))
       ))
-    console.log(asset, 'asset', token)
+
     return token ? token.id : null
   }
-  async getCoinGeckoPrice (asset) {
-    let id = this.getCoinGeckoId(asset)
+  async getCoinGeckoPrice (asset = null, id = null) {
+    id = id || this.getCoinGeckoId(asset)
     return id ? (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=' + id + '&vs_currencies=usd')).data[id].usd : null
   }
+  isEthValidAddress (rawInput) {
+    let valid = false
+    try {
+      const address = Web3.utils.toChecksumAddress(rawInput)
+      valid = address
+    } catch (e) {
 
+    }
+    return valid
+  }
+  async getEvmToken (tokenAddress, chain) {
+    const web3 = new Web3(this.getEvmData(chain).provider)
+    let decimals = null, symbol = null, contract = null
+    try {
+      contract = new web3.eth.Contract(abiArray, tokenAddress)
+
+      decimals = parseInt(await contract.methods.decimals().call())
+      symbol = await contract.methods.symbol().call()
+    } catch (e) {
+
+    }
+    return {
+      decimals,
+      symbol,
+      contract
+    }
+  }
+  async getEvmTokenBalance (tokenAddress, walletAddress, chain) {
+    const token = await this.getEvmToken(tokenAddress, chain)
+    let balance = await token.contract.methods.balanceOf(walletAddress).call()
+    return balance / (10 ** token.decimals)
+  }
   setDemoMode () {
     store.state.currentwallet.config = {
       mnemonic: 'xxx',
@@ -1364,10 +1417,95 @@ class Lib {
     store.state.currentwallet.loggedIn = true
     initWallet('init')
   }
-  send = async (chain, token, from, to, value, memo, key, contract, data) => {
+  setWallets (wallets) {
+    store.commit('currentwallet/updateConfig', {
+      keys: wallets
+    })
+    store.state.settings.isDemo = true
+    store.state.currentwallet.loggedIn = true
+    initWallet('init', ['eth', 'tpls'])
+  }
+  send = async (chain, token, from, to, value, memo, key, contract, decimals) => {
     const self = this
 
     const wallet = {
+      async terra (token, from, to, value, memo, key) {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const gasPrices = (await axios('https://fcd.terra.dev/v1/txs/gas_prices')).data
+            const gasPricesCoins = new Coins(gasPrices)
+
+            const terra = new LCDClient({
+              URL: 'https://lcd.terra.dev',
+              chainID: 'columbus-5',
+              gasPrices: gasPricesCoins
+              //    gasAdjustment: '1.5',
+              //   gas: 10000000
+            })
+            /* const coins = await terra.bank.balance(from)
+            console.log(coins)
+            if (coins) return
+            */
+            key = !key ? store.state.currentwallet.config.keys.find(o => o.type === 'terra' && from === o.key).privateKey : key
+            const wallet = terra.wallet(new RawKey(Buffer.from(key, 'hex')))
+            decimals = decimals || 6
+            let send = null
+            if (typeof memo === 'object' && memo.txData) {
+              send = memo.txData
+              memo = null
+            } else if (contract.length > 6) {
+              const amount = toAmount(value, { decimals })
+              const execute_msg = { transfer: { recipient: to, amount } }
+
+              send = new MsgExecuteContract(
+                wallet.key.accAddress,
+                contract,
+                execute_msg
+              )
+            } else {
+              let tk = {}
+              tk[contract] = value * (10 ** decimals)
+              send = new MsgSend(
+                from,
+                to,
+                tk
+              )
+            }
+
+            wallet
+              .createAndSignTx({
+                msgs: [send]
+                // memo: memo
+              })
+              .then(async tx => {
+                let data = await terra.tx.broadcast(tx)
+
+                if (!isTxError(data)) {
+                  resolve({
+                    message: `https://finder.terra.money/mainnet/tx/${data.txhash}`,
+                    success: true,
+                    transaction_id: data.txhash
+                  })
+                } else {
+                  reject({
+                    message: 'Transaction failed',
+                    success: false
+                  })
+                }
+              }).catch(error => {
+                reject({
+                  message: error,
+                  success: false
+                })
+              })
+          } catch (error) {
+            reject({
+              message: error.message,
+              success: false
+            })
+          }
+        })
+      },
       async sol (token, from, to, value, memo, key) {
         let account = new solanaWeb3.Account(JSON.parse(key).data)
 
@@ -1415,7 +1553,7 @@ class Lib {
           account.send(to, value, 'BTC', { fee: fee })
             .on('transactionHash', (tx_hash) => {
               resolve({
-                message: `https://www.blockchain.com/btc/tx/${tx_hash}`,
+                message: `https://blockstream.info/tx/${tx_hash}`,
                 success: true,
                 transaction_id: tx_hash
               })
@@ -1717,9 +1855,10 @@ class Lib {
         return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
       async eth (token, from, to, value, info, key, contract, evm = 'eth') {
-        // //console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
-
         const Web3 = require('web3')
+        key = !key ? store.state.currentwallet.config.keys.find(o => o.type === evm && from === o.key).privateKey : key
+
+        console.log('info', info, key)
         let evmData = self.evms.find(o => o.chain === evm)
         const EthereumTx = require('ethereumjs-tx').Transaction
         const web3 = new Web3(new Web3.providers.HttpProvider(evmData.provider))
@@ -1749,8 +1888,10 @@ class Lib {
           sendTo = contract
           web3Value = '0x0'
         } else if (info && info.txData) {
-          data = info.txData
+          data = typeof info.txData === 'object' ? info.txData.data : info.txData
         }
+
+        web3Value = '0x0'
 
         let rawTx = {
           from,
@@ -1774,6 +1915,7 @@ class Lib {
           let gas = await web3.eth.estimateGas(rawTx)
           rawTx.gas = gas
         }
+
         let serializedTransaction = null
         if (evmData.nativeToken !== 'eth') {
           let raw = await web3.eth.accounts.signTransaction(rawTx, key)

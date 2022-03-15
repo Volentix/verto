@@ -1,0 +1,1254 @@
+/*
+====================================
+Medium Screen - Others
+====================================
+*/
+@media screen and (min-width: 992px) and (max-width: 1200px) {
+
+.main-area {
+    background-color: #cee8ff;
+    padding: 10px;
+}
+
+.main-container-left {
+    width: 190px;
+    height: 100%;
+}
+
+.menu-part ul li a {
+    margin-bottom: 5px;
+    border-radius: 16px;
+    padding: 13px 11px;
+    margin-left: 14px;
+    position: relative;
+    transition: 0.2s all ease;
+}
+
+
+.menu-part ul li a::before {
+    content: "";
+    clear: both;
+    position: absolute;
+    width: 7px;
+    height: 25px;
+    left: -14px;
+    top: 11px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.menu-part ul li i {
+    font-size: 20px;
+}
+
+.menu-part ul li p {
+    margin-top: -23px;
+    padding-left: 28px;
+    margin-bottom: 0;
+    transition: 0.2s all ease;
+    font-size: 14px;
+}
+
+.logo-area {
+    padding: 15px;
+    padding-left: 19px;
+}
+
+.logo-area img {
+    width: 130px;
+    display: block;
+}
+
+
+.menu-part {
+    padding-right: 0px;
+    padding-top: 18px;
+    padding-bottom: 0px;
+}
+
+.main-container-right {
+    background-color: #fff;
+    padding: 15px;
+    padding-left: 1px;
+    width: 100%;
+    border-radius: 30px;
+    margin-left: 16px;
+    padding-top: 26px;
+}
+
+.dashboard-left_abcc1 {
+    width: 20%;
+}
+
+.dashboard-left_abbc3a2 {
+    color: #f2c85c;
+    font-size: 25px;
+    width: 55px;
+    height: 55px;
+    background-color: #fff;
+    line-height: 55px;
+    border-radius: 50%;
+    box-shadow: 0px 3px 5px rgb(0 0 0 / 20%);
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.dashboard-left_abbc3a2 img {
+    width: 25px;
+    height: 25px;
+    display: block;
+    margin: auto;
+    position: relative;
+    top: 17px;
+}
+
+.dashboard-left_abbc3a1 p {
+    font-family: 'Poppins-Medium';
+    color: #0e134c;
+    font-size: 11px;
+    margin: 0;
+    text-align: center;
+}
+
+.Exchange-area {
+    background-color: #f1f5f8;
+    padding: 10px;
+}
+
+
+.Exchange_parttop {
+    padding: 4px;
+    background: #fff;
+    border-radius: 8px 8px 0px 0px;
+}
+
+
+.mainexch-eth-left {
+    width: 30%;
+}
+
+.myportofolio-area {
+    background-color: #fff;
+    display: flex;
+    margin-top: 25px;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 0 15px;
+}
+
+.bitcoin-area {
+    background-color: #fff;
+    padding: 0 15px;
+    padding-bottom: 30px;
+}
+
+.bitcoin-part_a1 img {
+    width: 35px;
+    height: 35px;
+    display: block;
+}
+
+.bitcoin-part_a1 {
+    width: 22%;
+}
+
+.bitcoin-part_a2 {
+    width: 35%;
+}
+
+.bitcoin-part_a2 p {
+    font-family: 'Poppins-Regular';
+    color: #bdbfbc;
+    font-size: 12px;
+    margin: 0;
+    padding-left: 2px;
+}
+
+.bitcoin-part_a2 h5 {
+    font-family: 'Poppins-Regular';
+    color: #bdbfbc;
+    font-size: 10px;
+    font-weight: 400;
+    margin: 0;
+    padding-left: 2px;
+}
+
+
+
+.bitcoin-part_a3 {
+    width: 40%;
+}
+
+.bitcoin-part_a3 h5 {
+    font-family: 'Poppins-Bold';
+    color: #3f4262;
+    font-size: 11px;
+    margin: 0;
+    padding-left: 0px;
+    text-align: right;
+}
+
+.bitcoin-part_a3 p {
+    font-family: 'Poppins-Bold';
+    color: #6dcdf3;
+    font-size: 9px;
+    margin: 0;
+    text-align: right;
+    padding-top: 5px;
+}
+
+
+.defi-area1 {
+    background-color: #fff;
+    padding-top: 0px;
+    padding: 0 15px;
+}
+
+
+.defi-right {
+    width: 30%;
+}
+
+.defi-left {
+    width: 70%;
+}
+
+.dndefi-area {
+    background-color: #fff;
+    padding: 0 15px;
+    padding-top: 15px;
+}
+
+.dndefi-a1 {
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #dee1e5;
+    width: 42%;
+    padding: 7px 7px;
+}
+
+.img_a1 {
+    width: 25px;
+    height: 25px;
+    position: relative;
+    top: 10px;
+    margin-right: 2px;
+}
+.dndefi-a1 h2 {
+    font-family: 'Poppins-Regular';
+    color: #000000;
+    font-size: 10px;
+    margin: 0;
+    display: inline-block;
+}
+.img_a2 {
+    width: 15px;
+    height: 15px;
+    position: relative;
+    top: 5px;
+}
+
+
+.defi-area2 {
+    background-color: #fff;
+    padding: 0 15px;
+    padding-top: 25px;
+    padding-bottom: 20px;
+}
+
+.cvv-area {
+    background-color: #fff;
+    padding: 0 15px;
+    padding-bottom: 40px;
+}
+
+.cvv-parttb {
+    border-bottom: 1px solid #dee1e5;
+    padding: 4px 5px;
+    padding-bottom: 0;
+}
+
+.cvv-parttc {
+    padding: 4px 6px;
+    padding-bottom: 0;
+}
+
+.cvv-partb2 h5 {
+    font-family: 'Poppins-Medium';
+    color: #42424c;
+    font-size: 11px;
+    margin: 0;
+    padding-top: 4px;
+    padding-left: 3px;
+}
+
+.Recent-parta2 h3 {
+    font-family: 'Poppins-Medium';
+    color: #0e134c;
+    font-size: 12px;
+    margin: 0;
+}
+
+.Recent-parta3 h5 {
+    font-family: 'Poppins-Bold';
+    font-size: 11px;
+    margin: 0;
+    text-align: right;
+}
+
+.Recent-parta1 img {
+    width: 35px;
+    height: 35px;
+    display: block;
+}
+
+.Recent-parta2 p {
+    font-family: 'Poppins-Regular';
+    color: #bdbfbc;
+    font-size: 12px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.rightsidetop-part-left {
+    width: 12%;
+}
+
+
+.rightsidetop-part-right ul li a img {
+    width: 35px;
+    height: 35px;
+    position: relative;
+    top: 15px;
+}
+
+.rightsidetop-part-right ul li a {
+    font-family: 'Poppins-Bold';
+    color: #0b144e;
+    font-size: 12px;
+    display: inline-block;
+}
+
+
+
+
+
+}
+
+/*
+====================================
+Small Screen - Tablate
+====================================
+*/
+@media screen and (min-width: 768px) and (max-width: 991px) {
+
+.main-area {
+    background-color: #cee8ff;
+    padding: 0px;
+}
+
+.mobile-container {
+    display: block;
+    width: 100%;
+}
+
+
+.main-area .main-container-left {
+	display: none;
+}
+
+.topnav {
+    overflow: hidden;
+    position: relative;
+    padding: 10px;
+    background-color: #f0f7ff;
+}
+
+
+
+.main-container-left {
+    width: 100%;
+    height: 100%;
+    padding-top: 18px;
+}
+
+.news-area {
+    padding-left: 0px;
+}
+
+
+.menu-part {
+    padding-right: 0px;
+    padding-top: 19px;
+    padding-bottom: 17px;
+}
+
+.menu-part ul li a {
+    margin-bottom: 5px;
+    border-radius: 8px;
+    padding: 13px 18px;
+    margin-left: 11px;
+    position: relative;
+    transition: 0.2s all ease;
+}
+
+
+.profile-part img {
+    width: 60px;
+    height: 60px;
+    display: block;
+    margin: auto;
+    margin-top: 36px;
+}
+
+.profile-part p {
+    font-family: "Poppins-Bold";
+    color: #0e134c;
+    font-size: 21px;
+    text-align: center;
+    padding-top: 6px;
+    padding-bottom: 10px;
+}
+
+
+.main-container-left {
+    width: 100%;
+    height: 100%;
+    padding-top: 18px;
+}
+
+.main-area .Search form  {
+	display: none;
+}
+
+
+
+.main-area .right-sidetop {
+	display: none;
+}
+
+.main-container-right {
+    background-color: #fff;
+    padding: 15px;
+    padding-left: 20px;
+    width: 100%;
+    border-radius: 30px;
+    margin-left: 0px;
+    padding-top: 26px;
+}
+
+.dashboard-area {
+    background-color: #fff;
+    display: inherit;
+}
+
+.dashboard-left {
+    width: 100%;
+}
+
+.mncright {
+    display: inherit;
+}
+
+.mncright-left {
+    width: 100%;
+}
+.dashboard-right {
+    width: 100%;
+}
+
+.dashboard-left_abc3 {
+    background-color: #f1f5f8;
+    padding: 16px 0;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 30px;
+}
+
+.mncright-right2 {
+    margin-left: 0px;
+}
+
+.mncright-right {
+    width: 100%;
+}
+
+.Recent-parta1 {
+    width: 9%;
+}
+
+.Recent-parta3 {
+    width: 46%;
+}
+
+.main-container {
+    background-color: #f0f7ff;
+    padding-top: 15px;
+    border-radius: 0px;
+    padding-right: 4px;
+    display: flex;
+}
+
+
+.mncright-left {
+    overflow-x: initial;
+    overflow-y: initial;
+    height: initial;
+}
+
+.main-container {
+    overflow: initial;
+    height: initial;
+}
+
+.mncright-right {
+    height: initial;
+    overflow-y: initial;
+    overflow-x: initial;
+}
+
+.mainexch-eth-right input[type="text"] {
+    font-family: 'Poppins-Bold';
+    color: #111111;
+    font-size: 17px;
+    width: 57%;
+    outline: none;
+    padding-left: 0px;
+    text-align: center;
+    margin-left: 171px;
+}
+
+.news_partb h5 {
+    color: #000000;
+    font-size: 9px;
+    font-weight: 500;
+    margin: 0;
+}
+
+body {
+    min-height: inherit;
+    overflow: inherit;
+}
+
+.news_video iframe {
+    width: 100%;
+    height: 339px;
+    border-radius: 8px;
+    margin-top: 8px;
+    margin-bottom: 5px;
+}
+
+
+.tpRecent-parta2 {
+    padding-bottom: 0px;
+}
+
+}
+
+/*
+====================================
+Small Screen - Mobile
+====================================
+*/
+@media screen and (min-width: 576px) and (max-width: 767px) {	
+
+.mobile-container {
+    display: block;
+    width: 100%;
+}
+
+
+.main-area .main-container-left {
+	display: none;
+}
+
+.topnav {
+    overflow: hidden;
+    position: relative;
+    padding: 10px;
+    background-color: #f0f7ff;
+}
+
+
+.topnav a.icon {
+    display: block;
+    position: absolute;
+    right: 7px;
+    top: 8px;
+    font-size: 28px;
+    color: #fff;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    background-color: #627eea;
+}
+
+.main-container-left {
+    width: 100%;
+    height: 100%;
+    padding-top: 18px;
+}
+
+.news-area {
+    padding-left: 0px;
+}
+
+
+.menu-part {
+    padding-right: 0px;
+    padding-top: 19px;
+    padding-bottom: 17px;
+}
+
+.menu-part ul li a {
+    margin-bottom: 5px;
+    border-radius: 8px;
+    padding: 13px 18px;
+    margin-left: 11px;
+    position: relative;
+    transition: 0.2s all ease;
+}
+
+
+
+
+.profile-part img {
+    width: 60px;
+    height: 60px;
+    display: block;
+    margin: auto;
+    margin-top: 36px;
+}
+
+.profile-part p {
+    font-family: "Poppins-Bold";
+    color: #0e134c;
+    font-size: 21px;
+    text-align: center;
+    padding-top: 6px;
+    padding-bottom: 10px;
+}
+
+.dashboard-area {
+    background-color: #fff;
+    display: initial;
+}
+
+.main-area {
+    background-color: #cee8ff;
+    padding: 0px;
+    padding-top: 0px;
+}
+
+
+.dashboard-left {
+    width: 100%;
+}
+
+.main-container-right {
+    background-color: #fff;
+    padding: 15px;
+    padding-left: 8px;
+    width: 100%;
+    border-radius: 0px;
+    margin-left: 0px;
+    padding-top: 26px;
+}
+
+
+
+.dashboard-left_abc1 {
+    padding-left: 0px;
+    padding-bottom: 15px;
+}
+
+.dashboard-right {
+    width: 100%;
+}
+
+.mncright {
+    display: initial;
+}
+
+.mncright-left {
+    width: 100%;
+}
+
+.dashboard-left_abc2 {
+    padding-left: 0px;
+    display: flex;
+}
+
+.dashboard-left_abcc1 {
+    width: 20%;
+}
+
+.dashboard-left_abc3 {
+    background-color: #f1f5f8;
+    padding: 16px 0;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 27px;
+}
+
+
+
+.main-area .Search {
+   display: none;
+}
+
+.dashboard-left_abbc3a1 p {
+    font-family: 'Poppins-Medium';
+    color: #0e134c;
+    font-size: 11px;
+    margin: 0;
+    text-align: center;
+}
+
+.dashboard-left_abbc3a2 {
+    color: #f2c85c;
+    font-size: 25px;
+    width: 60px;
+    height: 60px;
+    background-color: #fff;
+    line-height: 60px;
+    border-radius: 50%;
+    box-shadow: 0px 3px 5px rgb(0 0 0 / 20%);
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.myportofolio-left h2 {
+    font-family: "Poppins-Bold";
+    color: #0e134c;
+    font-size: 18px;
+    margin: 0;
+}
+
+.myportofolio-right ul li a {
+    color: #b5bbc7;
+    font-size: 14px;
+    width: 35px;
+    height: 35px;
+    background-color: #fff;
+    line-height: 35px;
+    border-radius: 50%;
+    box-shadow: 0px 1px 5px rgb(0 0 0 / 20%);
+    margin: auto;
+    display: block;
+    text-align: center;
+    margin-left: 10px;
+    transition: 0.2s all ease;
+}
+
+
+.bitcoin-part {
+    display: inherit;
+}
+
+.bitcoin-part_a {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.bitcoin-part_b {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.bitcoin-part_c {
+    width: 100%;
+}
+
+.defi-left h2 {
+    font-family: "Poppins-Bold";
+    color: #0e134c;
+    font-size: 18px;
+    margin: 0;
+}
+
+.defi-right {
+    width: 20%;
+}
+
+
+.defi-left {
+    width: 80%;
+}
+
+.cvv-part {
+    display: inherit;
+}
+
+.cvv-parta {
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #dee1e5;
+    width: 100%;
+    padding: 6px 0px;
+    margin-bottom: 15px;
+}
+
+
+.main-area .rightsidetop-part {
+	display: none;
+}
+
+
+.mncright-right {
+    width: 100%;
+}
+
+
+.mncright-right2 {
+    margin-left: 0px;
+}
+
+.cvv-partaaa {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.dndefi-part {
+    display: initial;
+}
+
+
+.dndefi-a1 {
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #dee1e5;
+    width: 88%;
+    padding: 7px 17px;
+    margin-bottom: 20px;
+}
+
+.dndefi-a2 {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.main-container {
+    background-color: #f0f7ff;
+    padding-top: 0px;
+    border-radius: 25px;
+    padding-right: 0px;
+    display: flex;
+}
+
+
+.main {
+	overflow: hidden;
+}
+
+
+
+
+
+
+.mncright-left {
+    overflow-x: initial;
+    overflow-y: initial;
+    height: initial;
+}
+
+.main-container {
+    overflow: initial;
+    height: initial;
+}
+
+.mncright-right {
+    height: initial;
+    overflow-y: initial;
+    overflow-x: initial;
+}
+
+.bitcoin-partas {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.Upcoming-events {
+    padding-top: 0px;
+}
+
+.mainexch-eth-right input[type="text"] {
+    font-family: 'Poppins-Bold';
+    color: #111111;
+    font-size: 17px;
+    width: 100%;
+    outline: none;
+    padding-left: 29px;
+    border: none;
+    text-align: center;
+}
+
+.news_partb h5 {
+    color: #000000;
+    font-size: 9px;
+    font-weight: 500;
+    margin: 0;
+}
+
+body {
+    min-height: inherit;
+    overflow: inherit;
+}
+
+.tpRecent-parta2 {
+    padding-bottom: 0px;
+    margin-bottom: -22px;
+}
+
+}
+
+/*
+====================================
+Xtra Small Screen - Small Mobile
+====================================
+*/
+@media screen and (max-width: 576px) {
+
+.mobile-container {
+    display: block;
+    width: 100%;
+}
+
+
+.main-area .main-container-left {
+	display: none;
+}
+
+.topnav {
+    overflow: hidden;
+    position: relative;
+    padding: 10px;
+    background-color: #f0f7ff;
+}
+
+
+
+.main-container-left {
+    width: 100%;
+    height: 100%;
+    padding-top: 18px;
+}
+
+.news-area {
+    padding-left: 0px;
+}
+
+
+.menu-part {
+    padding-right: 0px;
+    padding-top: 19px;
+    padding-bottom: 17px;
+}
+
+.menu-part ul li a {
+    margin-bottom: 5px;
+    border-radius: 8px;
+    padding: 13px 18px;
+    margin-left: 11px;
+    position: relative;
+    transition: 0.2s all ease;
+}
+
+
+
+
+.profile-part img {
+    width: 60px;
+    height: 60px;
+    display: block;
+    margin: auto;
+    margin-top: 36px;
+}
+
+.profile-part p {
+    font-family: "Poppins-Bold";
+    color: #0e134c;
+    font-size: 21px;
+    text-align: center;
+    padding-top: 6px;
+    padding-bottom: 10px;
+}
+
+.dashboard-area {
+    background-color: #fff;
+    display: initial;
+}
+
+.main-area {
+    background-color: #cee8ff;
+    padding: 0px;
+    padding-top: 0px;
+}
+
+
+.dashboard-left {
+    width: 100%;
+}
+
+.main-container-right {
+    background-color: #fff;
+    padding: 15px;
+    padding-left: 8px;
+    width: 100%;
+    border-radius: 0px;
+    margin-left: 0px;
+    padding-top: 26px;
+}
+
+
+
+.dashboard-left_abc1 {
+    padding-left: 0px;
+    padding-bottom: 15px;
+}
+
+.dashboard-right {
+    width: 100%;
+}
+
+.mncright {
+    display: initial;
+}
+
+.mncright-left {
+    width: 100%;
+}
+
+.dashboard-left_abc2 {
+    padding-left: 0px;
+    display: flex;
+}
+
+.dashboard-left_abcc1 {
+    width: 20%;
+}
+
+.dashboard-left_abc3 {
+    background-color: #f1f5f8;
+    padding: 16px 0;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 27px;
+}
+
+
+
+.main-area .Search {
+   display: none;
+}
+
+.dashboard-left_abbc3a1 p {
+    font-family: 'Poppins-Medium';
+    color: #0e134c;
+    font-size: 11px;
+    margin: 0;
+    text-align: center;
+}
+
+.dashboard-left_abbc3a2 {
+    color: #f2c85c;
+    font-size: 25px;
+    width: 60px;
+    height: 60px;
+    background-color: #fff;
+    line-height: 60px;
+    border-radius: 50%;
+    box-shadow: 0px 3px 5px rgb(0 0 0 / 20%);
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.myportofolio-left h2 {
+    font-family: "Poppins-Bold";
+    color: #0e134c;
+    font-size: 18px;
+    margin: 0;
+}
+
+.myportofolio-right ul li a {
+    color: #b5bbc7;
+    font-size: 14px;
+    width: 35px;
+    height: 35px;
+    background-color: #fff;
+    line-height: 35px;
+    border-radius: 50%;
+    box-shadow: 0px 1px 5px rgb(0 0 0 / 20%);
+    margin: auto;
+    display: block;
+    text-align: center;
+    margin-left: 10px;
+    transition: 0.2s all ease;
+}
+
+
+.bitcoin-part {
+    display: inherit;
+}
+
+.bitcoin-part_a {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.bitcoin-part_b {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.bitcoin-part_c {
+    width: 100%;
+}
+
+.defi-left h2 {
+    font-family: "Poppins-Bold";
+    color: #0e134c;
+    font-size: 18px;
+    margin: 0;
+}
+
+.defi-right {
+    width: 20%;
+}
+
+
+.defi-left {
+    width: 80%;
+}
+
+.cvv-part {
+    display: inherit;
+}
+
+.cvv-parta {
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #dee1e5;
+    width: 100%;
+    padding: 6px 0px;
+    margin-bottom: 15px;
+}
+
+
+.main-area .rightsidetop-part {
+	display: none;
+}
+
+
+.mncright-right {
+    width: 100%;
+}
+
+
+.mncright-right2 {
+    margin-left: 0px;
+}
+
+.cvv-partaaa {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.dndefi-part {
+    display: initial;
+}
+
+
+.dndefi-a1 {
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #dee1e5;
+    width: 88%;
+    padding: 7px 17px;
+    margin-bottom: 20px;
+}
+
+.dndefi-a2 {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.main-container {
+    background-color: #f0f7ff;
+    padding-top: 0px;
+    border-radius: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    display: flex;
+}
+
+.tpRecent-parta2 {
+    padding-bottom: 0px;
+    margin-bottom: -22px;
+}
+
+.main {
+	overflow: hidden;
+}
+
+
+
+.mncright-left {
+    overflow-x: initial;
+    overflow-y: initial;
+    height: initial;
+}
+
+.main-container {
+    overflow: initial;
+    height: initial;
+}
+
+.mncright-right {
+    height: initial;
+    overflow-y: initial;
+    overflow-x: initial;
+}
+
+.bitcoin-partas {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.Upcoming-events {
+    padding-top: 0px;
+}
+
+
+.mainexch-eth-right input[type="text"] {
+    font-family: 'Poppins-Bold';
+    color: #111111;
+    font-size: 17px;
+    width: 100%;
+    outline: none;
+    padding-left: 29px;
+    border: none;
+    text-align: center;
+}
+
+
+.news_partb h5 {
+    color: #000000;
+    font-size: 9px;
+    font-weight: 500;
+    margin: 0;
+}
+
+
+body {
+    min-height: inherit;
+    overflow: inherit;
+}
+
+
+
+
+
+
+}

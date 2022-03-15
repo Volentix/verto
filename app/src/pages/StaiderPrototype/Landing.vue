@@ -6,11 +6,11 @@
           <div class="column justify-center items-start full-width" :class="{'rmv-br q-pl-lg q-pr-lg': $q.screen.width < 768}">
             <h1>Your portfolio <br>on autopilot</h1>
             <h2>Retain full custody of your assets</h2>
-            <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Launch app" />
+            <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Launch app" />
           </div>
         </div>
         <div class="col-12 col-sm-12 col-md-6 col-lg-6 flex flex-center staider3d">
-          <img src="statics/staider/staider3d.png" alt="" class="hide">
+          <img src="statics/staider/staider_3d.png" width="370px" alt="" class="">
         </div>
       </div>
       <div class="row section2 section-backdrop">
@@ -21,7 +21,7 @@
             <p>Simply said: Staider puts your crypto portfolio on autopilot</p>
         </div>
       </div>
-      <div class="row section3 section-backdrop q-mb-xl q-pb-xl">
+      <div class="row section3 section-backdrop q-pb-xl">
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">How to use Staider ?</h2>
             <div class="row full-width steps-row">
@@ -59,8 +59,9 @@
               </div>
             </div>
         </div>
+        <div class="q-mb-xl"></div>
       </div>
-      <div class="row section4 section-backdrop q-mb-xl q-pb-xl">
+      <div class="row section4 section-backdrop q-pb-xl">
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">Advantage of Staider</h2>
             <img v-if="$q.screen.width > 768" src="statics/staider/advantage.svg" class="full-width q-mt-xl" alt="">
@@ -71,6 +72,9 @@
         <div class="col-12 text-white q-mb-xl">
           <h2 class="text-shadow1">Come discover our Vaults and their performance</h2>
           <p>Discover and follow the best yield farmers with just one click. Historical APY, farming philosophy, risk appetite; You can see it all.</p>
+          <div class="cta-view-all flex justify-end">
+            <q-btn flat color="white" class="q-ml-sm text-bold" dense icon-right="keyboard_arrow_right" no-caps text-color="white" to="/te/staider-new-prototype/vaults" label="View All Vaults" />
+          </div>
         </div>
         <div :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
           <div class="vault-wrapper vault1 shadow2 text-white">
@@ -101,7 +105,7 @@
                 <span class="apy"><b>N/A</b> Up to APY</span>
               </div>
               <div class="vault-wrapper__cta col flex justify-end">
-                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Deposit">
+                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Deposit">
                   <div class="flex items-center">
                     <img height="20" class="q-ml-md q-mr-xs" src="statics/staider/coins/usdc.svg" alt="">
                     <img height="20" src="statics/staider/coins/eth.svg" alt="">
@@ -139,8 +143,8 @@
               <div class="vault-wrapper__apy col-4">
                 <span class="apy"><b>N/A</b> Up to APY</span>
               </div>
-              <div class="vault-wrapper__cta col-8 flex justify-end">
-                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Deposit">
+              <div class="vault-wrapper__cta col col-8 flex justify-end">
+                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Deposit">
                   <div class="flex items-center">
                     <img height="20" class="q-ml-md q-mr-xs" src="statics/staider/coins/usdc.svg" alt="">
                     <img height="20" class="q-mr-xs" src="statics/staider/coins/eth.svg" alt="">
@@ -161,8 +165,8 @@
         <div class="text-white q-mb-xl column" :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
           <p>You can filter strategies by assets, risk and performance, and find one that fits your profile.</p>
           <div class="cta-btns flex q-mt-xl">
-            <q-btn color="white" class="shadow1" no-caps text-color="white" to="/staider-new-prototype/vault" outline rounded label="Explore Funds" />
-            <q-btn flat color="white" class="q-ml-sm" no-caps text-color="white" to="/staider-new-prototype/vault" label="Connect Wallet" />
+            <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Explore Funds" />
+            <q-btn flat color="white" class="q-ml-sm" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" label="Connect Wallet" />
           </div>
         </div>
         <div class="text-white column" :class="{'col-6 q-mb-xl q-pl-xl': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">
@@ -176,14 +180,17 @@
           <h2 class="text-shadow1">Monitor & manage your digital portfolio</h2>
         </div>
       </div>
-      <div class="row section7 section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg" id="timeline">
+      <div class="row section7 section-backdrop q-pb-xl q-pt-lg" id="timeline">
+        <div class="q-mt-xl"></div>
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">Timeline</h2>
             <img v-if="$q.screen.width > 768" src="statics/staider/timeline.svg" class="full-width q-mt-xl" alt="">
             <img v-else src="statics/staider/timeline_v.svg" class="full-width q-mt-xl" alt="">
         </div>
+        <div class="q-mb-xl"></div>
       </div>
-      <div class="row section8 text-white section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg" id="team">
+      <div class="row section8 text-white section-backdrop q-pb-xl q-pt-lg" id="team">
+        <div class="q-mt-lg"></div>
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">Team</h2>
         </div>
@@ -235,8 +242,10 @@
           <span class="role">Advisor</span>
           <span class="name">Ihab Yassine</span>
         </div>
+        <div class="q-mb-lg"></div>
       </div>
-      <div class="row section9 section-backdrop q-mb-xl q-pb-xl q-pt-lg q-mt-lg" id="faqs">
+      <div class="row section9 section-backdrop q-pb-xl q-pt-lg" id="faqs">
+        <div class="q-mt-lg"></div>
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1">Frequently Ask Question</h2>
         </div>
@@ -250,6 +259,7 @@
             </div>
           </div>
         </div>
+        <div class="q-mb-lg"></div>
       </div>
     </div>
   </div>

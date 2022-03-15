@@ -131,7 +131,7 @@ import {
 import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 

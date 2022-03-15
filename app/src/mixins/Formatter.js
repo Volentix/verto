@@ -2,8 +2,19 @@ import HD from '@/util/hdwallet'
 import Lib from '@/util/walletlib'
 import { scroll, openURL } from 'quasar'
 import { toSvg } from 'jdenticon'
-
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
+  computed: {
+    fundTotal () {
+      let total = 0
+      if (this.$store.state.wallets.customTotal.show) {
+        total = this.nFormatter2(this.$store.state.wallets.customTotal.usd, 3)
+      } else {
+        total = this.nFormatter2(this.$store.state.investment.investmentTotal + this.$store.state.wallets.portfolioTotal, 3)
+      }
+      return total
+    }
+  },
   methods: {
     defaultToken (chain) {
       return "this.src='" + Lib.getDefaultToken(chain) + "'"
@@ -225,17 +236,22 @@ export default {
         position: 'top'
       })
     },
-    deleteWatchAccount (key, value) {
-      let watchAccounts = localStorage.getItem('watchAccounts')
-      watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-      watchAccounts = watchAccounts.filter(o => o[key].toLowerCase() !== value.toLowerCase())
-      localStorage.setItem('watchAccounts', JSON.stringify(watchAccounts))
+    deleteVertoAccount (key, value, account) {
+      console.log(key, value, account)
+      if (account.watch) {
+        let watchAccounts = localStorage.getItem('watchAccounts')
+        watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
+        watchAccounts = watchAccounts.filter(o => o[key].toLowerCase() !== value.toLowerCase())
+        localStorage.setItem('watchAccounts', JSON.stringify(watchAccounts))
+      }
 
       let data = localStorage.getItem('walletPublicDatav2')
       data = data ? JSON.parse(data) : []
       data = data.filter(o => o[key].toLowerCase() !== value.toLowerCase())
       localStorage.setItem('walletPublicDatav2', JSON.stringify(data))
+
       this.$store.state.wallets.tokens = this.$store.state.wallets.tokens.filter(o => o[key].toLowerCase() !== value.toLowerCase())
+      initWallet()
     },
     getRandomColor () {
       const randomNumber = (min, max) => {
@@ -252,7 +268,7 @@ export default {
       var form_data = new FormData()
 
       for (var key in data) {
-        if (data[key] != null) {
+        if (data[key] !== null) {
           form_data.append(key, data[key])
         }
       }
@@ -324,30 +340,34 @@ export default {
         ]
       */
       let chainsData = HD.getVertoChains()
-      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.type === 'verto' || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
-        .map(o => {
-          let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
-          o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
-          let evmChain = Lib.evms.find(a => a.chain === o.chain)
-          o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain)
-          o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {
-            q.tokenList = this.$store.state.wallets.tokens.filter((f, i, c) => f.chain === q.chain && ((f.isEvm && f.key.toLowerCase() === q.key.toLowerCase() && c.findIndex(t => t.isEvm && t.key.toLowerCase() === q.key.toLowerCase() && f.type === t.type) === i) || (!f.isEvm && q.chain === f.chain && f.name.toLowerCase() === q.name.toLowerCase())))
-            q.color = this.getRandomColor()
-            q.value = o.chain === 'eos' ? q.name : q.key
-            q.label = o.chain === 'eos' ? q.name : q.key
-            let c = chainsData.find(p => p.chain === q.chain)
-            q.icon = c ? c.icon : q.icon
-            return q
-          })
-          o.count = o.accounts.length
-          if (evmChain) o.icon = evmChain.icon
-          let chain = HD.names.find(a => a.value === o.chain)
-          o.evmChain = evmChain
+      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.multitoken) && a.findIndex(t => (t.chain === v.chain)) === i)))
 
-          o.label = evmChain ? evmChain.name : (chain ? chain.label : o.chain.toUpperCase())
+      chains.map(o => {
+        let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
+        o.chainTotal = accounts.filter(g => g.usd).reduce((a, b) => +(a || 0) + (isNaN(b.usd) ? 0 : +b.usd), 0)
+        let evmChain = Lib.evms.find(a => a.chain === o.chain)
+        let c = chainsData.find(p => p.chain === o.chain)
+        o.icon = c.icon
+        o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : (o.multitoken && o.chain !== 'eos' ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain))
+        o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {
+          q.tokenList = this.$store.state.wallets.tokens.filter((f, i, c) => f.chain === q.chain && ((f.multitoken && f.key.toLowerCase() === q.key.toLowerCase() && c.findIndex(t => t.isEvm && t.key.toLowerCase() === q.key.toLowerCase() && f.type === t.type) === i) || (!f.isEvm && q.chain === f.chain && f.name.toLowerCase() === q.name.toLowerCase())))
+          q.color = this.getRandomColor()
+          q.value = o.chain === 'eos' ? q.name : q.key
+          q.label = o.chain === 'eos' ? q.name : q.key
 
-          return o
+          q.icon = c ? c.icon : q.icon
+          return q
         })
+        o.count = o.accounts.length
+        if (evmChain) o.icon = evmChain.icon
+        let chain = HD.names.find(a => a.value === o.chain)
+        o.evmChain = evmChain
+
+        o.label = evmChain ? evmChain.name : (chain ? chain.label : o.chain.toUpperCase())
+
+        return o
+      })
+
       return chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
     },
 
@@ -377,7 +397,7 @@ export default {
       })
 
       let amount = isNaN(value) ? '0.00' : formatter.format(value)
-      if (parseFloat(num) >= 1000000) amount = this.nFormatter2(num)
+      // if (parseFloat(num) >= 9999) amount = this.nFormatter2(num, decimals, 1)
       if (parseFloat(amount) === 0 && parseFloat(num) !== 0 && !isNaN(amount) && decimals !== 0 && Math.abs(parseFloat(num)) < 0.00001) {
         if (scientific) {
           amount = parseFloat(num).toExponential().replace(/e\+?/, ' x10^')
@@ -388,6 +408,93 @@ export default {
         }
       }
       return amount.toString()
+    },
+    secondsTotime: function (secondsValue, text = false, pad = true, prefix = true, short = false, concat = 4) {
+      if (concat === 0) {
+        concat = 4
+      }
+      var days = 0,
+        hours = 0,
+        minutes = 0,
+        seconds = 0,
+        future = parseInt(secondsValue) >= 0
+
+      let value = future ? 'In ' : ''
+
+      secondsValue = Math.abs(secondsValue)
+      if (secondsValue >= 0) {
+        days = this.pad(parseInt(secondsValue / 86400), pad)
+        secondsValue = secondsValue % 86400
+
+        hours = this.pad(parseInt(secondsValue / 3600), pad)
+        secondsValue = secondsValue % 3600
+
+        minutes = this.pad(parseInt(secondsValue / 60), pad)
+        seconds = this.pad(parseInt(secondsValue % 60), pad)
+      } else {
+        days = hours = minutes = seconds = 0
+      }
+
+      if (text === true) {
+        if (days && days.toString() !== '00' && days !== 0) {
+          if (concat > 0) {
+            concat -= 1
+            value += parseInt(days).toString()
+
+            value += short ? 'd ' : parseInt(days) === 1 ? 'day ' : 'days '
+          }
+        }
+        if (hours && hours.toString() !== '00' && hours !== 0) {
+          if (concat > 0) {
+            concat -= 1
+            value += parseInt(hours).toString()
+            value += short ? 'h ' : parseInt(hours) === 1 ? 'hour ' : 'hours '
+          }
+        }
+        if (minutes && minutes.toString() !== '00' && minutes !== 0) {
+          if (concat > 0) {
+            concat -= 1
+            value += parseInt(minutes).toString()
+            value += short ? 'm ' : parseInt(minutes) === 1 ? 'min. ' : 'min. '
+          }
+        }
+
+        if (parseInt(secondsValue) === 0) {
+          value += ' just now'
+        } else if (seconds && seconds.toString() !== '00' && seconds !== 0) {
+          if (concat > 0) {
+            concat -= 1
+            value += parseInt(seconds).toString()
+            value += parseInt(seconds) === 1 ? 's ' : 's '
+          }
+        }
+
+        if (parseInt(secondsValue) !== 0) { value += future ? '' : 'ago' }
+      } else {
+        value = {
+          days: days,
+          hours: hours,
+          minutes: minutes,
+          seconds: seconds
+        }
+      }
+
+      return value
+    },
+    pad: function (n, use = true) {
+      if (use) {
+        return (n < 10 ? '0' : '') + n
+      } else {
+        return n
+      }
+    },
+    getTimeAgo (date_from, short = false, concat = 4, multiple = 1000) {
+      var date_now = new Date()
+      var time = new Date(date_from * multiple)
+      time = time.getTime()
+      var diff = time - date_now.getTime()
+      diff /= 1000
+      return this.secondsTotime(Math.round(diff), true, true, true, short, concat)
     },
     convertTimestamp (timestamp) {
       let d = isNaN(timestamp) ? new Date(timestamp) : new Date(timestamp * 1000),

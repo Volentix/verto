@@ -6,7 +6,7 @@ import store from '@/store'
 import axios from 'axios'
 const config = {
   headers: {
-    'api-key': 'b7575aeb-b8a2-4360-88ab-400d1fba3aec'
+    'api-key': '562eee97-e90e-42ac-8e7b-363cdff5cdaa'
   }
 }
 
@@ -31,7 +31,7 @@ export const getUniSwapHistoricalData = ({ rootState, commit, state }, payload) 
   })
 }
 export const getBalancerPools = ({ rootState, commit, state }, payload) => {
-  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/balancer?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', {}, config).then((result) => {
+  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/balancer?api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa', {}, config).then((result) => {
     if (result.data.length) {
       result.data/* .map((function(e) {
           var t = state.poolDataHistory['balancer'].find((function(t) {
@@ -75,7 +75,7 @@ export const getBalancerPools = ({ rootState, commit, state }, payload) => {
 }
 
 export const getUniswapPools = ({ rootState, context, commit, state }, payload) => {
-  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/uniswap-v2?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', {}, config).then((result) => {
+  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/uniswap-v2?api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa', {}, config).then((result) => {
     result.data/* .map(function (e) {
       if (e.protocol === 'uniswap' && state.poolDataHistory['UniswapV1']) {
         var t = e.liquidity / e.supply,
@@ -146,7 +146,7 @@ export const getUniswapPools = ({ rootState, context, commit, state }, payload) 
   })
 }
 export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
-  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/vault-stats/yearn?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', config).then((result) => {
+  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/vault-stats/yearn?api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa', config).then((result) => {
     if (result.data.length) {
       result.data.filter(function (e) {
         return !e.isBlocked
@@ -180,7 +180,7 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
   })
 }
 export const getCurvesPools = ({ rootState, commit, state }, payload) => {
-  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/curve?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', config).then((result) => {
+  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/curve?api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa', config).then((result) => {
     if (result.data.length) {
       result.data.forEach((value, index) => {
         let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
@@ -211,7 +211,7 @@ export const getCurvesPools = ({ rootState, commit, state }, payload) => {
 }
 export const getZapperTokens = (context /*, payload */) => {
   let address = '0x915f86d27e4e4a58e93e59459119faaf610b5be1'
-  axios.get(process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/tokens?addresses%5B%5D=' + address + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', config).then((result) => {
+  axios.get(process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/tokens?addresses%5B%5D=' + address + '&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa', config).then((result) => {
     if (result.data) {
       for (var prop in result.data) {
         context.commit('setTokens', result.data[prop])
@@ -241,7 +241,7 @@ export const getMarketDataVsUSD = (context, payload) => {
 }
 
 export const getTransactions = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/transactions/' + payload.value + '?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/transactions/' + payload.value + '?api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa'
   axios.get(transactionEndpoint, config)
     .then(function (result) {
       if (result.data.length) {
@@ -255,7 +255,7 @@ export const getTransactions = (context, payload) => {
 export const getETHTransactions = async (context, address) => {
   let transactions = []
 
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/transactions/' + address + '?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/transactions/' + address + '?api_key=cbaadb5b-92d2-4479-9a96-ee804989e27a'
   let result = (await axios.get(transactionEndpoint, config)
     .catch(error => {
       console.log(error, 'Cannot get transactions')
@@ -269,8 +269,8 @@ export const getETHTransactions = async (context, address) => {
 }
 
 export const getInvestments = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/protocols/' + payload.platform + '/balances?addresses%5B%5D=' + payload.value + '&network=ethereum&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
-  // let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/protocols/' + payload.platform + '/balances?addresses%5B%5D=' + payload.value + '&network=ethereum&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa'
+  // let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa'
 
   axios.get(transactionEndpoint, config)
     .then(function (result) {
@@ -288,7 +288,7 @@ export const getInvestments = (context, payload) => {
     })
 }
 export const getDebts = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa'
   axios.get(transactionEndpoint, config)
     .then(function (result) {
       context.commit('setDebts', result.data[payload.value.toLowerCase()])

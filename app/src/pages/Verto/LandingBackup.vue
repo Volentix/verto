@@ -58,7 +58,7 @@ import configManager from '@/util/ConfigManager'
 import {
   version
 } from '../../../package.json'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import DexInteraction from '../../mixins/DexInteraction'
 export default {
   name: 'Login',

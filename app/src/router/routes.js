@@ -24,6 +24,94 @@ if (process.env.QMODE !== 'bex') {
     //     { path: '', component: () => import('components/createwallet/SaveToFile.vue') }
     //   ]
     // },
+    /* {
+      name: 'HearDefiDashboard',
+      path: '/account/:key?',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
+      ]
+    },
+    {
+      name: 'Connect',
+      path: '/connect/:action',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
+      ]
+    }, {
+      name: 'Bridge',
+      path: '/Bridge',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/Bridge.vue') }
+      ]
+    }, {
+      name: 'HearDefiDashboard',
+      path: '/',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
+      ]
+    },
+    {
+      name: 'pulsexsac',
+      path: '/pulsexsac/:key',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/Heartdefi/Sacrifices.vue') }
+      ]
+    },
+    { name: 'HearDefiHistory',
+      path: '/account/:key/history',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Verto/History.vue') }
+      ]
+    }, { name: 'HearDefiCommunity',
+      path: '/community',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/NewsArea.vue') }
+      ]
+    }, { name: 'HearDefiProjects',
+      path: '/projects',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/Projects.vue') }
+      ]
+    }, { name: 'HearDefiProjects',
+      path: '/project/:projectId',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/ProjectDetails.vue') }
+      ]
+    }, { name: 'HearDefiCommunity',
+      path: '/community/:platform/:id',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/NewsArea.vue') }
+      ]
+    },
+    {
+      path: '/heart-layout',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
+      ]
+    }, {
+      path: '/heart-intro',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/Intro.vue') }
+      ]
+    }, {
+      path: '/list',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/ListProject.vue') }
+      ]
+    } /*,
     {
       path: '/',
       component: () => import('layouts/staiderLayout.vue'),
@@ -47,29 +135,58 @@ if (process.env.QMODE !== 'bex') {
           component: () => import('components/Verto/Token/AssetsExplorer.vue')
         }
       ]
-    },
-    {
-      path: '/',
+    }
+
+    */{
+      path: '/te',
       component: () => import('layouts/staiderLayoutNewPrototype.vue'),
       children: [
         {
-          path: '/staider-new-prototype/summary',
+          path: '/te/staider-new-prototype/summary',
+          meta: { site: false },
           component: () => import('pages/StaiderPrototype/Summary.vue')
         },
         {
-          path: '/staider-new-prototype/vault',
+          path: '/te/staider-new-prototype/vault',
+          meta: { site: false },
           component: () => import('pages/StaiderPrototype/Vault.vue')
         },
         {
-          path: '/staider-new-prototype/landing',
+          path: '/te/staider-new-prototype/vaults',
+          meta: { site: true },
+          component: () => import('pages/StaiderPrototype/Vaults.vue')
+        },
+        {
+          path: '/te/staider-new-prototype/landing',
+          meta: { site: true },
           component: () => import('pages/StaiderPrototype/Landing.vue')
         },
         {
-          path: '/staider-new-prototype/landing/:currentSection',
+          path: '/te/staider-new-prototype/landing/:currentSection',
+          meta: { site: true },
           component: () => import('pages/StaiderPrototype/Landing.vue')
         }
       ]
-    },
+    }, {
+      path: '/99',
+      component: () => import('layouts/Staider/MainLayout.vue'),
+      children: [
+        { meta: {
+          site: true
+        },
+        path: '/',
+        component: () => import('pages/StaiderPrototype/Landing.vue')
+        },
+        {
+          path: '/summary',
+          component: () => import('pages/Staider/Summary.vue')
+        },
+        {
+          path: '/vault/:fundID',
+          component: () => import('components/Staider/Vault.vue')
+        }
+      ]
+    } /*
     {
       path: '/blocktopusCreate',
       component: () => import('layouts/Default.vue'),
@@ -126,7 +243,7 @@ if (process.env.QMODE !== 'bex') {
           }
         }
       ]
-    }
+    } */
   ]
 }
 export default routes

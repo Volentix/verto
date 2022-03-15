@@ -543,7 +543,7 @@ import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 import AccountSelector from './AccountSelector.vue'
 let rpc, api, signatureProvider
-// import initWallet from '@/util/Wallets2Tokens'
+// import initWallet from '@/util/_Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
 import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'

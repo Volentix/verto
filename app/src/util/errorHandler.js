@@ -29,7 +29,7 @@ export const userError = (message) => {
 export const devError = (message) => {
   // With user permission log to server or service
   // console.log(message, 'devError')
-  if (process.env.PROD) return
+  // if (process.env.PROD) return
   const error = new ErrorHandler(message)
   Notify.create({ message: error.customMessage })
   // throw error

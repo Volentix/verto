@@ -17,9 +17,9 @@
                     <li class="limitBtn" v-if="false">Limit</li>
                 </ul>
 
-                  <AccountSelector v-if="currentPath.fromChain"     :key="currentPath.fromChain.chain"   class="q-pt-lg full-width flex flex-center" />
-
+        <div class="row exchange-header">
   <q-tabs
+  class="col-md-5"
         v-if="$store.state.investment.defaultAccount"
         v-model="networksDir"
         inline-label
@@ -28,89 +28,105 @@
         <q-tab name="same" :icon="'img:'+$store.state.investment.defaultAccount.icon" :label="getChainLabel($store.state.investment.defaultAccount.chain)" />
         <q-tab name="crosschain" icon="img:https://www.androidfreeware.net/img2/com-github-ontio-onto.jpg" label="Crosschain" />
       </q-tabs>
+ <AccountSelector  v-if="currentPath.fromChain"     :key="currentPath.fromChain.chain"   class="q-pt-lg flex flex-center col-md-5 offset-md-2" />
+</div>
 
-      <ul v-if="false" >
-                          <!-- <arrow-locator-loading _ngcontent-bjk-c337="" _nghost-bjk-c327=""><svg _ngcontent-bjk-c327="" id="arrow_loading" xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36" class="arrow-loading" width="36" height="36"><path _ngcontent-bjk-c327="" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z" class="background-path"></path><defs _ngcontent-bjk-c327=""><path _ngcontent-bjk-c327="" id="arrow" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z"></path><clipPath _ngcontent-bjk-c327="" id="arrow-clip"><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use></clipPath></defs><g _ngcontent-bjk-c327="" clip-path="url(#arrow-clip)"><circle _ngcontent-bjk-c327="" cx="12" cy="12" r="5" transform="rotate(365,12,12)" fill="none" stroke="currentColor" stroke-width="16" stroke-dasharray="30" stroke-dashoffset="0"><animate _ngcontent-bjk-c327="" attributeName="stroke-dashoffset" values="0;-30" begin="arrow_loading.click; 0.7s" repeatCount="indefinite" dur="9.3s"></animate></circle></g><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use><animateTransform _ngcontent-bjk-c327="" id="transform_0" attributeName="transform" attributeType="XML" type="rotate" from="0 0 0" to="-10 0 0" dur="0.07s" begin="arrow_loading.click;" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_1" attributeName="transform" attributeType="XML" type="rotate" from="-45 0 0" to="390 0 0" dur="0.6s" begin="transform_0.end" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_2" attributeName="transform" attributeType="XML" type="rotate" from="390 0 0" to="360 0 0" dur="0.15s" begin="transform_1.end" repeatCount="1"></animateTransform></svg></arrow-locator-loading> -->
-                     <!--  <b class="q-pr-md" >Account selected:&nbsp;&nbsp; </b> <span class="q-ml-md key"> {{getAccountLabel(currentAccount.from)}}</span>  <q-btn size="sm" class="q-ml-md" @click="toSelect = 'accounts' ; showHeader = false; " round flat  icon="img:https://icons.veryicon.com/png/128/education-technology/big-data-official-website-icon/exchange-11.png" /> -->
-
-                    <li v-if="false" class="settingBtn" @click="showHeader = false">
-                        <svg xmlns="http://www.w3.org/2000/svg" id="swap-settings" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <circle cx="9" cy="8" r="2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></circle>
-                            <path d="M11 8L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-                            <path d="M4 8H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-                            <circle cx="15" cy="16" r="2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></circle>
-                            <path d="M17 16H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-                            <path d="M4 16H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-                        </svg>
-                    </li>
-                </ul>
               </div>
-              <div class="fromBlk"  v-if="depositCoin">
-                  <p  style="color:#6c86ad;"><span class="drpn"><span v-show="networksDir == 'crosschain'" class="cursor-pointer" @click="fromSelected = true ; toSelect = 'chains' ; showHeader = false; ">From - {{currentPath.fromChain.label}} <q-icon  name="keyboard_arrow_down"  size="xs"/></span></span><span >Balance: {{formatNumber(depositCoin.amount, 5)}} {{depositCoin.value.toUpperCase()}}<span class="max" @click="swapData.fromAmount = depositCoin.amount ; getSwapInfo()" v-if="depositCoin.amount">Max</span></span></p>
-                  <h5 class="drpn"><span  @click="toSelect = 'deposit' ; showHeader = false; "><img  :key="depositCoin.value" :src="depositCoin.image" alt=""> {{depositCoin.value.toUpperCase()}}  </span> <input type="text"  v-model="swapData.fromAmount" @input="getSwapInfo()"></h5>
-                  <p><span>{{depositCoin.label}}</span> <span v-if="currentPathData && currentPathData.toUsdTotal">${{formatNumber(currentPathData.fromUsdTotal, 2)}}</span></p>
-              </div>
+ <div class="text-body1 text-red" v-if="!['terra','eth'].includes($store.state.investment.defaultAccount.chain)">
 
-              <div class="toBlk" v-if="destinationCoin">
-                  <div class="top_arrow_icon"  @click="switchAmounts()" ><svg xmlns="http://www.w3.org/2000/svg" id="swap-direction-arrow" width="12" height="11" viewBox="0 0 12 11" fill="none"><path d="M6 1L6 10M6 10L11 5M6 10L1 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
-                  <p ><span  class="drpn"><span v-show="networksDir == 'crosschain'" class="cursor-pointer" @click="fromSelected = false ; toSelect = 'chains' ; showHeader = false; ">To - {{currentPath.toChain.label}} <q-icon name="keyboard_arrow_down"  size="xs"/></span></span> <span>Balance: {{formatNumber(destinationCoin.amount,2)}} {{destinationCoin.value.toUpperCase()}}<br><span v-if="currentAccount.to !== currentAccount.from">{{getAccountLabel(currentAccount.to)}}</span></span></p>
-                  <h5 class="drpn" ><span @click="toSelect = 'destination'; showHeader = false;"><img  :key="depositCoin.value" :src="destinationCoin.image"  alt=""> {{ destinationCoin.value.toUpperCase() }} </span><input v-if="currentPathData" type="text" readonly :value="formatNumber(currentPathData.toAmount, 2)" ></h5>
+     The exchange is only available for the Ethereum and Terra chains. More chains coming soon...
+
+    </div>
+
+             <span  v-if="reviewStep"> <span class="text-h6 cursor-pointer" @click="isApproval &&  txHash ? getSwapInfo() : null ; reviewStep = false; txHash = false; loadingState = false"><q-icon name="chevron_left"/> Back |</span>
+             <span class="text-h6 text-bold " v-if="!txHash"> Please review your transaction</span>
+               <span class="text-h6 text-bold " v-else> Transaction submited</span>
+             </span>
+              <div v-if="!txHash" class="flex row q-mt-md" :class="{'on-review': reviewStep, 'approval' : isApproval && reviewStep}">
+              <div class="fromBlk col-md-5"  v-if="depositCoin">
+              <span v-if="reviewStep" class="text-h6">
+            <span v-if="isApproval">Approve {{currentPathData.approval.entity}}</span>
+             <span v-else>You send</span>
+
+              </span>
+                  <p  style="color:#6c86ad;"><span class="drpn"><span v-show="networksDir == 'crosschain'" class="cursor-pointer" @click="fromSelected = true ; toSelect = 'chains' ; showHeader = false; ">From - {{currentPath.fromChain.label}} <q-icon  name="keyboard_arrow_down"  size="xs"/></span></span><span v-if="!reviewStep" >Balance: {{formatNumber(depositCoin.amount, 5)}} {{depositCoin.value.toUpperCase()}}<span class="max" @click="swapData.fromAmount = depositCoin.amount ; getSwapInfo()" v-if="depositCoin.amount">Max</span></span></p>
+                  <h5 class="drpn"><span  @click="toSelect = 'deposit' ; showHeader = false; "><img  :key="depositCoin.value" :src="depositCoin.image" alt=""> {{depositCoin.value}}  </span> <input type="text" :class="{'bg-input': !reviewStep}"  v-model="swapData.fromAmount" @input="getSwapInfo()"></h5>
+                  <p v-if="!reviewStep"><span >{{depositCoin.label}}</span> <span v-if="currentPathData && currentPathData.toUsdTotal">${{formatNumber(currentPathData.fromUsdTotal, 2)}}</span></p>
+               <ul class="rates q-mt-md q-py-sm" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':''">
+              <li v-if="currentPathData && !reviewStep">
+
+                  <span>1 {{currentPathData.fromToken.toUpperCase()}} = {{formatNumber(currentPathData.toAmount/currentPathData.fromAmount,4)}} {{currentPathData.toToken.toUpperCase()}} {{currentPathData.fromUsd ? ' = $'+formatNumber(currentPathData.fromUsd, 2) : '' }}
+
+                  </span>
+              </li>
+               <li v-if="currentPathData && !reviewStep">
+
+                  <span>1 {{currentPathData.toToken.toUpperCase()}} = {{formatNumber(currentPathData.fromAmount/currentPathData.toAmount, 4)}} {{currentPathData.fromToken.toUpperCase()}}  {{currentPathData.toUsd ? ' = $'+formatNumber(currentPathData.toUsd,2) : '' }}
+
+                  </span>
+              </li>
+               <li v-if="currentPathData && currentPathData.fromChain === 'terra'">
+
+                  <span>Fee = 0.3 UST
+
+                  </span>
+              </li>
+               <li v-else-if="currentPathData &&  currentPathData.fee && currentPathData.fee.usd">
+
+                  <span>Fee = ${{formatNumber(currentPathData.fee.usd,2)}}
+
+                  </span>
+              </li>
+
+            </ul>
+            </div>
+              <div class="col-md-2 flex flex-center switcher"> <q-img class="cursor-pointer" @click="switchAmounts()" src="https://cdn-icons-png.flaticon.com/512/2026/2026657.png" style="width:50px" /> </div>
+              <div class="toBlk col-md-5" v-if="destinationCoin">
+              <span v-if="reviewStep" class="text-h6">You receive</span>
+                  <div v-if="false" class="top_arrow_icon"  @click="switchAmounts()" ><svg xmlns="http://www.w3.org/2000/svg" id="swap-direction-arrow" width="12" height="11" viewBox="0 0 12 11" fill="none"><path d="M6 1L6 10M6 10L11 5M6 10L1 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+                  <p ><span  class="drpn"><span v-show="networksDir == 'crosschain'" class="cursor-pointer" @click="fromSelected = false ; toSelect = 'chains' ; showHeader = false; ">To - {{currentPath.toChain.label}} <q-icon name="keyboard_arrow_down"  size="xs"/></span></span> <span v-if="!reviewStep">Balance: {{formatNumber(destinationCoin.amount,2)}} {{destinationCoin.value.toUpperCase()}}<br><span v-if="currentAccount.to !== currentAccount.from">{{getAccountLabel(currentAccount.to)}}</span></span></p>
+                  <h5 class="drpn" ><span @click="toSelect = 'destination'; showHeader = false;"><img  :key="depositCoin.value" :src="destinationCoin.image"  alt=""> {{ destinationCoin.value }} </span>
+                  <input v-if="currentPathData" type="text" readonly :value="formatNumber(currentPathData.toAmount, 4)" >
+                  <q-spinner-dots
+                  v-else
+
+           size="2em"
+        />
+        </h5>
                   <!-- <div class="cash-blk primari active">
                       <h5><b>{{swapData.dex}} <span>{{swapData.chain}}</span></b> <b>{{swapData.toAmount}} <span></span></b></h5>
                   </div> -->
                   <!-- <div class="cash-blk">
                       <h5><b class="dn_arr"> <div class="withArr">Unifi <span class="arrow"></span></div> <span>Tx cost 0.0336E (~$123.74)</span></b> <b>0.00031 <span>~$1.18</span></b></h5>
                   </div> -->
-                  <div class="cash-blk last_ops hide"  v-if="currentPathData && currentPathData.toAmount" >
+                  <div class="cash-blk last_ops hide"  v-if="!reviewStep && currentPathData && currentPathData.toAmount" >
                       <h5><b class="dn_arr"  ><img width="50px" :src="currentPathData.dexLogo" /><span v-if="false">Fees: $12</span> </b> <b style="text-align: end;">{{ formatNumber(currentPathData.toAmount, 5) }} {{ destinationCoin.value.toUpperCase() }} <span>{{ currentPathData.toUsdTotal ? "$" + formatNumber(currentPathData.toUsdTotal, 2) : "" }}</span></b></h5>
                   </div>
               </div>
-
-              <button type="button" class="theme-btn" @click="openWallet()" :disabled="paths.length < 1">Exchange</button>
+</div>
+<div v-if="txHash" class=" q-py-md q-pt-lg text-body1">
+<br/>
+Click to view on explorer<br/>
+<div class="hash-status">
+<a :href="txExplorerLink" target="_blank" class="text-green q-mt-md">{{getKeyFormat(txHash, 20 )}}</a> <q-btn  @click="
+                                copyToClipboard(
+                                  txHash,
+                                  'Tx Hash'
+                                )" flat icon="content_copy"/>
+</div>
+</div>
+<p v-if="txError" class="text-red text-body1 q-mt-sm"><br/>{{txError}}</p>
+              <button v-if="!txHash" type="button" class="theme-btn" @click="reviewStep ? pushTransaction() : reviewStep = true" :disabled="paths.length < 1">{{!reviewStep ? (isApproval ? 'Approve '+currentPathData.approval.entity : 'Review') : 'Submit transaction'}}
+                 <q-spinner-dots
+                v-if="loadingState"
+          color="white"
+          size="2em"
+        />
+        </button>
             </div>
-            <ul class="rates" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white'">
-              <li v-if="currentPathData">
 
-                  <span>1 {{currentPathData.fromToken.toUpperCase()}} = {{formatNumber(currentPathData.toAmount/currentPathData.fromAmount,6)}} {{currentPathData.toToken.toUpperCase()}} {{currentPathData.fromUsd ? ' = $'+formatNumber(currentPathData.fromUsd, 2) : '' }}
-                      <div class="toltip" v-if="false">
-                          <svg xmlns="http://www.w3.org/2000/svg" id="info" viewBox="0 0 16 16" fill="none">
-                              <path d="M8.66699 5.33317C8.66699 5.70136 8.36852 5.99984 8.00033 5.99984C7.63214 5.99984 7.33366 5.70136 7.33366 5.33317C7.33366 4.96498 7.63214 4.6665 8.00033 4.6665C8.36852 4.6665 8.66699 4.96498 8.66699 5.33317ZM8.66699 10.6665C8.66699 11.0347 8.36852 11.3332 8.00033 11.3332C7.63214 11.3332 7.33366 11.0347 7.33366 10.6665L7.33366 7.99984C7.33366 7.63165 7.63214 7.33317 8.00033 7.33317C8.36852 7.33317 8.66699 7.63165 8.66699 7.99984L8.66699 10.6665ZM8.00699 14.6665C11.687 14.6665 14.667 11.6798 14.667 7.99984C14.667 4.31984 11.687 1.33317 8.00699 1.33317C4.32033 1.33317 1.33366 4.31984 1.33366 7.99984C1.33366 11.6798 4.32033 14.6665 8.00699 14.6665ZM8.00033 2.6665C10.947 2.6665 13.3337 5.05317 13.3337 7.99984C13.3337 10.9465 10.947 13.3332 8.00033 13.3332C5.05366 13.3332 2.66699 10.9465 2.66699 7.99984C2.66699 5.05317 5.05366 2.6665 8.00033 2.6665Z" fill="currentColor"></path>
-                          </svg>
-                          <ul>
-                              <li><span>DAI Price</span> <span><b>~$1.2</b> 0.0003 Ξ</span></li>
-                              <li><span>DAI Price</span> <span><b>~$3,168</b> 3153.7824 DA</span></li>
-                              <li><span>Minimum received</span> <span><b>0.0003 ETH</b></span></li>
-                          </ul>
-                      </div>
-                  </span>
-              </li>
-               <li v-if="currentPathData">
-
-                  <span>1 {{currentPathData.toToken.toUpperCase()}} = {{formatNumber(currentPathData.fromAmount/currentPathData.toAmount, 6)}} {{currentPathData.fromToken.toUpperCase()}}  {{currentPathData.toUsd ? ' = $'+formatNumber(currentPathData.toUsd,2) : '' }}
-                      <div class="toltip" v-if="false">
-                          <svg xmlns="http://www.w3.org/2000/svg" id="info" viewBox="0 0 16 16" fill="none">
-                              <path d="M8.66699 5.33317C8.66699 5.70136 8.36852 5.99984 8.00033 5.99984C7.63214 5.99984 7.33366 5.70136 7.33366 5.33317C7.33366 4.96498 7.63214 4.6665 8.00033 4.6665C8.36852 4.6665 8.66699 4.96498 8.66699 5.33317ZM8.66699 10.6665C8.66699 11.0347 8.36852 11.3332 8.00033 11.3332C7.63214 11.3332 7.33366 11.0347 7.33366 10.6665L7.33366 7.99984C7.33366 7.63165 7.63214 7.33317 8.00033 7.33317C8.36852 7.33317 8.66699 7.63165 8.66699 7.99984L8.66699 10.6665ZM8.00699 14.6665C11.687 14.6665 14.667 11.6798 14.667 7.99984C14.667 4.31984 11.687 1.33317 8.00699 1.33317C4.32033 1.33317 1.33366 4.31984 1.33366 7.99984C1.33366 11.6798 4.32033 14.6665 8.00699 14.6665ZM8.00033 2.6665C10.947 2.6665 13.3337 5.05317 13.3337 7.99984C13.3337 10.9465 10.947 13.3332 8.00033 13.3332C5.05366 13.3332 2.66699 10.9465 2.66699 7.99984C2.66699 5.05317 5.05366 2.6665 8.00033 2.6665Z" fill="currentColor"></path>
-                          </svg>
-                          <ul>
-                              <li><span>DAI Price</span> <span><b>~$1.2</b> 0.0003 Ξ</span></li>
-                              <li><span>DAI Price</span> <span><b>~$3,168</b> 3153.7824 DA</span></li>
-                              <li><span>Minimum received</span> <span><b>0.0003 ETH</b></span></li>
-                          </ul>
-                      </div>
-                  </span>
-              </li>
-              <li v-if="false">
-                  <span>Route</span>
-                  <span class="getpoup">ETH <span class="arrow"></span>
-                      USDT <svg xmlns="http://www.w3.org/2000/svg" id="fullscreen" viewBox="0 0 16 16" fill="none">
-                          <path d="M7 3H12C12.5523 3 13 3.44772 13 4V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
-                          <path d="M9 13H4C3.44772 13 3 12.5523 3 12V7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
-                      </svg>
-                  </span>
-               </li>
-            </ul>
           </div>
-          <!-- SEARCH PANEL  -->
+          <!-- SEARCH PANEL  openWallet() -->
         <div class="searchBlk" :class="{'active': !showHeader}" style="position: fixed; width:400px">
           <h5 class="heading">
             <q-icon name="arrow_back_ios"  class="backfromtoken" style="padding-right: 25px; height: 1px;  top: 50%; left: 13px; background-clor: #000; font-size: 1em;" @click="back()"/>
@@ -127,17 +143,17 @@
           </form>
           <ul class="cryptoSuggestions" v-if="toSelect == 'deposit' && depositCoinOptions && depositCoinOptions.length > 4">
               <li v-for="item in [...depositCoinOptions].sort((a,b) => b-a).slice(0,3)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
-                <img :src="item.image" alt="" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"> {{item.value.toUpperCase()}}
+                <img :src="item.image" alt="" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"> {{item.label}}
               </li>
           </ul>
           <ul class="cryptoSuggestions"  v-else-if="toSelect == 'destination'">
               <li v-for="item in [...destinationCoinOptions].sort((a,b) => b-a).slice(0,3)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
-                <img :src="item.image" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" alt=""> {{item.value.toUpperCase()}}
+                <img :src="item.image" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" alt=""> {{item.label}}
               </li>
           </ul>
           <div class="cryptoList">
               <ul v-if="toSelect == 'deposit'">
-                  <li v-for="item in depositCoinOptions" :key="`${Math.floor(Math.random() * 1000)} ${item.address}${item.label}`" @click="selectionProcess(item)">
+                  <li v-for="item in depositCoinOptions.filter( a => !search || search.length == 0 ||  a.label.toLowerCase().includes(search.toLowerCase()))" :key="`${Math.floor(Math.random() * 1000)} ${item.address}${item.label}`" @click="selectionProcess(item)">
                       <div class="leftBlk"><img :src="item.image" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" alt=""> <p>{{item.value.toUpperCase()}} </p></div>
                       <span> {{formatNumber(item.amount, 4)}}</span>
                   </li>
@@ -175,7 +191,7 @@
       </li>
               </ul>
               <ul v-else-if="toSelect == 'destination'">
-                  <li v-for="item in destinationCoinOptions" :key="`${Math.floor(Math.random() * 1000)} ${item.address}${item.label}`" @click="selectionProcess(item)">
+                  <li v-for="item in destinationCoinOptions.filter( a => !search || search.length == 0 ||  a.label.toLowerCase().includes(search.toLowerCase()))" :key="`${Math.floor(Math.random() * 1000)} ${item.address}${item.label}`" @click="selectionProcess(item)">
                       <div class="leftBlk"><img :src="item.image" alt=""> <p>{{item.value.toUpperCase()}} </p></div>
                       <!-- span>{{item.label}} </span><b>{{item.amount}}</b> -->
                   </li>
@@ -1547,7 +1563,7 @@ function ChangeTheme () {
   try {
     let switchs = document.querySelector('.switch input')
     switchs.addEventListener('change', (e) => {
-      if (e.target.checked) {
+      if (window.localStorage.getItem('skin') === 'true') {
         localStorage.setItem('theme', 'dark')
         fnccc()
       } else {
@@ -1606,12 +1622,17 @@ import Formatter from '@/mixins/Formatter'
 export default {
   mixins: [Formatter],
   name: 'GodexDialogMobile',
-  props: ['step', 'setMinimum', 'isPathInvalid', 'getSwapInfo', 'hideDeposit', 'filterDepositCoin', 'swapData', 'spinner', 'setPathTransaction', 'paths', 'getDepositTxData', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'currentDex', 'hideDestination', 'switchAmounts',
+  props: ['step', 'setMinimum', 'isPathInvalid', 'getSwapInfo', 'hideDeposit', 'filterDepositCoin', 'swapData', 'spinner', 'setPathTransaction', 'paths', 'getDepositTxData', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'currentDex', 'hideDestination',
     'createTransaction', 'error', 'path', 'splitterModel', 'tab', 'setPathData', 'innerStep', 'chainData', 'approvalCheckRun', 'fromAccountSelected', 'setSelectedGas', 'processApproval', 'swapTokens', 'toAccountSelected', 'setTransactionStatus', 'setTab', 'exchangeDetails', 'showSendComponent', 'validStatus' ],
   components: { GasSelector, SendComponent, AccountSelector },
   data () {
     return {
+      txHash: null,
+      txExplorerLink: null,
+      txError: null,
+      loadingState: false,
       depositCoinOptions: [],
+      reviewStep: false,
       depositCoin: null,
       networksDir: 'same',
       currentAccount: {
@@ -1672,6 +1693,7 @@ export default {
   created () {
     this.chains = this.setChains()
     this.currentPath.fromChain = this.chains.find(o => o.chain === (this.$route.params.asset ? this.$route.params.asset.chain : 'eth'))
+
     this.setTokens(this.currentPath.fromChain.chain)
     this.currentPath.toChain = this.currentPath.fromChain
     this.currentAccount.from = this.$store.state.investment.defaultAccount
@@ -1696,14 +1718,21 @@ export default {
     this.tabLocal = this.tab
   },
   watch: {
+    '$store.state.settings.lightMode': function (val) {
+      if (val === 'true') {
+        UpdateTheme()
+      } else {
+        UpdateTheme(true)
+      }
+    },
     async paths () {
-      console.log(this.paths, 'this.paths')
+      this.txError = false
       if (this.paths.length) {
         this.$set(this, 'currentPathData', this.paths[0])
-        console.log(this.currentPathData, 'this.currentPathData')
+
         if (!this.currentPathData.toUsd) {
           let usd = await Lib.getCoinGeckoPrice({ address: this.destinationCoin.address, chain: this.currentPath.toChain, type: this.destinationCoin.value.toLowerCase() })
-          console.log(usd, 'toUsd')
+
           if (usd) {
             this.$set(this.currentPathData, 'toUsd', usd)
             this.$set(this.currentPathData, 'toUsdTotal', usd * this.currentPathData.toAmount)
@@ -1712,7 +1741,7 @@ export default {
 
         if (!this.currentPathData.fromUsd) {
           let usd = await Lib.getCoinGeckoPrice({ address: this.depositCoin.address, chain: this.currentPath.toChain, type: this.depositCoin.value.toLowerCase() })
-          console.log(usd, 'fromUsd')
+
           if (usd) {
             this.$set(this.currentPathData, 'fromUsd', usd)
             this.$set(this.currentPathData, 'fromUsdTotal', usd * this.currentPathData.fromAmount)
@@ -1755,20 +1784,59 @@ export default {
       }
     }
   },
+  computed: {
+    isApproval () {
+      return this.currentPathData && this.currentPathData.approval && this.currentPathData.approval.required
+    }
+  },
   methods: {
+    pushTransaction () {
+      this.loadingState = true
+      Lib.send(
+        this.currentPathData.fromChain,
+        this.currentPathData.fromToken,
+        this.$store.state.investment.defaultAccount.chain !== 'eos' ? this.$store.state.investment.defaultAccount.key : this.$store.state.investment.defaultAccount.name,
+        this.currentPathData.txParams && this.currentPathData.txParams.to ? this.currentPathData.txParams.to : null,
+        0,
+        { gasData: this.currentPathData.txParams, txData: this.currentPathData.txParams }
+      ).then(result => {
+        if (result.success) {
+          this.txHash = result.transaction_id
+          this.txExplorerLink = result.message
+        } else if (result.message) {
+          this.txError = result.message
+        } else {
+          this.txError = 'Transaction failed'
+        }
+      }).catch((error) => {
+        console.log(error)
+        if (typeof error === 'object' && error.message) {
+          this.txError = error.message
+        } else {
+          this.txError = 'Transaction failed'
+        }
+
+        setTimeout(() => {
+          this.reviewStep = false
+        }, 3000)
+        this.loadingState = false
+      })
+    },
     async setTokens (fromChain = 'eth', toChain = null) {
       if (fromChain) {
         if (!toChain) toChain = fromChain
         this.depositCoinOptions = await CrosschainDex.getCoinByChain(fromChain)
-        this.depositCoinUnfilter = this.depositCoinOptions.map(o => {
-          let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+        this.depositCoinUnfilter = this.depositCoinOptions = this.depositCoinOptions.map(o => {
+          let token = this.$store.state.investment.accountTokens.find(t => t.type.toLowerCase() === o.value.toLowerCase())
           if (token) {
             o.usd = token.usd
             o.amount = token.amount
             o.tokenPrice = token.tokenPrice
+          } else {
+            o.usd = 0
           }
           return o
-        })
+        }).sort((a, b) => b.usd - a.usd)
         this.depositCoin = this.$route.params.action === 'sell' && this.$route.params.asset.chain === fromChain ? this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$route.params.asset.type.toLowerCase()) : (this.$route.params.action === 'buy' ? this.depositCoinOptions.find(o => o.value.toLowerCase() !== this.$route.params.asset.type.toLowerCase()) : this.depositCoinOptions[0])
         this.$emit('update:depositCoin', this.depositCoin)
       }
@@ -1777,14 +1845,16 @@ export default {
         this.destinationCoinUnfilter = this.depositCoinOptions
       } else if (toChain) {
         this.destinationCoinOptions = this.destinationCoinUnfilter = (await CrosschainDex.getCoinByChain(toChain)).map(o => {
-          let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+          let token = this.$store.state.investment.accountTokens.find(t => t.type.toLowerCase() === o.value.toLowerCase())
           if (token) {
             o.usd = token.usd
             o.amount = token.amount
             o.tokenPrice = token.tokenPrice
+          } else {
+            o.usd = 0
           }
           return o
-        })
+        }).sort((a, b) => b.usd - a.usd)
       }
 
       if (toChain) {
@@ -1801,6 +1871,14 @@ export default {
     },
     changeDepositCoin () {
       this.$emit('update:depositCoin', this.depositCoinLocal)
+    },
+    switchAmounts () {
+      let depositCoinVar = this.depositCoin
+      this.depositCoin = this.destinationCoin
+      this.destinationCoin = depositCoinVar
+      this.$emit('update:depositCoin', this.depositCoin)
+      this.$emit('update:destinationCoin', this.destinationCoin)
+      this.getSwapInfo()
     },
     closeDialog () {
       this.dialog = false
@@ -1893,7 +1971,18 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.dark-theme .switcher {
+    filter: invert(1);
+}
+a {
+    text-decoration: none;
+    padding-top: 10px !important;
+    text-transform: lowercase;
+}
+.exchange-header {
+margin-bottom: 50px !important;
+}
 .q-mt-md, .q-my-md {
     margin-top: 16px  !important
 }
@@ -2251,7 +2340,7 @@ h5.drpn span:first-child:after {
     right: 14px;
     width: 7px;
     height: 7px;
-    border: 2px solid var(--bodyColor);
+    border: 2px solid #002d69;
     transform: translateY(-50%) rotate(45deg);
     border-top: none;
     border-left: none;
@@ -2312,10 +2401,10 @@ h5.drpn span:first-child:hover {
 .cash-blk.primari:after {content: "primary";position: absolute;left: -1px;top: -10px;text-transform: capitalize;font-size: 11px;background: #00897B;color: #fff;padding: 4px 10px;border-radius: 10px 10px 10px 0;}
 .theme-btn {
     display: block;
-    width: 100%;
+    width: 320px;
     font-size: 16px;
     border-radius: 12px;
-    margin-top: 8px;
+    margin-top: 28px;
     padding: 16px 0;
     background: linear-gradient(45deg, #0FBCE4,#0563D0, #2D88F3) !important;
     color: #fff;
@@ -2326,7 +2415,7 @@ h5.drpn span:first-child:hover {
     background: linear-gradient(45deg, #0fbce4b8,#0563d0c7, #2d88f3c2);
 }
 ul.rates {
-    padding: 0 16px;
+    padding: 0 0px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -2612,7 +2701,9 @@ body.active_limit_popup .block-contents
     color: var(--bodyColor);
     cursor: pointer;
 }
-
+.approval .toBlk , .approval .col-md-2.flex.flex-center, .approval.toBlk{
+    display: none;
+}
 .popup-content  ul {
     display: flex;
     align-items: center;
@@ -3275,5 +3366,31 @@ body.lighTheme .hiddenCnt ul li:hover span, .hiddenCnt ul li.active span {
 .mobile-card{
     background-color: #04111F !important;
   }
+.bg-input {
+    background: #dee3ec !important
+}
 
+.dark-theme .bg-input{
+    background: #121d2a !important;
+    }
+.fromBlk h5.drpn input {
+    border-radius: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+.on-review h5.drpn span:first-child:after{
+    display: none
+}
+.hash-status a {
+ text-decoration: none !important;
+}
+.hash-status{
+      background: #f0f0f0;
+    padding: 10px;
+
+    width: max-content;
+    margin-top: 20px;
+}
 </style>

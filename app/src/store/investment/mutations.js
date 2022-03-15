@@ -124,6 +124,7 @@ export const setDebts = (state, payload) => {
   })
 }
 export const setDefaultAccount = (state, payload) => {
+  console.log(payload, 'payload')
   state.defaultAccount = payload
 }
 export const setAccountTokens = (state, payload) => {

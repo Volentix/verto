@@ -37,6 +37,10 @@
 
                 </q-list>
                   <p class="text-red" v-if="error">{{parseError(error)}}</p>
+                    <span v-else-if="!error && !gasOptions.length">
+                        <q-linear-progress class="q-my-md" indeterminate color="grey" />
+
+</span>
                    <p class="text-caption"  v-else-if="gasSelected && gasSelected.requiredNativeAmount">{{parseFloat(gasSelected.requiredNativeAmount).toFixed(5)}} {{gasSelected.nativeToken.toUpperCase()}} required</p>
                 </div>
 </template>
