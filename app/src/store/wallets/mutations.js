@@ -86,7 +86,7 @@ export const updateTokens = (state, updatedtokens) => {
       updatedtokens[accountIndex].total = parseFloat(
         updatedtokens
           .filter(f => f.key === account.key && f.chain === account.chain)
-          .map(v => (isNaN(v.usd) ? 0 : +v.usd))
+          .map(v => (isNaN(v.usd) || !v.usd ? 0 : +v.usd))
           .reduce((a, b) => a + b, 0)
       )
     })

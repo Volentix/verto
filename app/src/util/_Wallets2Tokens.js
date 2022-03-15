@@ -336,17 +336,6 @@ class Wallets2Tokens {
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
-  getCw20TokenBalanceQuery (tokens, userAddres) {
-    let r = { variables: {}, query: {} }, str = '{'
-    tokens.forEach(t => {
-      // x.test = `   ` + t + `: WasmContractsContractAddressStore(     ContractAddress: "` + t + `"     QueryMsg: "{"balance":{"address":"` + userAddres + `"}}"  ) {     Height    Result     __typename   }`
-      str += `\n  ` + t + `: WasmContractsContractAddressStore(\n    ContractAddress: "` + t + `"\n    QueryMsg: "{\\"balance\\":{\\"address\\":\\"` + userAddres + `\\"}}"\n  ) {\n    Height\n    Result\n    __typename\n  }`
-    })
-    str += '}'
-    r.query = str /// .replace(/\\"/g, '\\\\\\')
-
-    return r
-  }
   async getCw20TokenPrice (amount, contract, decimals = 6) {
     let val = 0
     if (!this.cw20Pairs.length) {
@@ -379,15 +368,23 @@ class Wallets2Tokens {
         if (response.data && response.data.balance) {
           let alltokens = Object.keys(resTokens.data.mainnet)
           for (let i = 0, counter = 20; i <= alltokens.length; i = i + counter) {
-            let resEc20s = await axios.post('https://mantle.terra.dev/', this.getCw20TokenBalanceQuery(alltokens.slice(i, i + counter), wallet.key))
+            let resEc20s = await axios.post('https://mantle.terra.dev/', Lib.getCw20TokenBalanceQuery(alltokens.slice(i, i + counter), wallet.key))
             if (resEc20s && resEc20s.data && resEc20s.data.data) {
               let tokensWIthBlance = Object.keys(resEc20s.data.data).filter(o => parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance))
               tokensWIthBlance.map(async o => {
                 let tkData = resTokens.data.mainnet[Object.keys(resTokens.data.mainnet).find(x => resTokens.data.mainnet[x].token.toLowerCase() === o)]
                 let amount = parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance)
                 let decimals = tkData.decimals || 6
-                let usd = await this.getCw20TokenPrice(amount, o, decimals)
+                let usd = 0
+
+                if (tkData.symbol.toLowerCase() === 'aust') {
+                  usd = await Lib.getUstState() || 0
+                } else {
+                  usd = await this.getCw20TokenPrice(amount, o, decimals)
+                }
+
                 amount = amount / 10 ** decimals
+                let total = usd * amount
                 let n = {
                   contract: o,
                   isCw20: true,
@@ -399,7 +396,7 @@ class Wallets2Tokens {
                   tokenPrice: usd || 0,
                   key: wallet.key.toLowerCase(),
                   privateKey: wallet.privateKey,
-                  usd: usd * amount,
+                  usd: total || 0,
                   decimals: tkData.decimals,
                   chain: 'terra'
                 }
@@ -418,6 +415,7 @@ class Wallets2Tokens {
               priceData.swaprate = 1 / priceData.swaprate
             }
             let sym = t.denom === 'uluna' ? 'Luna' : t.denom.substring(1).toUpperCase().substring(0, t.denom.length - 2) + 'T'
+            let total = priceData ? priceData.swaprate * (t.available / 10 ** 6) : 0
             let data = {
               type: sym,
               contract: t.denom,
@@ -427,7 +425,7 @@ class Wallets2Tokens {
               key: wallet.key.toLowerCase(),
               privateKey: wallet.privateKey,
               amount: t.available / 10 ** 6,
-              usd: priceData ? priceData.swaprate * (t.available / 10 ** 6) : 0,
+              usd: total || 0,
               decimals: 6,
               chain: 'terra',
               icon: 'https://assets.terra.money/icon/60/' + sym + '.png'

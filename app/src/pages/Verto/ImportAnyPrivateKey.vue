@@ -1587,7 +1587,7 @@ export default {
   position: relative;
   overflow: hidden;
   @media screen and (min-width: 768px) {
-    padding-top: 11vh;
+    padding-top: 0vh;
     padding-bottom: 0px;
   }
 }

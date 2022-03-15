@@ -306,7 +306,9 @@ export default {
 
       let w = this.setChains().find(o => o.chain === chain)
 
-      if (w && w.accounts && w.accounts.length) { this.$store.commit('investment/setDefaultAccount', this.formatAccoountOption(w.accounts[0])) }
+      if (w && w.accounts && w.accounts.length) {
+        this.$store.commit('investment/setDefaultAccount', this.formatAccoountOption(w.accounts[0]))
+      }
 
       return w
     },
@@ -316,6 +318,14 @@ export default {
       return c ? c.icon : 'statics/empty-token.png'
     },
     setChains () {
+      let walletData = {
+        tokensCount: this.$store.state.wallets.tokens.length,
+        chainsData: null
+      }
+      if (this.$store.state.currentwallet.userData.walletData && this.$store.state.currentwallet.userData.walletData.tokensCount === this.$store.state.wallets.tokens.length) {
+        walletData.chainsData = this.$store.state.currentwallet.userData.walletData.chainsData
+      }
+
       /*
         Hierarchy chains[]->accounts[]->tokenList[]
         chains: [
@@ -339,36 +349,41 @@ export default {
            ....,
         ]
       */
-      let chainsData = HD.getVertoChains()
-      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.multitoken) && a.findIndex(t => (t.chain === v.chain)) === i)))
+      if (!walletData.chainsData) {
+        let chainsData = HD.getVertoChains()
+        let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.multitoken) && a.findIndex(t => (t.chain === v.chain)) === i)))
 
-      chains.map(o => {
-        let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
-        o.chainTotal = accounts.filter(g => g.usd).reduce((a, b) => +(a || 0) + (isNaN(b.usd) ? 0 : +b.usd), 0)
-        let evmChain = Lib.evms.find(a => a.chain === o.chain)
-        let c = chainsData.find(p => p.chain === o.chain)
-        o.icon = c.icon
-        o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : (o.multitoken && o.chain !== 'eos' ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain))
-        o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {
-          q.tokenList = this.$store.state.wallets.tokens.filter((f, i, c) => f.chain === q.chain && ((f.multitoken && f.key.toLowerCase() === q.key.toLowerCase() && c.findIndex(t => t.isEvm && t.key.toLowerCase() === q.key.toLowerCase() && f.type === t.type) === i) || (!f.isEvm && q.chain === f.chain && f.name.toLowerCase() === q.name.toLowerCase())))
-          q.color = this.getRandomColor()
-          q.value = o.chain === 'eos' ? q.name : q.key
-          q.label = o.chain === 'eos' ? q.name : q.key
+        chains.map(o => {
+          let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
+          o.chainTotal = accounts.filter(g => g.usd).reduce((a, b) => +(a || 0) + (isNaN(b.usd) || !b.usd ? 0 : +b.usd), 0)
+          let evmChain = Lib.evms.find(a => a.chain === o.chain)
+          let c = chainsData.find(p => p.chain === o.chain)
+          o.icon = c.icon
+          o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : (o.multitoken && o.chain !== 'eos' ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain))
+          o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {
+            q.tokenList = this.$store.state.wallets.tokens.filter((f, i, c) => f.chain === q.chain && ((f.multitoken && f.key.toLowerCase() === q.key.toLowerCase() && c.findIndex(t => t.isEvm && t.key.toLowerCase() === q.key.toLowerCase() && f.type === t.type) === i) || (!f.isEvm && q.chain === f.chain && f.name.toLowerCase() === q.name.toLowerCase())))
+            q.color = this.getRandomColor()
+            q.value = o.chain === 'eos' ? q.name : q.key
+            q.label = o.chain === 'eos' ? q.name : q.key
 
-          q.icon = c ? c.icon : q.icon
-          return q
+            q.icon = c ? c.icon : q.icon
+            return q
+          })
+          o.count = o.accounts.length
+          if (evmChain) o.icon = evmChain.icon
+          let chain = HD.names.find(a => a.value === o.chain)
+          o.evmChain = evmChain
+
+          o.label = evmChain ? evmChain.name : (chain ? chain.label : o.chain.toUpperCase())
+
+          return o
         })
-        o.count = o.accounts.length
-        if (evmChain) o.icon = evmChain.icon
-        let chain = HD.names.find(a => a.value === o.chain)
-        o.evmChain = evmChain
+        walletData.chainsData = chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
+        let data = { walletData: walletData }
+        this.$store.commit('currentwallet/setUserData', data)
+      }
 
-        o.label = evmChain ? evmChain.name : (chain ? chain.label : o.chain.toUpperCase())
-
-        return o
-      })
-
-      return chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
+      return walletData.chainsData
     },
 
     async setCurrentWallet (chain) {

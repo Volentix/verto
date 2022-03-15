@@ -159,7 +159,7 @@
                   selectedChain = null;
                   $store.state.settings.defaultChainData = null;
                   $store.state.wallets.customTotal.show = false;
-                   initTable();
+                  setTimeout(() => { initTable(); }, 100)
 
                 "
                 :class="{ active: tab == 'overview' }"
@@ -361,7 +361,7 @@
     <nfts-explorer v-show=" tab == 'nfts'"/>
     <div
       :class="{ 'chains q-pt-md': !$route.params.accounts }"
-      v-if="
+      v-show="
         (($route.params.accounts || !tokensTotal) &&
           !['assets', 'investments'].includes(tab)) || $store.state.currentwallet.user ||
         tab == 'chains'
@@ -369,10 +369,10 @@
     >
      <div class="row q-col-gutter-md" v-show="!hideList">
 
-        <AssetGroup  @setItemAction="setItemAction" :getChainTotal="getChainTotal" @showAll="showAll"  :style=" groupLayout == 'grid' ? 'background: #3f50b512;' : ''" :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-if=" (!entity || entity.includes('chains'))"  :card="{title:'Chains', view:groupLayout, description:'Portfolio value by chain', limit:6, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
-         <AssetGroup  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #cbe5e15e;' : ''"   :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-if="(!entity || entity.includes('assets'))"  :card="{title:'Assets' ,view:groupLayout,hideArrow:this.readOnly, description:'Liquid assets', limit:6, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
-          <AssetGroup :key="'inv'+uniqueKey"  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #ab47bb21;' : ''" :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-if="allInvestments && allInvestments.length && (!entity || entity.includes('investments'))" :card="{title:'Investments', view:groupLayout,hideArrow:this.readOnly, description:'Staked and locked assets', limit:6, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
-          <AssetGroup v-if="!entity || entity.includes('nfts')" @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #00ffff1f;' : ''"  :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }"   :card="{title:'Nfts' , description:'NFTs on Ethereum',view:groupLayout,hideArrow:this.readOnly, limit:6, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
+        <AssetGroup  @setItemAction="setItemAction" :getChainTotal="getChainTotal" @showAll="showAll"  :style=" groupLayout == 'grid' ? 'background: #3f50b512;' : ''" :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-show=" (!entity || entity.includes('chains'))"  :card="{title:'Chains', view:groupLayout, description:'Portfolio value by chain', limit:6, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
+         <AssetGroup  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #cbe5e15e;' : ''"   :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-show="(!entity || entity.includes('assets'))"  :card="{title:'Assets' ,view:groupLayout,hideArrow:this.readOnly, description:'Liquid assets', limit:6, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
+          <AssetGroup :key="'inv'+uniqueKey"  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #ab47bb21;' : ''" :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }" v-show="allInvestments && allInvestments.length && (!entity || entity.includes('investments'))" :card="{title:'Investments', view:groupLayout,hideArrow:this.readOnly, description:'Staked and locked assets', limit:6, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
+          <AssetGroup v-show="!entity || entity.includes('nfts')" @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" :style=" groupLayout == 'grid' ? 'background: #00ffff1f;' : ''"  :class="{'col-md-6': groupLayout == 'grid','col-md-3': groupLayout == 'list' || !groupLayout }"   :card="{title:'Nfts' , description:'NFTs on Ethereum',view:groupLayout,hideArrow:this.readOnly, limit:6, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
           </div>
     <!-- CHAIN LOOP START  -->
       <q-scroll-area v-if="hideList" :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
@@ -1350,7 +1350,7 @@ export default {
       allChains: false
     }
   },
-  async created () {
+  async mounted () {
     if (this.settings) {
       for (let i in this.settings) {
         this[i] = this.settings[i]
@@ -1408,6 +1408,11 @@ export default {
       }
     }) */
     this.getVTXHistoriclPrice()
+
+    if (!this.tokensTotal) {
+      this.tab = 'receive'
+    }
+    this.getHexStakes()
   },
   watch: {
     '$store.state.settings.accountTab': function (val, old) {
@@ -1554,15 +1559,6 @@ export default {
   },
   destroyed () {
     this.$store.state.wallets.customTotal.show = false
-  },
-  mounted () {
-    if (!this.tokensTotal) {
-      this.tab = 'receive'
-    }
-    setTimeout(() => {
-      this.initTable()
-      this.getHexStakes()
-    }, 0)
   },
   methods: {
     setItemAction (data) {
@@ -2034,6 +2030,7 @@ export default {
 
       this.getChains()
       this.getVTXStakingInvestment()
+
       if (
         this.$store.state.investment.defaultAccount &&
        (this.$q.platform.is.mobile || this.$store.state.currentwallet.user)
@@ -2045,7 +2042,7 @@ export default {
       this.assets = []
       let not_valuable = localStorage.getItem('not_valuable')
       not_valuable = not_valuable ? JSON.parse(not_valuable) : []
-      // .filter(o => !this.filterChains || this.filterChains.includes(o.chain))
+
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens
         .filter(
           (o) =>
@@ -2080,7 +2077,7 @@ export default {
             if (index !== -1) {
               this.assets[index].notValuable = token.notValuable
               this.assets[index].amount += token.amount
-              this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
+              this.assets[index].usd += isNaN(token.usd) || !token.usd || typeof token.usd === 'undefined' ? 0 : token.usd
               this.assets[index].rateUsd = isNaN(token.tokenPrice)
                 ? 0
                 : token.tokenPrice
@@ -2094,6 +2091,7 @@ export default {
                 (token.usd /
                   parseFloat(this.$store.state.wallets.portfolioTotal)) *
                 100
+              token.usd = isNaN(token.usd) || !token.usd || typeof token.usd === 'undefined' ? 0 : token.usd
               token.index = this.assets.length
               token.rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
               token.friendlyType =

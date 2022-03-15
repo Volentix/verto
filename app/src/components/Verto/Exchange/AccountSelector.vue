@@ -596,9 +596,9 @@ export default {
     }
   },
   created () {
-    this.init()
     this.chainsData = this.setChains()
     this.chainsData = this.chainsData.filter((o) => this.checkChain(o))
+    this.init()
   },
   methods: {
     getAccount (item) {
@@ -668,14 +668,16 @@ export default {
           })
       )
 
-      tableData.filter(
+      this.chainsData.filter(
         (w, i, a) =>
           w.chain !== 'eth' &&
           w.chain !== 'eos' &&
-          this.checkChain(w) &&
-          a.findIndex((t) => t.key === w.key && t.chain === w.chain) === i &&
-          this.accountOptions.push(this.formatAccoountOption(w))
-      )
+          this.checkChain(w)
+      ).forEach(chain => {
+        chain.accounts.forEach(a => {
+          this.accountOptions.push(this.formatAccoountOption(a))
+        })
+      })
 
       this.accountOptions = this.accountOptions.filter((o) => o && o.name)
       if (this.$store.state.wallets.metamask.accounts.length) {
@@ -749,6 +751,7 @@ export default {
       this.accountOptions = this.accountOptions.filter(
         (o) => !this.chain || o.chain === this.chain
       )
+
       if (
         !this.accountOptions &&
         this.autoSelectChain &&
@@ -763,7 +766,6 @@ export default {
           ? this.accountOptions[0]
           : !this.showPortfolio
       }
-      // console.log(this.accountOptions, this.accountOption, this)
 
       if (!this.showPortfolio) {
         this.setAccount()
