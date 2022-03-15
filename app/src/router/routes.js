@@ -137,7 +137,7 @@ if (process.env.QMODE !== 'bex') {
       ]
     }
 
-    */{
+ {
       path: '/te',
       component: () => import('layouts/staiderLayoutNewPrototype.vue'),
       children: [
@@ -167,8 +167,8 @@ if (process.env.QMODE !== 'bex') {
           component: () => import('pages/StaiderPrototype/Landing.vue')
         }
       ]
-    }, {
-      path: '/dede',
+    },    */{
+      path: '/',
       component: () => import('layouts/Staider/MainLayout.vue'),
       children: [
         { meta: {
@@ -176,6 +176,11 @@ if (process.env.QMODE !== 'bex') {
         },
         path: '/',
         component: () => import('pages/StaiderPrototype/Landing.vue')
+        },
+        {
+          path: '/vaults',
+          meta: { site: true },
+          component: () => import('pages/StaiderPrototype/Vaults.vue')
         },
         {
           path: '/summary',

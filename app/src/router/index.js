@@ -3,15 +3,15 @@ import VueRouter from 'vue-router'
 import Lib from '@/util/walletlib'
 import store from '../store/index.js'
 import otherRoutes from './routes'
-import login from './_login'
-import getVtx from './getVtx'
-import wallet from './wallet'
+// import login from './_login'
+// import getVtx from './getVtx'
+// import wallet from './wallet'
 
 const routes = [
-  ...otherRoutes,
-  ...getVtx,
-  ...login,
-  ...wallet
+  ...otherRoutes
+  // ...getVtx,
+  // ...login,
+  // ...wallet
 ]
 if (process.env.MODE !== 'ssr') {
   otherRoutes.push({
