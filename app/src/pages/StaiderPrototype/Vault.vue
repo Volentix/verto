@@ -31,18 +31,18 @@
               </div>
             </div>
           </q-btn-dropdown>
+          <div v-if="!canDeposit" class="q-ml-lg flex flex-center action-btn-wrapper">
+            <q-btn color="white" class="q-mt-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Whitelist to deposit" />
+          </div>
+          <div v-else class="q-ml-lg flex flex-center action-btn-wrapper">
+            <q-btn @click="depositPopup = true" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Deposit" />
+            <q-btn @click="withdrawPopup = true" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Withdraw" />
+          </div>
         </div>
         <div class="col-4 column items-center share-price-wrapper text-white">
           <span class="label">Share Price</span>
           <span class="value">{{currentVault.sharePrice}} <small>$US</small></span>
           <span v-if="$q.screen.width >= 768" class="daily-change">Daily change: <b :class="currentVault.dailyChangeStyle">{{currentVault.dailyChange}}</b></span>
-          <div v-if="!canDeposit" class="flex flex-center action-btn-wrapper">
-            <q-btn color="white" class="q-mt-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Whitelist to deposit" />
-          </div>
-          <div v-else class="flex flex-center action-btn-wrapper">
-            <q-btn @click="depositPopup = true" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Deposit" />
-            <q-btn @click="withdrawPopup = true" color="white" class="q-mt-sm q-ml-sm q-mr-sm" :class="{'q-pl-md q-pr-md': $q.screen.width >= 768}" no-caps text-color="white" outline rounded label="Withdraw" />
-          </div>
         </div>
         <div class="col-4 network-wrapper text-white">
           <span class="column pairs items-end">
@@ -109,7 +109,7 @@
               class="text-grey-6 q-mt-lg q-pa-md vaults-tabs-wrapper" :class="{'full-width': $q.screen.width < 768}"
             >
             <q-tab dark name="vault-holdings" icon="img:statics/staider/icon_my_vaults.svg" label="Vault Holdings" />
-            <q-tab dark name="trades" icon="img:statics/staider/icon_trades.svg" label="Trades" />
+            <q-tab dark name="activity" icon="img:statics/staider/icon_trades.svg" label="Activity" />
             <q-tab dark name="deposits" icon="img:statics/staider/icon_my_deposits.svg" label="Deposits" />
             <q-tab dark name="monthly-returns" icon="img:statics/staider/icon_returns.svg" label="Monthly Returns" />
           </q-tabs>
@@ -219,9 +219,30 @@
                 </div>
               </div>
             </q-tab-panel>
-            <q-tab-panel dark name="trades">
-              <div class="text-h6 q-mt-md">Trades</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <q-tab-panel dark name="activity">
+              <div class="q-mt-md">
+                <q-btn-dropdown
+                  class="activity-filter-dropdown-wrapper-btn q-pa-none"
+                  flat
+                  no-caps
+                  dark
+                  align="left"
+                  content-class="vault-dropdown-wrapper"
+                >
+                  <template v-slot:label>
+                    <span class="text-bold filter-title">Filter by</span>
+                  </template>
+                  <div class="column no-wrap dropdown-content q-pt-sm q-pb-sm coin-dropdown">
+                    <div class="flex text-white q-pl-md q-pr-md q-pb-xs q-pt-xs coin-item justify-start">
+                      <span class="text-bold filter-title">Trades</span>
+                    </div>
+                    <div class="flex text-white q-pl-md q-pr-md q-pb-xs q-pt-xs coin-item justify-start">
+                      <span class="text-bold filter-title">Deposits</span>
+                    </div>
+                  </div>
+                </q-btn-dropdown>
+              </div>
+              <activity-item :data="activity" v-for="(activity, index) in depositActivityData" :key="'activy_'+index" />
             </q-tab-panel>
             <q-tab-panel dark name="deposits">
               <div class="text-h6 q-mt-md">Deposits</div>
@@ -451,6 +472,9 @@
 
 <script>
 import ChartFund from 'components/StaiderPrototype/ChartFund'
+import ActivityItem from 'components/StaiderPrototype/ActivityItem'
+import Vue from 'vue'
+Vue.component('activity-item', ActivityItem)
 export default {
   name: 'VaultPage',
   components: {
@@ -458,6 +482,91 @@ export default {
   },
   data () {
     return {
+      depositActivityData: [
+        {
+          type: 'deposit',
+          title: 'Deposit',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#',
+          amountBalance: '4,500 USDC',
+          amountCoin: 'statics/staider/coins/usdc.svg',
+          amountEquivalent: '4,480.56 $US',
+          sharesReceived: '9,262.2413',
+          depositor: '0xcedb...b71f'
+        },
+        {
+          type: 'entrance-fee',
+          title: 'Entrance Fee',
+          date: '24 Feb 2022 14:00',
+          shares: '27.8703',
+          transactionHash: '#'
+        },
+        {
+          type: 'protocol-fee-collected',
+          title: 'Protocol Fee Collected',
+          date: '24 Feb 2022 14:00',
+          shares: '0.63935602',
+          transactionHash: '#'
+        },
+        {
+          type: 'management-fee-paid-out',
+          title: 'Management Fee Paid Out',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#',
+          fee: '2.00%',
+          shares: '2.58499555',
+          recipient: '0xcedb...b71f'
+        },
+        {
+          type: 'swap',
+          title: 'Swap',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#',
+          protocol: {
+            name: 'ParaSwap v5',
+            logo: 'statics/staider/coins/usdc.svg'
+          },
+          outgoingAsset: {
+            balance: '9,262.2413',
+            equivalent: '4,480.56 $US',
+            coin: 'statics/staider/coins/usdc.svg'
+          },
+          incommingAsset: {
+            balance: '0.1232 YFI',
+            equivalent: '2,540.80 $US',
+            coin: 'statics/staider/coins/usdc.svg'
+          }
+        },
+        {
+          type: 'vault-migration-executed',
+          title: 'Vault Migration Executed',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#'
+        },
+        {
+          type: 'vault-migration-signalled',
+          title: 'Vault Migration Signalled',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#'
+        },
+        {
+          type: 'redemption',
+          title: 'Redemption',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#',
+          amountBalance: '0.0201 USDC',
+          amountCoin: 'statics/staider/coins/usdc.svg',
+          amountEquivalent: '0.02 $US',
+          sharesReceived: '0.02',
+          depositor: '0xcedb...b71f'
+        },
+        {
+          type: 'vault-created',
+          title: 'Vault Created',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#'
+        }
+      ],
       slippage: '3%',
       advancedSettings: false,
       termsConditionPopup: false,
@@ -470,7 +579,7 @@ export default {
       withdrawPopup: false,
       canDeposit: true,
       fundID: '0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a',
-      tab: 'vault-holdings',
+      tab: 'activity',
       toggleActive: false,
       currentVault: {
         vaultIcon: 'statics/staider/sif_logo_white.svg',
@@ -489,8 +598,8 @@ export default {
       columns: [
         { headerClasses: 'th-header-style', name: 'asset', align: 'left', label: 'Asset', field: row => row.name, sortable: true, format: val => `${val}` },
         { headerClasses: 'th-header-style', name: 'balance', align: 'left', label: 'Balance', field: row => row.name, sortable: true, format: val => `${val}` },
-        { headerClasses: 'th-header-style', name: 'price', align: 'left', label: `Price(${window.localStorage.getItem('currency').toUpperCase()})`, field: row => row.name, sortable: true, format: val => `${val}` },
-        { headerClasses: 'th-header-style', name: 'value', align: 'left', label: `Value(${window.localStorage.getItem('currency').toUpperCase()})`, field: row => row.name, sortable: true, format: val => `${val}` },
+        { headerClasses: 'th-header-style', name: 'price', align: 'left', label: `Price(USD)`, field: row => row.name, sortable: true, format: val => `${val}` },
+        { headerClasses: 'th-header-style', name: 'value', align: 'left', label: `Value(USD)`, field: row => row.name, sortable: true, format: val => `${val}` },
         { headerClasses: 'th-header-style', name: 'dailyChange', align: 'left', label: 'Daily Change', field: row => row.name, sortable: true, format: val => `${val}` }
         // { headerClasses: 'th-header-style', name: 'allocation', align: 'left', label: 'Allocation', field: row => row.name, sortable: true, format: val => `${val}` }
       ],
@@ -562,6 +671,7 @@ export default {
   mounted () {
   },
   async created () {
+
   },
   methods: {
     formatNumber (number, tofix) {
@@ -697,7 +807,20 @@ export default {
       }
     }
     .vault-dropdown-col{
+      position: relative;
       margin-top: 0px;
+      .action-btn-wrapper{
+        // position: absolute;
+        // top: 0px;
+        // left: 0px;
+        // top: calc(100% + 15px);
+        transform: scale(.85);
+        position: absolute;
+        left: 180px;
+        /deep/ button{
+          background: #1D1D21 !important;
+        }
+      }
       @media screen and (max-width: 768px) {
         margin-top: -20px;
       }
@@ -764,13 +887,6 @@ export default {
         font-family: $MainFont;
         font-weight: 400;
         margin-top: -5px;
-      }
-      .action-btn-wrapper{
-        position: absolute;
-        top: calc(100% + 15px);
-        /deep/ button{
-          background: #1D1D21 !important;
-        }
       }
     }
     .network-wrapper{

@@ -174,7 +174,7 @@ module.exports = function (ctx) {
               minify: false,
               hash: false
             })
-          ) 
+          )
           cfg.optimization.splitChunks = {
             cacheGroups: {
               vendor: {
@@ -202,6 +202,21 @@ module.exports = function (ctx) {
             fix: true
           }
         })
+        cfg.module.rules.push({
+          test: /\.(glb)$/,
+          loader: 'file-loader',
+          exclude: /node_modules/
+        })
+        // cfg.module.rules.push({
+        //   test: /\.(hdr)$/,
+        //   loader: 'file-loader',
+        //   exclude: /node_modules/
+        // })
+        // cfg.module.rules.push({
+        //   test: /\.(fbx)$/,
+        //   loader: 'file-loader',
+        //   exclude: /node_modules/
+        // })
       }
     },
 

@@ -142,15 +142,28 @@ if (process.env.QMODE !== 'bex') {
       component: () => import('layouts/staiderLayoutNewPrototype.vue'),
       children: [
         {
-          path: '/staider-new-prototype/summary',
+          path: '/te/staider-new-prototype/summary',
+          meta: { site: false },
           component: () => import('pages/StaiderPrototype/Summary.vue')
         },
         {
-          path: '/staider-new-prototype/vault',
+          path: '/te/staider-new-prototype/vault',
+          meta: { site: false },
           component: () => import('pages/StaiderPrototype/Vault.vue')
         },
         {
-          path: '/staider-new-prototype/landing',
+          path: '/te/staider-new-prototype/vaults',
+          meta: { site: true },
+          component: () => import('pages/StaiderPrototype/Vaults.vue')
+        },
+        {
+          path: '/te/staider-new-prototype/landing',
+          meta: { site: true },
+          component: () => import('pages/StaiderPrototype/Landing.vue')
+        },
+        {
+          path: '/te/staider-new-prototype/landing/:currentSection',
+          meta: { site: true },
           component: () => import('pages/StaiderPrototype/Landing.vue')
         }
       ]

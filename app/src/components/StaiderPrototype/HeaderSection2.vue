@@ -3,16 +3,20 @@
     <div class="container">
       <div v-if="$q.screen.width >= 768" class="row justify-between disktop-version-wrapper">
         <div class="col-3 main-logo">
-          <router-link to="/home/">
+          <router-link to="/staider-new-prototype/landing/">
             <img src="statics/staider/staider_logo_white.svg" alt="">
           </router-link>
         </div>
         <div v-if="appSiteMode === 'site'" class="col-6 main-menu flex justify-center items-center">
           <nav class="full-width flex justify-center items-center">
-            <router-link to="/about">About Staider</router-link>
-            <router-link to="/faq">FAQ</router-link>
-            <router-link to="/documentation">Documentation</router-link>
-            <router-link to="/blog">Blog</router-link>
+            <!-- <router-link to="/about">About</router-link> -->
+            <a href="javascript:void(0)" @click="scrollToSection('home')">About</a>
+            <!-- <router-link to="/about">Vaults</router-link> -->
+            <a href="javascript:void(0)" @click="scrollToSection('vaults')">Vaults</a>
+            <!-- <router-link to="/faq">FAQs</router-link> -->
+            <a href="javascript:void(0)" @click="scrollToSection('faqs')">FAQs</a>
+            <!-- <router-link to="/documentation">Documentation</router-link> -->
+            <!-- <router-link to="/blog">Blog</router-link> -->
           </nav>
         </div>
         <div v-if="!connected" class="col-3 download-btn flex justify-end items-center">
@@ -67,12 +71,12 @@
         </div>
       </div>
       <div v-else class="row mobile-version-wrapper">
-        <div class="main-logo" :class="{'col-3': connected, 'col-6': !connected}">
+        <div class="main-logo" :class="{'col-3': connected, 'col-3': !connected}">
           <router-link to="/home/">
             <img src="statics/staider/sif_logo_white.svg" alt="">
           </router-link>
         </div>
-        <div v-if="!connected" class="col-6 main-menu flex justify-end items-center">
+        <div v-if="!connected" class="col-9 main-menu flex justify-end items-center">
           <q-btn color="white" class="shadow1 q-mr-sm" no-caps text-color="white" @click="connectPopup = true" outline rounded label="Connect Wallet" />
           <q-btn color="white" @click="menuStatOpen = !menuStatOpen" flat class="q-pa-sm" text-color="black" dense>
             <svg v-if="!menuStatOpen" version="1.1"
@@ -146,10 +150,13 @@
         </div>
         <div class="col-12 main-menu-fixed-mobile column justify-center items-center" :class="{'open':menuStatOpen}">
           <nav class="full-width column justify-start q-pa-md">
-            <router-link to="/vaults">Explore vaults</router-link>
-            <router-link to="/faq">FAQ</router-link>
-            <router-link to="/documentation">Documentation</router-link>
-            <router-link to="/blog">Blog</router-link>
+            <!-- <router-link to="/vaults">Explore vaults</router-link> -->
+            <!-- <router-link to="/faq">FAQ</router-link> -->
+            <a href="javascript:void(0)" @click="scrollToSection('home');menuStatOpen = false">About</a>
+            <a href="javascript:void(0)" @click="scrollToSection('vaults');menuStatOpen = false">Explore vaults</a>
+            <a href="javascript:void(0)" @click="scrollToSection('faqs');menuStatOpen = false">FAQs</a>
+            <!-- <router-link to="/documentation">Documentation</router-link> -->
+            <!-- <router-link to="/blog">Blog</router-link> -->
           </nav>
           <div class="full-width socialmedia flex justify-start items-center q-pa-md q-mt-xl">
             <q-btn type="a" href="https://github.com/Volentix" target="_blank" color="white" class="q-mr-sm" text-color="white" dense rounded flat icon="img:statics/staider/github_icon.svg" />
@@ -271,6 +278,20 @@ export default {
     //   window.localStorage.setItem('skin', val)
     //   this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin')
     // },
+    scrollToSection (sectionScrollName) {
+      // let sectionScrollName = this.$route.params.currentSection
+      let scrollTop = 0
+      setTimeout(() => {
+        console.log('scrollToSection', sectionScrollName)
+        try {
+          document.querySelector('#' + sectionScrollName).classList.add('activate-animation')
+          scrollTop = document.querySelector('#' + sectionScrollName).offsetTop
+        } catch (error) {
+          console.log(error.message)
+        }
+        document.querySelector('#scroll_area_wrapper .scroll').scrollTop = parseInt(scrollTop) + (scrollTop > 0 ? -120 : 0)
+      }, 100)
+    },
     connectToWalletConnect () {
       this.connectingWalletConnect = true
       setTimeout(() => {
@@ -309,7 +330,8 @@ export default {
 <style lang="scss" scoped>
   @import "assets/styles/staider_theme/helpers.scss";
   .main-header{
-    padding-top: 26px;
+    padding-top: 15px;
+    padding-bottom: 15px;
     @media screen and (max-width: 768px) {
       padding-bottom: 20px;
     }
