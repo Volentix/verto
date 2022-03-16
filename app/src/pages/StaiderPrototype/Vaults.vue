@@ -232,6 +232,7 @@ export default {
       position: relative;
       min-height: 460px;
       border-radius: 20px;
+      border: 2px solid rgba(#FFF, .9);
       &:hover{
         z-index: 99;
       }
