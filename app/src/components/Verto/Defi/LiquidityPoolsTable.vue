@@ -1,7 +1,7 @@
 <template>
   <div class="full-height">
     <q-table
-      style="max-width:800px; "
+      style="max-width:900px; "
       :light="$store.state.settings.lightMode === 'false'"
       :dark="$store.state.settings.lightMode === 'true'"
       :pagination="initialPagination"

@@ -3,6 +3,7 @@ import Lib from '@/util/walletlib'
 import { scroll, openURL } from 'quasar'
 import { toSvg } from 'jdenticon'
 import initWallet from '@/util/_Wallets2Tokens'
+
 export default {
   computed: {
     fundTotal () {
@@ -329,7 +330,9 @@ export default {
     },
     triggerTokenAction (token) {
       let found = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === token.type.toLowerCase() && o.chain === token.chain.toLowerCase())
-      if (!found) {
+      if (token.protocol === 'Enzyme') {
+        return openURL('https://staider.finance/vault/0xe00d15b722a3c3a5ae2d4dd68a302ec8fdc2ccba')
+      } else if (!found) {
         this.error.data.token = token
         this.error.msg = 'You seems very excited to ' + token.action.toLowerCase() + ' ' + token.type + '. However your wallet balance for this token is zero.'
 

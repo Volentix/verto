@@ -486,7 +486,7 @@
                   :class="{ 'q-pb-md': tab == 'receive' }"
                   v-if="!showQr[chain.chain]"
                 >
-                  <img :src="chain.icon" />
+                  <img :src="chain.icon"  />
                 </div>
                 <div
                   v-if="
@@ -883,7 +883,7 @@
             <div class="main cursor-pointer">
               <div class="main-top">
                 <div class="mt-img">
-                  <img :src="asset.icon" :onerror="defaultToken(asset.chain)" />
+                  <img :src="asset.icon" style="border-radius:50%" :onerror="defaultToken(asset.chain)" />
                 </div>
                 <div>
                   <h6>

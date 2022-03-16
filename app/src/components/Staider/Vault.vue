@@ -26,8 +26,8 @@
             </template>
             <div class="column no-wrap dropdown-content">
               <div class="column nav q-pa-md text-white">
-                <router-link to="/funds/sif-usdc-vault" class="text-white">SIF USDC Vault</router-link>
-                <router-link to="/funds/pulsechain-vault" class="text-white">PulseChain Vault</router-link>
+                <router-link to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" class="text-white">SIF USDC Vault</router-link>
+                <router-link to="/vault/0xe00d15b722a3c3a5ae2d4dd68a302ec8fdc2ccba" class="text-white">PulseChain Vault</router-link>
               </div>
             </div>
           </q-btn-dropdown>
@@ -586,7 +586,7 @@ export default {
       depositPopup: false,
       withdrawPopup: false,
       canDeposit: true,
-      fundID: '0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a',
+      fundID: null,
       tab: 'vault-holdings',
       toggleActive: false,
       upgrading: false,
@@ -705,6 +705,7 @@ export default {
   mounted () {
   },
   async created () {
+    this.fundID = this.$route.params.fundID
     this.loading = true
 
     if (this.$store.state.settings.components[this.fundID]) {

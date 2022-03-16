@@ -2,8 +2,10 @@ import axios from 'axios'
 import store from '@/store'
 import Lib from '@/util/walletlib'
 import CW20s from '@/statics/json/cw20.json'
-
 import EosWrapper from '@/util/EosWrapper'
+const Format = {
+  formatNumber: (n) => n
+}
 /*
 refresParams = {
   chains:[]
@@ -39,6 +41,40 @@ class Wallets2Tokens {
     let found = cacheData.find(o => o.key.toLowerCase() === wallet.key.toLowerCase() && o.name.toLowerCase() === wallet.name.toLowerCase() && o.chain.toLowerCase() === wallet.type.toLowerCase())
     console.log(found, cacheData, wallet)
     return found
+  }
+
+  async getVaultPerformance (fundAddress) {
+    let performance = null
+    let data = JSON.stringify({
+      'operationName': 'VaultPerformanceLatest',
+      'variables': {
+        'currency': 'usd',
+        'network': 'ethereum',
+        'vault': fundAddress
+      },
+      'query': 'query VaultPerformanceLatest($currency: Currency!, $network: Network!, $vault: Address!) {\n  vaultPerformanceLatest(currency: $currency, network: $network, vault: $vault) {\n    totalSupply\n    netShareValue\n    grossAssetValue\n    netAssetValue\n    performance24h\n    performanceMtd\n    performanceQtd\n    performanceYtd\n    performanceSinceInception\n    __typename\n  }\n}'
+    })
+
+    let config = {
+      method: 'post',
+      url: process.env[store.state.settings.network].CACHE + 'https://app.enzyme.finance/api/graphql',
+      headers: {
+        'Content-type': 'application/json' },
+      data: data
+    }
+
+    let response = await axios(config)
+    if (response && response.data && response.data.data) {
+      performance = response.data.data.vaultPerformanceLatest
+      performance.aum = Format.formatNumber(performance.grossAssetValue, 2)
+      performance.apy = Format.formatNumber(performance.performanceYtd * 100, 2)
+      performance.apyStyle = performance.performanceYtd < 0 ? 'red' : 'green'
+      performance.sharePrice = Format.formatNumber(performance.netShareValue)
+      let change = performance.performance24h / performance.netShareValue * 100
+      performance.dailyChange = Format.formatNumber(change, 2) + '%'
+      performance.dailyChangeStyle = change < 0 ? 'red' : 'green'
+    }
+    return performance
   }
   initWallet () {
     // store.state.currentwallet.config.keys = '[{"name":"EOS Key","type":"verto","origin":"mnemonic","key":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ","defaultKey":true},{"name":"Bitcoin","type":"btc","origin":"mnemonic","key":"1BfUMHXcS3RoZYvFT3nYTwQDb27RAxqy9J","defaultKey":false,"to":"/verto/wallets/btc/btc/1BfUMHXcS3RoZYvFT3nYTwQDb27RAxqy9J","chain":"btc","disabled":false,"icon":"https://files.coinswitch.co/public/coins/btc.png","index":"1BfUMHXcS3RoZYvFT3nYTwQDb27RAxqy9J-btc","multitoken":false,"amount":0,"tokenPrice":39520,"usd":0},{"name":"Account 1","type":"eth","origin":"mnemonic","key":"0xcedb32e1f02a27d42f5f5023ae530077d4a8b71f","defaultKey":false,"to":"/verto/wallets/eth/eth/0xcedb32e1f02a27d42f5f5023ae530077d4a8b71f","chain":"eth","disabled":false,"icon":"https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png","index":"0xcedb32e1f02a27d42f5f5023ae530077d4a8b71f-eth","isEvm":true,"multitoken":true,"total":3278.1176760469725,"amount":1.2423390414449704,"decimals":18,"usd":3278.023698916368,"tokenPrice":2638.5902636559526},{"name":"Binance Chain","type":"bnb","origin":"mnemonic","key":"bnb1je2jftxphqvfx45y8v4tzwf9tl0t8ax76xfm7d","defaultKey":false,"to":"/verto/wallets/bnb/bnb/bnb1je2jftxphqvfx45y8v4tzwf9tl0t8ax76xfm7d","chain":"bnb","disabled":false,"icon":"https://files.coinswitch.co/public/coins/bnb.png","index":"bnb1je2jftxphqvfx45y8v4tzwf9tl0t8ax76xfm7d-bnb","multitoken":false,"amount":0,"tokenPrice":371.65,"usd":0},{"name":"Litecoin","type":"ltc","origin":"mnemonic","key":"LYSZCcJqpjQpUvTppwX322GpDHgPUefkEa","defaultKey":false,"to":"/verto/wallets/ltc/ltc/LYSZCcJqpjQpUvTppwX322GpDHgPUefkEa","chain":"ltc","disabled":false,"icon":"https://files.coinswitch.co/public/coins/ltc.png","index":"LYSZCcJqpjQpUvTppwX322GpDHgPUefkEa-ltc","multitoken":false,"amount":0,"tokenPrice":107.53,"usd":0},{"name":"DASH","type":"dash","origin":"mnemonic","key":"XoNz5qG9t8K4LK5MP1GQQ3vCR2aUAQddRC","defaultKey":false,"to":"/verto/wallets/dash/dash/XoNz5qG9t8K4LK5MP1GQQ3vCR2aUAQddRC","chain":"dash","disabled":false,"icon":"https://files.coinswitch.co/public/coins/dash.png","index":"XoNz5qG9t8K4LK5MP1GQQ3vCR2aUAQddRC-dash","multitoken":false,"amount":0,"tokenPrice":96,"usd":0},{"name":"Avalanche","type":"avax","origin":"mnemonic","key":"X-avax1m5x5w9lvst4xfrw7ayzd7gg68wwvh58u5radlq","defaultKey":false,"to":"/verto/wallets/avax/avax/X-avax1m5x5w9lvst4xfrw7ayzd7gg68wwvh58u5radlq","chain":"avax","disabled":false,"icon":"https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png","index":"X-avax1m5x5w9lvst4xfrw7ayzd7gg68wwvh58u5radlq-avax","multitoken":true},{"name":"Polkadot","type":"dot","origin":"mnemonic","key":"12izQG9wLpiaAYdPD9oVQGGJQ7Qgo5Bg2E6XybDqAtz7tvEF","defaultKey":false,"to":"/verto/wallets/dot/dot/12izQG9wLpiaAYdPD9oVQGGJQ7Qgo5Bg2E6XybDqAtz7tvEF","chain":"dot","disabled":false,"icon":"https://files.coinswitch.co/public/coins/dot.png","index":"12izQG9wLpiaAYdPD9oVQGGJQ7Qgo5Bg2E6XybDqAtz7tvEF-dot","multitoken":true,"amount":0,"tokenPrice":17.86,"usd":0},{"name":"Kusama","type":"ksm","origin":"mnemonic","key":"EJJvFEk7QU2UfSK2DZYA4o9h5hGuSSiQ7CoCxWS6cB6TdpA","defaultKey":false,"to":"/verto/wallets/ksm/ksm/EJJvFEk7QU2UfSK2DZYA4o9h5hGuSSiQ7CoCxWS6cB6TdpA","chain":"ksm","disabled":false,"icon":"https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg","index":"EJJvFEk7QU2UfSK2DZYA4o9h5hGuSSiQ7CoCxWS6cB6TdpA-ksm","multitoken":true,"amount":0,"tokenPrice":121.5,"usd":0},{"name":"Solana","type":"sol","origin":"mnemonic","key":"DjbXv4FE267QWJk54ddKAKfZHEsd7DeEbtyUjxzLZ1ku","defaultKey":false,"to":"/verto/wallets/sol/sol/DjbXv4FE267QWJk54ddKAKfZHEsd7DeEbtyUjxzLZ1ku","chain":"sol","disabled":false,"icon":"https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png","index":"DjbXv4FE267QWJk54ddKAKfZHEsd7DeEbtyUjxzLZ1ku-sol","multitoken":true,"amount":0,"tokenPrice":84.01,"usd":0},{"name":"Stellar Lumens","type":"xlm","origin":"mnemonic","key":"GBI7IFJRR5A3WIMC6IOB6OAO6ZNT3IH6LYJVLNUEKPN7KHPUA6NIXWCH","defaultKey":false,"to":"/verto/wallets/xlm/xlm/GBI7IFJRR5A3WIMC6IOB6OAO6ZNT3IH6LYJVLNUEKPN7KHPUA6NIXWCH","chain":"xlm","disabled":false,"icon":"https://files.coinswitch.co/public/coins/xlm.png","index":"GBI7IFJRR5A3WIMC6IOB6OAO6ZNT3IH6LYJVLNUEKPN7KHPUA6NIXWCH-xlm","multitoken":false},{"name":"Terra","type":"terra","origin":"mnemonic","key":"terra1dhyqt7qrex4m4g9sehdj3tqyxzwnzjlq9u8uzx","defaultKey":false,"to":"/verto/wallets/terra/terra/terra1dhyqt7qrex4m4g9sehdj3tqyxzwnzjlq9u8uzx","chain":"terra","disabled":false,"icon":"https://files.coinswitch.co/public/coins/terra.png","index":"terra1dhyqt7qrex4m4g9sehdj3tqyxzwnzjlq9u8uzx-terra","multitoken":true},{"name":"Tezos","type":"xtz","origin":"mnemonic","key":"tz1XMqDP2r3eUUmqScZZVaxhVHNLF3si8mPC","defaultKey":false,"to":"/verto/wallets/xtz/xtz/tz1XMqDP2r3eUUmqScZZVaxhVHNLF3si8mPC","chain":"xtz","disabled":false,"icon":"https://files.coinswitch.co/public/coins/xtz.png","index":"tz1XMqDP2r3eUUmqScZZVaxhVHNLF3si8mPC-xtz","multitoken":false},{"name":"victoreosvtx","type":"eos","origin":"mnemonic","key":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ","defaultKey":false,"to":"/verto/wallets/eos/eos/victoreosvtx","icon":"https://files.coinswitch.co/public/coins/eos.png","chain":"eos","disabled":false,"index":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ-eos-victoreosvtx","multitoken":true,"vtxStakes":2300000,"vtxStakesUsd":20000.064000000002,"amount":"0.0000","usd":0,"contract":"eosio.token","tokenPrice":1.99555511,"precision":4,"vtx":4,"accountData":{"account_name":"victoreosvtx","head_block_num":236418652,"head_block_time":"2022-03-15T20:38:41.500","privileged":false,"last_code_update":"1970-01-01T00:00:00.000","created":"2022-03-02T06:42:42.000","ram_quota":6699,"net_weight":11639,"cpu_weight":33708864,"net_limit":{"used":129,"available":21737,"max":21866},"cpu_limit":{"used":197,"available":2837,"max":3034},"ram_usage":3574,"permissions":[{"perm_name":"active","parent":"owner","required_auth":{"threshold":1,"keys":[{"key":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ","weight":1}],"accounts":[],"waits":[]}},{"perm_name":"owner","parent":"","required_auth":{"threshold":1,"keys":[{"key":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ","weight":1}],"accounts":[],"waits":[]}}],"total_resources":{"owner":"victoreosvtx","net_weight":"1.1639 EOS","cpu_weight":"3370.8864 EOS","ram_bytes":5299},"self_delegated_bandwidth":{"from":"victoreosvtx","to":"victoreosvtx","net_weight":"0.1000 EOS","cpu_weight":"0.1000 EOS"},"refund_request":null,"voter_info":{"owner":"victoreosvtx","proxy":"","producers":[],"staked":2000,"last_vote_weight":"0.00000000000000000","proxied_vote_weight":"0.00000000000000000","is_proxy":0,"flags1":0,"reserved2":0,"reserved3":"0 "},"rex_info":null,"subjective_cpu_bill_limit":{"used":0,"available":0,"max":0}},"proxy":"","staked":0.2}]'
@@ -287,10 +323,23 @@ class Wallets2Tokens {
                         .map(async (t, index) => {
                           t.tokenInfo.image = 'https://tokens.1inch.io/' + t.tokenInfo.address + '.png'
 
-                          let usd = t.tokenInfo.symbol ? Lib.findInExchangeList('eth', t.tokenInfo.symbol.toLowerCase(), t.tokenInfo.address) : false
+                          // let usd = t.tokenInfo.symbol ? Lib.findInExchangeList('eth', t.tokenInfo.symbol.toLowerCase(), t.tokenInfo.address) : false
+                          let image = t.tokenInfo.image
                           let amount =
-                            (t.balance / 10 ** t.tokenInfo.decimals) *
-                            t.tokenInfo.price.rate
+                            (t.balance / 10 ** t.tokenInfo.decimals), rate = 0
+                          if (t.tokenInfo.symbol.toLowerCase() === 'enzf') {
+                            let performance = await this.getVaultPerformance(t.tokenInfo.address)
+                            if (performance) {
+                              rate = performance.sharePrice
+                            }
+                            if (['0xe00d15b722a3c3a5ae2d4dd68a302ec8fdc2ccba', '0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a'].includes(t.tokenInfo.address)) {
+                              image = '/statics/img/staider-logo.png'
+                            }
+                          } else {
+                            rate = t.tokenInfo.price ? t.tokenInfo.price.rate : 0
+                          }
+                          amount = amount * rate
+
                           self.tableData.push({
                             isEvm: true,
                             disabled: false,
@@ -298,7 +347,7 @@ class Wallets2Tokens {
                               ? t.tokenInfo.symbol.toLowerCase()
                               : '',
                             name: wallet.name,
-                            tokenPrice: usd ? t.tokenInfo.price.rate : 0,
+                            tokenPrice: rate,
                             key: wallet.key.toLowerCase(),
                             decimals: parseInt(t.tokenInfo.decimals),
                             privateKey: wallet.privateKey,
@@ -311,7 +360,7 @@ class Wallets2Tokens {
                               t.tokenInfo.symbol.toLowerCase() +
                               '/' +
                               wallet.key,
-                            icon: t.tokenInfo.image
+                            icon: image
                           })
 
                           // store.state.wallets.portfolioTotal += isNaN(amount) ? 0 : amount
