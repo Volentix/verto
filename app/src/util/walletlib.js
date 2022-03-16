@@ -102,9 +102,33 @@ class Lib {
       this.evms = evms
     }
   }
+  async getEtherereumPriceGasPrices () {
+    let data = false
+    let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.gasprice.io/v1/estimates')
+    if (res && res.data && res.data.result) {
+      data = {
+        normal: {
+          gwei: res.data.result.eco.feeCap
+        },
+        fast: {
+          gwei: res.data.result.fast.feeCap
+        },
+        instant: {
+          gwei: res.data.result.instant.feeCap
+        }
+      }
+    }
+    return data
+  }
   async getEtherereumPriceGas () {
-    let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://ethgas.watch/api/gas')
-    return res.data.fast.gwei
+    let gas = null
+    let res = await this.getEtherereumPriceGasPrices()
+    if (res) {
+      gas = res.instant.gwei
+    } else {
+      alert('Error fetching gas price')
+    }
+    return gas
   }
   async hexStake (address) {
     let locked = 0
@@ -301,7 +325,7 @@ class Lib {
       }
     }
 
-    let web3Value = localWeb3.utils.toHex(value * 10 ** toToken.decimals)
+    let web3Value = localWeb3.utils.toHex(parseInt(value * 10 ** toToken.decimals).toString())
 
     let sendTo = to
     let data = null
@@ -1073,7 +1097,15 @@ class Lib {
 
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
-      if (evmData.gas && evmData.gas.length) { response = await axios.get(process.env[store.state.settings.network].CACHE + evmData.gas) }
+      if (evmData.gas && evmData.gas.length) {
+        if (chain === 'eth') {
+          response = {
+            data: await this.getEtherereumPriceGasPrices()
+          }
+        } else {
+          response = await axios.get(process.env[store.state.settings.network].CACHE + evmData.gas)
+        }
+      }
 
       gasData = {
         gas: gasLimit || 21000,
@@ -1106,7 +1138,6 @@ class Lib {
       async tpls () {
         gasData.gasPrice = await web3.eth.getGasPrice()
         transaction.value = 0
-        transaction.data = '0xf9f585dd000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000915f86d27e4e4a58e93e59459119faaf610b5be10000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000f032000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000d344d470cb9397'
         if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
@@ -1160,7 +1191,7 @@ class Lib {
             gasOptions.push(gasOption)
           })
         }
-        // console.log(gasOptions, 'gasOptions')
+        console.log(gasOptions, 'gasOptions')
         return gasOptions
       },
       async avaxc () {
@@ -1929,6 +1960,11 @@ class Lib {
           nonce,
           chainId: evmData.network_id
         }
+
+        /* if (rawTx) {
+          console.log(rawTx)
+          return
+        } */
 
         if (info && (typeof info === 'object') && info.gasData) {
           rawTx.gas = info.gasData.gas

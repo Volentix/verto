@@ -18,6 +18,9 @@ class Wallets2Tokens {
         acount: null
       }
     }
+    if (!refresParams) {
+      refresParams.fromCache = true
+    }
 
     if (!refresParams.chains) {
       refresParams.chains = []
@@ -32,12 +35,14 @@ class Wallets2Tokens {
     this.initWallet()
   }
   isFoundInCache (wallet, cacheData = []) {
-    return cacheData.find(o => o.key.toLowerCase() === wallet.key.toLowerCase() && o.name.toLowerCase() === wallet.name.toLowerCase() && o.type.toLowerCase() === wallet.type.toLowerCase())
+    let found = cacheData.find(o => o.key.toLowerCase() === wallet.key.toLowerCase() && o.name.toLowerCase() === wallet.name.toLowerCase() && o.chain.toLowerCase() === wallet.type.toLowerCase())
+    console.log(found, cacheData, wallet)
+    return found
   }
   initWallet () {
     let watchAccounts = localStorage.getItem('watchAccounts')
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-    watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || !store.state.currentwallet.config.keys.find(a => a.key === o.key.toLowerCase()))
+    watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || !store.state.currentwallet.config.keys.find(a => a.key.toLowerCase() === o.key.toLowerCase()))
     watchAccounts.map(a => {
       a.key = a.key.trim()
       a.name = a.name.trim()
@@ -49,11 +54,12 @@ class Wallets2Tokens {
     this.tableData = !this.refresParams.account && !this.refresParams.chains.length && !this.refresParams.fromCache ? accounts : accounts.filter(
       w => !this.isFoundInCache(w, this.tableDataCache)
     )
+    console.log(this.tableData, 'wallet', this.refresParams)
     this.tableData.sort(function (a, b) {
       return a.type === 'eth' ? -1 : 1
     })
     this.fetchCustomTokens(this.tableData)
-    console.log(this.tableData, ' this.tableData', store.state.currentwallet.config.keys, this.tableDataCache)
+
     this.tableData.map(wallet => {
       if (!wallet.hasOwnProperty('type')) {
         wallet.type = 'verto'
@@ -133,6 +139,7 @@ class Wallets2Tokens {
           wallet.usd = result.usd
         })
       } else if (wallet.type === 'terra') {
+        console.log(wallet, 'terra')
         this.getTerraBalance(wallet)
       }
     })
@@ -1011,8 +1018,8 @@ class Wallets2Tokens {
     return currentAsset
   }
 }
-const initWallet = async (walletName, chains) => {
-  let wallet = new Wallets2Tokens(walletName, chains)
+const initWallet = async (refresParams, chains) => {
+  let wallet = new Wallets2Tokens(refresParams, chains)
   return wallet
 }
 export default initWallet

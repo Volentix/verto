@@ -73,7 +73,7 @@
           <h2 class="text-shadow1">Come discover our Vaults and their performance</h2>
           <p>Discover and follow the best yield farmers with just one click. Historical APY, farming philosophy, risk appetite; You can see it all.</p>
           <div class="cta-view-all flex justify-end">
-            <q-btn flat color="white" class="q-ml-sm text-bold" dense icon-right="keyboard_arrow_right" no-caps text-color="white" to="/te/staider-new-prototype/vaults" label="View All Vaults" />
+            <q-btn flat color="white" class="q-ml-sm text-bold" dense icon-right="keyboard_arrow_right" no-caps text-color="white" to="/vaults" label="View All Vaults" />
           </div>
         </div>
         <div :class="{'col-6': $q.screen.width > 768, 'col-12': $q.screen.width < 768}">

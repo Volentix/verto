@@ -17,7 +17,7 @@ export const updateTokens = (state, updatedtokens) => {
   if (!updatedtokens) {
     updatedtokens = []
   }
-  updatedtokens = updatedtokens.filter((o, idx, all) => all.findIndex(t => t.chain === o.chain && t.type === o.type && t.name === o.name && t.key === o.key) === idx)
+  updatedtokens = updatedtokens.filter((o, idx, all) => all.findIndex(t => t.chain === o.chain && t.type.toLowerCase() === o.type.toLowerCase() && t.name.toLowerCase() === o.name.toLowerCase() && t.key.toLowerCase() === o.key.toLowerCase()) === idx)
 
   updatedtokens = updatedtokens.map((o) => {
     o.index = getWalletIndex(o)

@@ -99,9 +99,9 @@
         ]"
         class="q-mb-sm"
       >
-        <q-toolbar-title :class="[card.textColor]" class="text-bold"
+        <q-toolbar-title  :class="[card.textColor]" class="text-bold"
           >{{ card.title }}
-          <span class="float-right text-grey text-bold shad"
+          <span v-if="card.type !== 'farms'" class="float-right text-grey text-bold shad"
             >${{ nFormatter2(total,card.type == 'investments' ? 0 : 1) }}</span
           >
         </q-toolbar-title>
@@ -120,7 +120,7 @@
           found
         </div>
         <q-item
-          @click="$emit('setItemAction', { item: item, tab: card.type })"
+          @click="card.type == 'farms' ? $set(menuState, i , !menuState[i]) : $emit('setItemAction', { item: item, tab: card.type })"
           v-for="(item, i) in card.data.slice(0, card.limit)"
           :key="i+card.type"
           class="q-mb-sm"
@@ -144,6 +144,10 @@
               }}</q-item-label
             >
           </q-item-section>
+             <q-item-section v-if="card.type == 'farms'">
+            <q-item-label lines="1">{{ item.type }}</q-item-label>
+         <q-item-label class="text-h6 text-green text-bold"><q-icon name="trending_up" />  {{ item.apy }}%</q-item-label>
+          </q-item-section>
           <q-item-section v-else-if="card.type == 'assets'">
             <q-item-label  lines="1">{{ item.type.toUpperCase() }}</q-item-label>
 
@@ -165,8 +169,50 @@
               caption>{{ formatNumber(item.amount , 1) }} <span v-if="item.usd">| ${{ nFormatter2(item.usd,1) }}</span></q-item-label
             >
           </q-item-section>
+          <q-item-section class="farm-action" v-if="card.type == 'farms'" side>
 
-          <q-item-section v-if="!card.hideArrow" side>
+            <q-btn-dropdown
+
+       v-model="menuState[i]"
+      dense
+      flat
+      icon="more_vert"
+    >
+      <q-list :dark="$store.state.settings.lightMode === 'true'" :class="$store.state.settings.lightMode === 'false'
+            ? ''
+            : 'title-bg'" >
+        <q-item @click="triggerTokenAction(item)" clickable v-close-popup >
+          <q-item-section avatar>
+           <q-avatar>
+              <img :src="item.icon"  :onerror="defaultToken(item.chain)"/>
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+           <q-item-label class="texth-h6 text-bold">{{item.action}} </q-item-label>
+
+          </q-item-section>
+          <q-item-section side>
+            <q-icon name="keyboard_arrow_right" />
+          </q-item-section>
+        </q-item>
+
+        <q-item @click="exchangeToken(item)" class="texth-h6 text-bold" v-if="item.buy" clickable v-close-popup >
+          <q-item-section avatar>
+          <q-avatar>
+              <img :src="item.icon"  :onerror="defaultToken(item.chain)"/>
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Buy </q-item-label>
+          </q-item-section>
+         <q-item-section side>
+            <q-icon name="keyboard_arrow_right" />
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
+          </q-item-section>
+          <q-item-section v-else-if="!card.hideArrow" side>
             <q-icon name="chevron_right" color="grey" />
           </q-item-section>
         </q-item>
@@ -189,15 +235,18 @@
         </q-item>
       </q-list>
     </div>
+      <ErrorDialog @hideDialog="error.msg = null" :key="error.msg" v-if="error.msg" :error="error" />
   </div>
 </template>
 <script>
+import ErrorDialog from '../Accounts/ErrorDialog'
 import Formatter from '@/mixins/Formatter'
 import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 export default {
   mixins: [Formatter],
   components: {
-    AssetBalancesTable
+    AssetBalancesTable,
+    ErrorDialog
   },
   props: ['card', 'getChainTotal', 'itemAction'],
   computed: {
@@ -218,7 +267,17 @@ export default {
   },
   data () {
     return {
-      mode: 'mini'
+      menuState: {},
+      mode: 'mini',
+      openDialog: false,
+      error: {
+        msg: null,
+        data: {
+          token: null,
+          import: true,
+          buy: true
+        }
+      }
     }
   }
 }
@@ -226,6 +285,9 @@ export default {
 <style scoped>
 .title-bg {
   background-color: #0a1830;
+}
+/deep/ .q-btn-dropdown__arrow {
+    display: none;
 }
 
 /*--- myportofolio-area start ---*/
@@ -338,7 +400,11 @@ export default {
    font-weight: bold;
     color: #3f4262;
 }
-
+.farm-action  {
+width: 10px !important;
+    display: contents;
+    padding-left: 20px;
+    }
 .bitcoin-part_a2 h5 {
     font-family: 'Poppins-Regular';
     color: #bdbfbc;

@@ -50,7 +50,7 @@
                 </h2>
                 <h3   class="q-pl-lg q-pr-md">
 
-                 <span class="historicalPrice"> ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,18).split(".")[0] : formatNumber(asset.rateUsd, 18).split(".")[0]
+                 <span class="historicalPrice"> ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,18).split(".")[0] : formatNumber(asset.rateUsd, 3).split(".")[0]
                   }} </span><span
                   class="g-txt"
                     style="

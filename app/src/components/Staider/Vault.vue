@@ -119,7 +119,7 @@
               class="text-grey-6 q-mt-lg q-pa-md vaults-tabs-wrapper" :class="{'full-width': $q.screen.width < 768}"
             >
             <q-tab dark name="vault-holdings" icon="img:statics/staider/icon_my_vaults.svg" label="Vault Holdings" />
-            <q-tab dark name="trades" icon="img:statics/staider/icon_trades.svg" label="Trades" />
+            <q-tab dark name="activity" icon="img:statics/staider/icon_trades.svg" label="Activity" />
             <q-tab dark name="deposits" icon="img:statics/staider/icon_my_deposits.svg" label="Deposits" />
             <q-tab dark name="monthly-returns" icon="img:statics/staider/icon_returns.svg" label="Monthly Returns" />
           </q-tabs>
@@ -334,6 +334,31 @@
                 </div>
               </div>
             </q-tab-panel>
+            <q-tab-panel dark name="activity">
+              <div class="q-mt-md">
+                <q-btn-dropdown
+                  class="activity-filter-dropdown-wrapper-btn q-pa-none"
+                  flat
+                  no-caps
+                  dark
+                  align="left"
+                  content-class="vault-dropdown-wrapper"
+                >
+                  <template v-slot:label>
+                    <span class="text-bold filter-title">Filter by</span>
+                  </template>
+                  <div class="column no-wrap dropdown-content q-pt-sm q-pb-sm coin-dropdown">
+                    <div class="flex text-white q-pl-md q-pr-md q-pb-xs q-pt-xs coin-item justify-start">
+                      <span class="text-bold filter-title">Trades</span>
+                    </div>
+                    <div class="flex text-white q-pl-md q-pr-md q-pb-xs q-pt-xs coin-item justify-start">
+                      <span class="text-bold filter-title">Deposits</span>
+                    </div>
+                  </div>
+                </q-btn-dropdown>
+              </div>
+              <ActivityItem :data="activity" v-for="(activity, index) in depositActivityData" :key="'activy_'+index" />
+            </q-tab-panel>
             <q-tab-panel dark name="monthly-returns">
              <q-table
                 flat
@@ -449,11 +474,13 @@ import DepositPopup from './Fund/DepositPopupV4.vue'
 import ChartFund from 'components/StaiderPrototype/ChartFund'
 import EnzymeV4 from '@/util/Staider/EnzymeV4'
 import Formatter from '@/mixins/Formatter'
+import ActivityItem from 'components/StaiderPrototype/ActivityItem'
 export default {
   name: 'VaultPage',
   mixins: [Formatter],
   components: {
     ChartFund,
+    ActivityItem,
     DepositPopup
   },
   destroyed () {
@@ -462,6 +489,91 @@ export default {
   data () {
     return {
       slippage: '3%',
+      depositActivityData: [
+        {
+          type: 'deposit',
+          title: 'Deposit',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#',
+          amountBalance: '4,500 USDC',
+          amountCoin: 'statics/staider/coins/usdc.svg',
+          amountEquivalent: '4,480.56 $US',
+          sharesReceived: '9,262.2413',
+          depositor: '0xcedb...b71f'
+        },
+        {
+          type: 'entrance-fee',
+          title: 'Entrance Fee',
+          date: '24 Feb 2022 14:00',
+          shares: '27.8703',
+          transactionHash: '#'
+        },
+        {
+          type: 'protocol-fee-collected',
+          title: 'Protocol Fee Collected',
+          date: '24 Feb 2022 14:00',
+          shares: '0.63935602',
+          transactionHash: '#'
+        },
+        {
+          type: 'management-fee-paid-out',
+          title: 'Management Fee Paid Out',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#',
+          fee: '2.00%',
+          shares: '2.58499555',
+          recipient: '0xcedb...b71f'
+        },
+        {
+          type: 'swap',
+          title: 'Swap',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#',
+          protocol: {
+            name: 'ParaSwap v5',
+            logo: 'statics/staider/coins/usdc.svg'
+          },
+          outgoingAsset: {
+            balance: '9,262.2413',
+            equivalent: '4,480.56 $US',
+            coin: 'statics/staider/coins/usdc.svg'
+          },
+          incommingAsset: {
+            balance: '0.1232 YFI',
+            equivalent: '2,540.80 $US',
+            coin: 'statics/staider/coins/usdc.svg'
+          }
+        },
+        {
+          type: 'vault-migration-executed',
+          title: 'Vault Migration Executed',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#'
+        },
+        {
+          type: 'vault-migration-signalled',
+          title: 'Vault Migration Signalled',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#'
+        },
+        {
+          type: 'redemption',
+          title: 'Redemption',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#',
+          amountBalance: '0.0201 USDC',
+          amountCoin: 'statics/staider/coins/usdc.svg',
+          amountEquivalent: '0.02 $US',
+          sharesReceived: '0.02',
+          depositor: '0xcedb...b71f'
+        },
+        {
+          type: 'vault-created',
+          title: 'Vault Created',
+          date: '24 Feb 2022 14:00',
+          transactionHash: '#'
+        }
+      ],
       loading: true,
       actionType: null,
       advancedSettings: false,

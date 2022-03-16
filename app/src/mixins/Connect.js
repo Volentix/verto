@@ -162,7 +162,7 @@ export default {
       let element2 = document.createElement('script')
       element.setAttribute('src', 'https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js')
       document.head.appendChild(element)
-      element2.setAttribute('src', 'https://unpkg.com/moralis/dist/moralis.js')
+      element2.setAttribute('src', 'https://unpkg.com/moralis@1.5.1/dist/moralis.js')
       document.head.appendChild(element2)
     },
     setUser (address, wallet = 'metamask', balance = 0) {
