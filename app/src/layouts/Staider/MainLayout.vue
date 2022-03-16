@@ -6,8 +6,7 @@
     </q-header>
 
     <div class="animation_simulation_wrapper flex justify-center items-center">
-      <img v-if="true" src="statics/staider/var1.png" alt="">
-      <canvas v-else id="abstract_aniamtion"></canvas>
+      <img src="statics/staider/var1.png" class="bg_fixed_animated animate__heartBeat" alt="">
     </div>
 
     <q-drawer
@@ -20,7 +19,7 @@
       </q-scroll-area>
     </q-drawer>
 
-    <q-scroll-area style="height: calc(100vh - 180px)" class="scroll_area_wrapper" :class="{'height-auto': $q.screen.width < 768, 'site': $route.meta.site}" dark>
+    <q-scroll-area id="scroll_area_wrapper" ref="scrollAreaWrapper" style="height: calc(100vh - 180px)" class="scroll_area_wrapper" :class="{'height-auto': $q.screen.width < 768, 'site': appSiteMode === 'site'}" dark>
       <q-scroll-observer @scroll="onScroll" />
       <q-page-container>
         <!-- This is where pages get injected -->
@@ -50,7 +49,7 @@ export default {
   },
   data () {
     return {
-      appSiteMode: 'site',
+      // appSiteMode: 'site',
       leftDrawer: false,
       currentPage: '',
       backdrop: false
@@ -59,6 +58,11 @@ export default {
 
   async created () {
     await this.initConnect()
+  },
+  computed: {
+    appSiteMode () {
+      return this.$route.meta.site ? 'site' : 'app'
+    }
   },
   methods: {
     onScroll (info) {
@@ -71,9 +75,14 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+</style>
 <style>
   body {overflow: hidden !important;}
   .q-menu{z-index: 99999 !important;}
+  #abstract_aniamtion{
+    width: 100%;
+  }
 </style>
 <style lang="scss" scoped>
   @import "assets/styles/staider_theme/helpers.scss";
@@ -172,10 +181,42 @@ export default {
     z-index: 1;
     width: 100%;
     height: 100%;
-    background: #040404 !important;
+    background: #16161A !important;
+    // background: #040404 !important;
+    canvas{
+      mix-blend-mode: color-dodge;
+    }
     img{
       width: 100%;
+      @media screen and (max-width: 768px) {
+        width: auto;
+        max-width: unset;
+        height: 100%;
+      }
     }
+  }
+  @-webkit-keyframes heartBeat{
+    0%{opacity: 1;}
+    50%{opacity: .7;}
+    100%{opacity: 1;}
+  }
+  @keyframes heartBeat{
+    0%{opacity: 1;}
+    50%{opacity: .7;}
+    100%{opacity: 1;}
+  }
+  .animate__heartBeat{
+    -webkit-animation-name:heartBeat;
+    animation-name:heartBeat;
+    -webkit-animation-duration:5s;
+    animation-duration:5s;
+    -webkit-animation-duration:5s;
+    animation-duration:5s;
+    -webkit-animation-timing-function:ease-in-out;
+    animation-timing-function:ease-in-out;
+
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
   }
 </style>
 <style>

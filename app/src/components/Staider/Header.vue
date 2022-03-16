@@ -7,12 +7,15 @@
             <img src="statics/staider/staider_logo_white.svg" alt="">
           </router-link>
         </div>
-        <div v-if="false" class="col-6 main-menu flex justify-center items-center">
+        <div v-if="appSiteMode === 'site'" class="col-6 main-menu flex justify-center items-center">
           <nav class="full-width flex justify-center items-center">
-            <router-link to="/about">About Staider</router-link>
+            <!-- <router-link to="/about">About Staider</router-link>
             <router-link to="/faq">FAQ</router-link>
             <router-link to="/documentation">Documentation</router-link>
-            <router-link to="/blog">Blog</router-link>
+            <router-link to="/blog">Blog</router-link> -->
+            <a href="javascript:void(0)" @click="scrollToSection('home')">About</a>
+            <a href="javascript:void(0)" @click="scrollToSection('vaults')">Vaults</a>
+            <a href="javascript:void(0)" @click="scrollToSection('faqs')">FAQs</a>
           </nav>
         </div>
         <div v-if="!connected" class="col-3 download-btn flex justify-end items-center">
@@ -67,12 +70,12 @@
         </div>
       </div>
       <div v-else class="row mobile-version-wrapper">
-        <div class="main-logo" :class="{'col-3': connected, 'col-6': !connected}">
+        <div class="main-logo" :class="{'col-3': connected, 'col-3': !connected}">
           <router-link to="/">
             <img src="statics/staider/sif_logo_white.svg" alt="">
           </router-link>
         </div>
-        <div v-if="!connected" class="col-6 main-menu flex justify-end items-center">
+        <div v-if="!connected" class="col-9 main-menu flex justify-end items-center">
           <q-btn color="white" class="shadow1 q-mr-sm" no-caps text-color="white" @click="connectPopup = true" outline rounded label="Connect Wallet" />
           <q-btn color="white" @click="menuStatOpen = !menuStatOpen" flat class="q-pa-sm" text-color="black" dense>
             <svg v-if="!menuStatOpen" version="1.1"
@@ -146,10 +149,13 @@
         </div>
         <div class="col-12 main-menu-fixed-mobile column justify-center items-center" :class="{'open':menuStatOpen}">
           <nav class="full-width column justify-start q-pa-md">
-            <router-link to="/vaults">Explore vaults</router-link>
+            <!-- <router-link to="/vaults">Explore vaults</router-link>
             <router-link to="/faq">FAQ</router-link>
             <router-link to="/documentation">Documentation</router-link>
-            <router-link to="/blog">Blog</router-link>
+            <router-link to="/blog">Blog</router-link> -->
+            <a href="javascript:void(0)" @click="scrollToSection('home');menuStatOpen = false">About</a>
+            <router-link to="/vaults" @click.native="menuStatOpen = false">Explore vaults</router-link>
+            <a href="javascript:void(0)" @click="scrollToSection('faqs');menuStatOpen = false">FAQs</a>
           </nav>
           <div class="full-width socialmedia flex justify-start items-center q-pa-md q-mt-xl">
             <q-btn type="a" href="https://github.com/Volentix" target="_blank" color="white" class="q-mr-sm" text-color="white" dense rounded flat icon="img:statics/staider/github_icon.svg" />
@@ -227,6 +233,11 @@ export default {
       menuStatOpen: false
     }
   },
+  computed: {
+    appSiteMode () {
+      return this.$route.meta.site ? 'site' : 'app'
+    }
+  },
   watch: {
     'connectionError': function (val) {
       if (val) {
@@ -268,6 +279,20 @@ export default {
     //   window.localStorage.setItem('skin', val)
     //   this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin')
     // },
+    scrollToSection (sectionScrollName) {
+      // let sectionScrollName = this.$route.params.currentSection
+      let scrollTop = 0
+      setTimeout(() => {
+        console.log('scrollToSection', sectionScrollName)
+        try {
+          document.querySelector('#' + sectionScrollName).classList.add('activate-animation')
+          scrollTop = document.querySelector('#' + sectionScrollName).offsetTop
+        } catch (error) {
+          console.log(error.message)
+        }
+        document.querySelector('#scroll_area_wrapper .scroll').scrollTop = parseInt(scrollTop) + (scrollTop > 0 ? -120 : 0)
+      }, 100)
+    },
     connectToWalletConnect () {
       this.connect('walletconnect')
       this.connectingWalletConnect = true
@@ -299,7 +324,8 @@ export default {
 <style lang="scss" scoped>
   @import "assets/styles/staider_theme/helpers.scss";
   .main-header{
-    padding-top: 26px;
+    padding-top: 15px;
+    padding-bottom: 15px;
     @media screen and (max-width: 768px) {
       padding-bottom: 20px;
     }
@@ -356,6 +382,12 @@ export default {
   .main-menu{
     nav{
       a{
+        font-family: $MainFont;
+        font-weight: 200;
+        opacity: .7;
+        &:hover{
+          opacity: 1;
+        }
         font-size: 14px;
         color: #FFF;
         text-decoration: none;
@@ -464,6 +496,12 @@ export default {
       font-family: $MainFont;
       font-weight: 400;
       opacity: .4;
+      &.wrongnetwork{
+        opacity: 1;
+        /deep/ .q-btn__wrapper:before {
+          border: 2px solid $MainYellow !important;
+        }
+      }
     }
     .connecting-wrapper{
       min-height: 140px;

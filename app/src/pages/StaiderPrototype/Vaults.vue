@@ -5,7 +5,7 @@
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1 page-title">Our Vaults</h2>
         </div>
-        <div class="vault-col col-12 col-md-4 col-lg-4 q-pl-xl q-pr-xl text-white">
+        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768}">
           <div class="vault-wrapper q-pa-lg column justify-between items-center">
             <div class="header column justify-between items-center">
               <img src="statics/staider/vault-bg-head.svg" width="190px" alt="">
@@ -31,7 +31,7 @@
             <img src="statics/staider/vault-bg-body1.svg" class="bg" alt="">
           </div>
         </div>
-        <div class="vault-col col-12 col-md-4 col-lg-4 q-pl-xl q-pr-xl text-white">
+        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768}">
           <div class="vault-wrapper featured q-pa-lg column justify-between items-center">
             <div class="header column justify-between items-center">
               <img src="statics/staider/vault-bg-head2.svg" width="190px" alt="">
@@ -57,7 +57,7 @@
             <img src="statics/staider/vault-bg-body2.svg" class="bg2" alt="">
           </div>
         </div>
-        <div class="vault-col col-12 col-md-4 col-lg-4 q-pl-xl q-pr-xl text-white">
+        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768}">
           <div class="vault-wrapper q-pa-lg column justify-between items-center">
             <div class="header column justify-between items-center">
               <img src="statics/staider/vault-bg-head.svg" width="190px" alt="">
