@@ -1185,7 +1185,7 @@ class Lib {
           let speed = ['normal', 'fast', 'instant']
           speed.forEach((option) => {
             let gasOption = Object.assign({}, gasData)
-            gasOption.gasPrice = gasStationData[option].gwei * 1000000000 // To wei
+            gasOption.gasPrice = parseInt(gasStationData[option].gwei * 1000000000) // To wei
             gasOption.label = option
             gasOption = convertGasPrice(gasOption, response.data.ethPrice)
             gasOptions.push(gasOption)
@@ -1917,7 +1917,6 @@ class Lib {
         const Web3 = require('web3')
         key = !key ? store.state.currentwallet.config.keys.find(o => o.type === evm && from === o.key).privateKey : key
 
-        console.log('info', info, key)
         let evmData = self.evms.find(o => o.chain === evm)
         const EthereumTx = require('ethereumjs-tx').Transaction
         const web3 = new Web3(new Web3.providers.HttpProvider(evmData.provider))
@@ -1960,11 +1959,6 @@ class Lib {
           nonce,
           chainId: evmData.network_id
         }
-
-        /* if (rawTx) {
-          console.log(rawTx)
-          return
-        } */
 
         if (info && (typeof info === 'object') && info.gasData) {
           rawTx.gas = info.gasData.gas

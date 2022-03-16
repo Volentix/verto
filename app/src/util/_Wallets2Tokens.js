@@ -18,6 +18,7 @@ class Wallets2Tokens {
         acount: null
       }
     }
+
     if (!refresParams) {
       refresParams.fromCache = true
     }
@@ -40,21 +41,31 @@ class Wallets2Tokens {
     return found
   }
   initWallet () {
+    // store.state.currentwallet.config.keys = '[{"name":"EOS Key","type":"verto","origin":"mnemonic","key":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ","defaultKey":true},{"name":"Bitcoin","type":"btc","origin":"mnemonic","key":"1BfUMHXcS3RoZYvFT3nYTwQDb27RAxqy9J","defaultKey":false,"to":"/verto/wallets/btc/btc/1BfUMHXcS3RoZYvFT3nYTwQDb27RAxqy9J","chain":"btc","disabled":false,"icon":"https://files.coinswitch.co/public/coins/btc.png","index":"1BfUMHXcS3RoZYvFT3nYTwQDb27RAxqy9J-btc","multitoken":false,"amount":0,"tokenPrice":39520,"usd":0},{"name":"Account 1","type":"eth","origin":"mnemonic","key":"0xcedb32e1f02a27d42f5f5023ae530077d4a8b71f","defaultKey":false,"to":"/verto/wallets/eth/eth/0xcedb32e1f02a27d42f5f5023ae530077d4a8b71f","chain":"eth","disabled":false,"icon":"https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png","index":"0xcedb32e1f02a27d42f5f5023ae530077d4a8b71f-eth","isEvm":true,"multitoken":true,"total":3278.1176760469725,"amount":1.2423390414449704,"decimals":18,"usd":3278.023698916368,"tokenPrice":2638.5902636559526},{"name":"Binance Chain","type":"bnb","origin":"mnemonic","key":"bnb1je2jftxphqvfx45y8v4tzwf9tl0t8ax76xfm7d","defaultKey":false,"to":"/verto/wallets/bnb/bnb/bnb1je2jftxphqvfx45y8v4tzwf9tl0t8ax76xfm7d","chain":"bnb","disabled":false,"icon":"https://files.coinswitch.co/public/coins/bnb.png","index":"bnb1je2jftxphqvfx45y8v4tzwf9tl0t8ax76xfm7d-bnb","multitoken":false,"amount":0,"tokenPrice":371.65,"usd":0},{"name":"Litecoin","type":"ltc","origin":"mnemonic","key":"LYSZCcJqpjQpUvTppwX322GpDHgPUefkEa","defaultKey":false,"to":"/verto/wallets/ltc/ltc/LYSZCcJqpjQpUvTppwX322GpDHgPUefkEa","chain":"ltc","disabled":false,"icon":"https://files.coinswitch.co/public/coins/ltc.png","index":"LYSZCcJqpjQpUvTppwX322GpDHgPUefkEa-ltc","multitoken":false,"amount":0,"tokenPrice":107.53,"usd":0},{"name":"DASH","type":"dash","origin":"mnemonic","key":"XoNz5qG9t8K4LK5MP1GQQ3vCR2aUAQddRC","defaultKey":false,"to":"/verto/wallets/dash/dash/XoNz5qG9t8K4LK5MP1GQQ3vCR2aUAQddRC","chain":"dash","disabled":false,"icon":"https://files.coinswitch.co/public/coins/dash.png","index":"XoNz5qG9t8K4LK5MP1GQQ3vCR2aUAQddRC-dash","multitoken":false,"amount":0,"tokenPrice":96,"usd":0},{"name":"Avalanche","type":"avax","origin":"mnemonic","key":"X-avax1m5x5w9lvst4xfrw7ayzd7gg68wwvh58u5radlq","defaultKey":false,"to":"/verto/wallets/avax/avax/X-avax1m5x5w9lvst4xfrw7ayzd7gg68wwvh58u5radlq","chain":"avax","disabled":false,"icon":"https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png","index":"X-avax1m5x5w9lvst4xfrw7ayzd7gg68wwvh58u5radlq-avax","multitoken":true},{"name":"Polkadot","type":"dot","origin":"mnemonic","key":"12izQG9wLpiaAYdPD9oVQGGJQ7Qgo5Bg2E6XybDqAtz7tvEF","defaultKey":false,"to":"/verto/wallets/dot/dot/12izQG9wLpiaAYdPD9oVQGGJQ7Qgo5Bg2E6XybDqAtz7tvEF","chain":"dot","disabled":false,"icon":"https://files.coinswitch.co/public/coins/dot.png","index":"12izQG9wLpiaAYdPD9oVQGGJQ7Qgo5Bg2E6XybDqAtz7tvEF-dot","multitoken":true,"amount":0,"tokenPrice":17.86,"usd":0},{"name":"Kusama","type":"ksm","origin":"mnemonic","key":"EJJvFEk7QU2UfSK2DZYA4o9h5hGuSSiQ7CoCxWS6cB6TdpA","defaultKey":false,"to":"/verto/wallets/ksm/ksm/EJJvFEk7QU2UfSK2DZYA4o9h5hGuSSiQ7CoCxWS6cB6TdpA","chain":"ksm","disabled":false,"icon":"https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg","index":"EJJvFEk7QU2UfSK2DZYA4o9h5hGuSSiQ7CoCxWS6cB6TdpA-ksm","multitoken":true,"amount":0,"tokenPrice":121.5,"usd":0},{"name":"Solana","type":"sol","origin":"mnemonic","key":"DjbXv4FE267QWJk54ddKAKfZHEsd7DeEbtyUjxzLZ1ku","defaultKey":false,"to":"/verto/wallets/sol/sol/DjbXv4FE267QWJk54ddKAKfZHEsd7DeEbtyUjxzLZ1ku","chain":"sol","disabled":false,"icon":"https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png","index":"DjbXv4FE267QWJk54ddKAKfZHEsd7DeEbtyUjxzLZ1ku-sol","multitoken":true,"amount":0,"tokenPrice":84.01,"usd":0},{"name":"Stellar Lumens","type":"xlm","origin":"mnemonic","key":"GBI7IFJRR5A3WIMC6IOB6OAO6ZNT3IH6LYJVLNUEKPN7KHPUA6NIXWCH","defaultKey":false,"to":"/verto/wallets/xlm/xlm/GBI7IFJRR5A3WIMC6IOB6OAO6ZNT3IH6LYJVLNUEKPN7KHPUA6NIXWCH","chain":"xlm","disabled":false,"icon":"https://files.coinswitch.co/public/coins/xlm.png","index":"GBI7IFJRR5A3WIMC6IOB6OAO6ZNT3IH6LYJVLNUEKPN7KHPUA6NIXWCH-xlm","multitoken":false},{"name":"Terra","type":"terra","origin":"mnemonic","key":"terra1dhyqt7qrex4m4g9sehdj3tqyxzwnzjlq9u8uzx","defaultKey":false,"to":"/verto/wallets/terra/terra/terra1dhyqt7qrex4m4g9sehdj3tqyxzwnzjlq9u8uzx","chain":"terra","disabled":false,"icon":"https://files.coinswitch.co/public/coins/terra.png","index":"terra1dhyqt7qrex4m4g9sehdj3tqyxzwnzjlq9u8uzx-terra","multitoken":true},{"name":"Tezos","type":"xtz","origin":"mnemonic","key":"tz1XMqDP2r3eUUmqScZZVaxhVHNLF3si8mPC","defaultKey":false,"to":"/verto/wallets/xtz/xtz/tz1XMqDP2r3eUUmqScZZVaxhVHNLF3si8mPC","chain":"xtz","disabled":false,"icon":"https://files.coinswitch.co/public/coins/xtz.png","index":"tz1XMqDP2r3eUUmqScZZVaxhVHNLF3si8mPC-xtz","multitoken":false},{"name":"victoreosvtx","type":"eos","origin":"mnemonic","key":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ","defaultKey":false,"to":"/verto/wallets/eos/eos/victoreosvtx","icon":"https://files.coinswitch.co/public/coins/eos.png","chain":"eos","disabled":false,"index":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ-eos-victoreosvtx","multitoken":true,"vtxStakes":2300000,"vtxStakesUsd":20000.064000000002,"amount":"0.0000","usd":0,"contract":"eosio.token","tokenPrice":1.99555511,"precision":4,"vtx":4,"accountData":{"account_name":"victoreosvtx","head_block_num":236418652,"head_block_time":"2022-03-15T20:38:41.500","privileged":false,"last_code_update":"1970-01-01T00:00:00.000","created":"2022-03-02T06:42:42.000","ram_quota":6699,"net_weight":11639,"cpu_weight":33708864,"net_limit":{"used":129,"available":21737,"max":21866},"cpu_limit":{"used":197,"available":2837,"max":3034},"ram_usage":3574,"permissions":[{"perm_name":"active","parent":"owner","required_auth":{"threshold":1,"keys":[{"key":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ","weight":1}],"accounts":[],"waits":[]}},{"perm_name":"owner","parent":"","required_auth":{"threshold":1,"keys":[{"key":"EOS6UPTaGfmnFaZSonHeJGoThQUtvzMofVg2R2ShD5RKFP1uXMNnZ","weight":1}],"accounts":[],"waits":[]}}],"total_resources":{"owner":"victoreosvtx","net_weight":"1.1639 EOS","cpu_weight":"3370.8864 EOS","ram_bytes":5299},"self_delegated_bandwidth":{"from":"victoreosvtx","to":"victoreosvtx","net_weight":"0.1000 EOS","cpu_weight":"0.1000 EOS"},"refund_request":null,"voter_info":{"owner":"victoreosvtx","proxy":"","producers":[],"staked":2000,"last_vote_weight":"0.00000000000000000","proxied_vote_weight":"0.00000000000000000","is_proxy":0,"flags1":0,"reserved2":0,"reserved3":"0 "},"rex_info":null,"subjective_cpu_bill_limit":{"used":0,"available":0,"max":0}},"proxy":"","staked":0.2}]'
+    // store.state.currentwallet.config.keys = JSON.parse(store.state.currentwallet.config.keys)
     let watchAccounts = localStorage.getItem('watchAccounts')
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-    watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || !store.state.currentwallet.config.keys.find(a => a.key.toLowerCase() === o.key.toLowerCase()))
+
+    watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || store.state.currentwallet.config.keys.filter(a => a[o.type === 'eos' ? 'name' : 'key'].toLowerCase() === o[o.type === 'eos' ? 'name' : 'key'].toLowerCase()).length === 0)
     watchAccounts.map(a => {
       a.key = a.key.trim()
       a.name = a.name.trim()
     })
     let accounts = (store.state.currentwallet.config.keys || []).concat(watchAccounts).filter(c => !this.refresParams.chains.length || this.refresParams.chains.includes(c.type))
+    let eosCount = accounts.filter(o => !o.watch && o.type === 'eos' && o.name !== 'EOS Key').length
+    console.log(watchAccounts.length, eosCount, 'eosCount', accounts, store.state.currentwallet.config.keys)
+    if (eosCount) {
+      accounts = accounts.filter(o => o.name !== 'EOS Key')
+    }
+    console.log(this.tableData.length, eosCount, 'eosCount', accounts)
+
     this.tableDataCache = this.getWalletFromCache()
     const self = this
 
     this.tableData = !this.refresParams.account && !this.refresParams.chains.length && !this.refresParams.fromCache ? accounts : accounts.filter(
       w => !this.isFoundInCache(w, this.tableDataCache)
     )
-    console.log(this.tableData, 'wallet', this.refresParams)
+    console.log(this.tableDataCache.length, this.tableData.length, Object.assign([], this.tableData), 'wallet', this.refresParams)
     this.tableData.sort(function (a, b) {
       return a.type === 'eth' ? -1 : 1
     })
@@ -143,7 +154,7 @@ class Wallets2Tokens {
         this.getTerraBalance(wallet)
       }
     })
-
+    console.log(Object.assign([], this.tableData, 2))
     this.tableData
       .map(async wallet => {
         if (wallet.type.toLowerCase() === 'eos') {
@@ -824,7 +835,7 @@ class Wallets2Tokens {
 
       data.filter(o => !this.isRefreshable(o)).map(o => {
         let wallet = (store.state.currentwallet.config.keys || []).find(
-          a => a.key === o.key
+          a => a.key === o.key && o.name.toLowerCase() === a.name.toLowerCase()
         )
 
         if (wallet === undefined) return

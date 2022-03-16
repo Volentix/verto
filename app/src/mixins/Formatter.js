@@ -386,6 +386,7 @@ export default {
           let c = chainsData.find(p => p.chain === o.chain)
           o.icon = c.icon
           o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : (o.multitoken && o.chain !== 'eos' ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain))
+          console.log(accounts, o.accounts, '  o.accounts ', o.chain)
           o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {
             q.tokenList = this.$store.state.wallets.tokens.filter((f, i, c) => f.chain === q.chain && ((f.multitoken && f.key.toLowerCase() === q.key.toLowerCase() && c.findIndex(t => t.isEvm && t.key.toLowerCase() === q.key.toLowerCase() && f.type === t.type) === i) || (!f.isEvm && q.chain === f.chain && f.name.toLowerCase() === q.name.toLowerCase())))
             q.color = this.getRandomColor()

@@ -159,7 +159,7 @@
                   selectedChain = null;
                   $store.state.settings.defaultChainData = null;
                   $store.state.wallets.customTotal.show = false;
-                  setTimeout(() => { initTable(); }, 100)
+                  initAssets()
 
                 "
                 :class="{ active: tab == 'overview' }"
@@ -1563,6 +1563,9 @@ export default {
     this.$store.state.wallets.customTotal.show = false
   },
   methods: {
+    initAssets () {
+      setTimeout(() => { this.initTable() }, 100)
+    },
     setItemAction (data) {
       if (data.tab === 'chains') {
         this.hideList = true
@@ -1669,6 +1672,7 @@ export default {
 
         this.$set(this, 'assetsOptions', this.assetsOptions)
         this.updateTotals()
+        this.getChains()
         this.uniqueKey++
       })
     },
@@ -1699,6 +1703,7 @@ export default {
         }
       })
       this.$set(this, 'assetsOptions', this.assetsOptions)
+      this.getChains()
       this.uniqueKey++
     },
     async verifyPassword () {
@@ -2013,7 +2018,7 @@ export default {
             ))
           .filter(
             (o) => !this.$store.state.settings.disableChains.includes(o.chain)
-          )
+          ).sort((a, b) => this.getChainTotal(b) - this.getChainTotal(a))
       } else if (this.tab === 'import') {
         all = HD.getVertoChains().filter(c => !this.$store.state.settings.importDisabled.includes(c.value)).filter(c => !this.$store.state.settings.disableChains.includes(c.value))
         this.chains = all
