@@ -237,7 +237,7 @@ export default {
   props: ['active', 'link', 'currentPage'],
   data () {
     return {
-      appSiteMode: 'site',
+      // appSiteMode: 'site',
       wrongNetworkPopup: false,
       connectingWalletConnect: false,
       connectingMetamask: false,
@@ -246,6 +246,11 @@ export default {
       toggleActive: false,
       accountAddress: '0x8e6b...12e2',
       menuStatOpen: false
+    }
+  },
+  computed: {
+    appSiteMode () {
+      return this.$route.meta.site ? 'site' : 'app'
     }
   },
   watch: {
