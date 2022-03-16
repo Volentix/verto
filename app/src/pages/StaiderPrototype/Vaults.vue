@@ -5,7 +5,7 @@
         <div class="col-12 text-white column flex-center">
             <h2 class="text-shadow1 page-title">Our Vaults</h2>
         </div>
-        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768}">
+        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768, 'q-pt-xl q-pb-xl': $q.screen.width < 768}">
           <div class="vault-wrapper q-pa-lg column justify-between items-center">
             <div class="header column justify-between items-center">
               <img src="statics/staider/vault-bg-head.svg" width="190px" alt="">
@@ -31,8 +31,8 @@
             <img src="statics/staider/vault-bg-body1.svg" class="bg" alt="">
           </div>
         </div>
-        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768}">
-          <div class="vault-wrapper featured q-pa-lg column justify-between items-center">
+        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768, 'q-pt-xl q-pb-xl': $q.screen.width < 768}">
+          <div class="vault-wrapper q-pa-lg column justify-between items-center" :class="{'featured': $q.screen.width > 768}">
             <div class="header column justify-between items-center">
               <img src="statics/staider/vault-bg-head2.svg" width="190px" alt="">
               <span class="apy flex flex-center text-black">APY UNKNOWN</span>
@@ -57,7 +57,7 @@
             <img src="statics/staider/vault-bg-body2.svg" class="bg2" alt="">
           </div>
         </div>
-        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768}">
+        <div class="vault-col col-12 col-md-4 col-lg-4 text-white" :class="{'q-pl-xl q-pr-xl': $q.screen.width > 768, 'q-pt-xl q-pb-xl': $q.screen.width < 768}">
           <div class="vault-wrapper q-pa-lg column justify-between items-center">
             <div class="header column justify-between items-center">
               <img src="statics/staider/vault-bg-head.svg" width="190px" alt="">
@@ -223,6 +223,7 @@ export default {
       @media screen and (max-width: 768px) {
         font-size: 30px;
         line-height: 40px;
+        margin-bottom: 30px;
       }
     }
     .vault-wrapper{
