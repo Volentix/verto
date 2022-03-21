@@ -1,5 +1,5 @@
 <template>
-  <div class="vaults-section">
+  <div class="vaults-section" id="topsection">
     <div class="fluid-container">
       <div class="row">
         <div class="col-12 text-white column flex-center">
@@ -192,9 +192,23 @@ export default {
   mounted () {
   },
   async created () {
-
+    this.scrollToSection('topsection')
   },
   methods: {
+    scrollToSection (sectionScrollName) {
+      // let sectionScrollName = this.$route.params.currentSection
+      let scrollTop = 0
+      setTimeout(() => {
+        console.log('scrollToSection', sectionScrollName)
+        try {
+          document.querySelector('#' + sectionScrollName).classList.add('activate-animation')
+          scrollTop = document.querySelector('#' + sectionScrollName).offsetTop
+        } catch (error) {
+          console.log(error.message)
+        }
+        document.querySelector('#scroll_area_wrapper .scroll').scrollTop = parseInt(scrollTop) + (scrollTop > 0 ? -120 : 0)
+      }, 100)
+    },
     formatNumber (number, tofix) {
       const val = (number / 1).toFixed(tofix).replace(',', ' ')
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')

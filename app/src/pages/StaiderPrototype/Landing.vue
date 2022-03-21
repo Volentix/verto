@@ -284,7 +284,7 @@ export default {
         {
           index: 2,
           question: 'Why use Staider',
-          answer: 'We simplify how your crypto investment can be parked to yield returns. Staider allows for investors to interact directly with the index funds in a non-custodial manner. <br>Staider is always innovating and bringing unique vault strategies to the community. The second vault will be greared towards Pulse Chain.',
+          answer: 'We simplify how your crypto investment can be parked to yield returns. Staider allows for investors to interact directly with the index funds in a non-custodial manner. <br>Staider is always innovating and bringing unique vault strategies to the community. The second vault will be geared towards Pulse Chain.',
           selected: false
         },
         {
@@ -314,7 +314,7 @@ export default {
         {
           index: 7,
           question: 'Are gas fees cheaper on Staider?',
-          answer: 'Fees on Saider are determined by the Etheruen network fees.',
+          answer: 'Fees on Saider are determined by the Ethereum network fees.',
           selected: false
         }
         // {
@@ -616,6 +616,13 @@ export default {
           }
           /deep/ .q-btn__content{
             justify-content: space-between;
+            .block {
+              max-width: 80%;
+              text-align: left;
+              line-height: 18px;
+              font-size: 14px;
+              font-weight: 400;
+            }
           }
         }
         &__detail{

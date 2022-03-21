@@ -60,6 +60,9 @@
                 <li v-for="(link, index) in footerNav" :key="'nav_'+index">
                   <router-link :to="link.to">{{link.title}}</router-link>
                 </li>
+                <li>
+                  <a href="javascript:void(0)" @click="showNotif">Cookie Preferences</a>
+                </li>
               </ul>
             </div>
           </div>
@@ -87,8 +90,7 @@ export default {
       ],
       footerNav: [
         { to: '/privacy-policy', title: 'Privacy Policy' },
-        { to: '/terms-of-Use', title: 'Terms of Use' },
-        { to: '/cookie-preferences', title: 'Cookie Preferences' }
+        { to: '/terms-of-Use', title: 'Terms of Use' }
       ]
     }
   },
@@ -102,6 +104,29 @@ export default {
     }
   },
   methods: {
+    showNotif () {
+      this.$q.notify({
+        progress: false,
+        persistent: true,
+        timeout: 0,
+        color: 'white',
+        textColor: 'black',
+        multiLine: true,
+        position: 'bottom-right',
+        classes: 'cookie-notif',
+        message: '<div class="cookie_notif_wrapper">By continuing to browse the site, you accept the use of cookies for audience measurement purposes.</div>',
+        html: true,
+        actions: [
+          { label: 'Accept',
+            color: 'black',
+            noCaps: true,
+            handler: () => {
+              // this.$store.commit('utils/updateAcceptCookies', true)
+            } },
+          { label: 'Close', color: 'black', noCaps: true, handler: () => { /* ... */ } }
+        ]
+      })
+    },
     scrollToSection (sectionScrollName) {
       let scrollTop = 0
       setTimeout(() => {
@@ -232,6 +257,9 @@ export default {
         color: #FFF;
         text-decoration: none;
         padding: 5px 15px;
+        @media screen and (max-width: 768px) {
+          padding: 5px 0px;
+        }
       }
     }
     a{
