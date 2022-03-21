@@ -140,7 +140,7 @@ export default {
         'value': 'xlm',
         'label': 'Stellar Lumens'
       },
-      { 'icon': 'https://assets.website-files.com/611153e7af981472d8da199c/61117b476d11877a9638750e_Terra%20Opengraph.png',
+      { 'icon': 'https://verto.volentix.io/statics/img/terra.png',
         'value': 'terra',
         'label': 'Terra'
       },

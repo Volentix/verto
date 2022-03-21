@@ -3,7 +3,12 @@
 // const element = document.createElement('div')
 // element.id = 'q-app'
 // window.document.body.insertBefore(element, window.document.body.firstChild)
-
+chrome.runtime.onInstalled.addListener(function(details) {
+  if ((details.reason === 'install') ) 
+  { 
+    window.open(window.location.origin+'/www/index.html#/setup')
+  } 
+});
 chrome.runtime.onMessageExternal.addListener(
   (message, sender, sendResponse) => {
     if (message.type === 'EXTENSION_AVAILABLE') {

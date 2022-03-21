@@ -111,7 +111,7 @@ class Wallets2Tokens {
       if (!wallet.hasOwnProperty('type')) {
         wallet.type = 'verto'
       }
-      if (Lib.evms.find(f => f.chain === wallet.type) && wallet.type !== 'eth') {
+      if (Lib.getEvms().find(f => f.chain === wallet.type) && wallet.type !== 'eth') {
         wallet.type = 'eth'
       }
 
@@ -225,7 +225,7 @@ class Wallets2Tokens {
           }
           this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
-          Lib.evms.filter(m =>
+          Lib.getEvms().filter(m =>
             ![1, 940].includes(m.network_id) && ((!this.refresParams.chains.length || this.refresParams.chains.includes(m.chain)) && (!this.refresParams.account || this.refresParams.account.isEvm)) // Until eth is integrated into covalent api
           ).forEach(e => {
             axios
@@ -333,7 +333,7 @@ class Wallets2Tokens {
                               rate = performance.sharePrice
                             }
                             if (['0xe00d15b722a3c3a5ae2d4dd68a302ec8fdc2ccba', '0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a'].includes(t.tokenInfo.address)) {
-                              image = '/statics/img/staider-logo.png'
+                              image = 'https://verto.volentix.io/statics/img/staider-logo.png'
                             }
                           } else {
                             rate = t.tokenInfo.price ? t.tokenInfo.price.rate : 0
@@ -679,7 +679,7 @@ class Wallets2Tokens {
     if (type === 'tpls') type = 'eth'
     let image = Lib.getDefaultToken(chain)
 
-    if (Lib.evms.find(o => o.chain === chain) && store.state.tokens.evmTokens[chain]) {
+    if (Lib.getEvms().find(o => o.chain === chain) && store.state.tokens.evmTokens[chain]) {
       let token = store.state.tokens.evmTokens[chain].find(o => o.symbol && type && o.symbol.toLowerCase() === type.toLowerCase())
       if (token) image = token.logoURI
       // Set bnb token image temp

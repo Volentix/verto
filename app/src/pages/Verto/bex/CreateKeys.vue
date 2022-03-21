@@ -93,8 +93,7 @@
               </p>
               <p v-else class="q-mt-md">
                 Your 24 words are very important! <br>
-                Keep them stored somewhere safe. <br>
-                The position of each word is critical and should be stored in the correct sequence.<br><br>
+                Keep them stored somewhere safe.<br><br>
                 Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
                 so keep in a safe place that only you have access to.
               </p>
@@ -150,7 +149,7 @@ export default {
       },
       {
         'value': 'eth',
-        'label': 'Ethereum'
+        'label': 'Account 1'
       },
       {
         'value': 'bnb',
@@ -176,6 +175,10 @@ export default {
       {
         'value': 'dot',
         'label': 'Polkadot'
+      },
+      { 'icon': 'https://verto.volentix.io/statics/img/terra.png',
+        'value': 'terra',
+        'label': 'Terra'
       },
       { 'icon': 'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg',
         'value': 'ksm',

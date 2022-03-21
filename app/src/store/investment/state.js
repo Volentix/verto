@@ -37,7 +37,7 @@ export default function () {
         protocol: 'Enzyme',
         type: 'Staider Index Funds',
         icon:
-          '/statics/img/staider-logo.png',
+          'https://verto.volentix.io/statics/img/staider-logo.png',
         action: 'Deposit'
 
       },

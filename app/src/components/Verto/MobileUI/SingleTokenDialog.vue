@@ -35,7 +35,7 @@
                       </div>
                   </q-item-section>
               </q-item>
-              <div>
+              <div v-if="false">
                   <div v-if="chartAvailable"  :class="$store.state.settings.lightMode === 'true' ? 'dark_bg_transparent':'bg-grey-2'" class="rounded q-pl-md q-pr-md q-pb-xl q-mb-md" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
                       <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
                       <span class="text-caption" v-if="!chartData && chartAvailable">

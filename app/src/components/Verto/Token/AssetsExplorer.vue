@@ -1158,7 +1158,7 @@
   <div> </div>
   <!-- MOBILE SECTION STARTED -->
   <div   v-if="$q.platform.is.mobile||$isbex">
-    <TabAssetsExplorer :defaultToken="defaultToken" :key="uniqueKey" ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
+    <TabAssetsExplorer :defaultToken="defaultToken"  ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
   </div>
   <!-- MOBILE SECTION END -->
 
@@ -2819,7 +2819,9 @@ ul.tabs li a.active {
  .investments .col-md-3 .main {
     height: 219px;
 }
+@media only screen and (min-width: 600px){
 .wrapper {
     padding-left: 40px;
+}
 }
 </style>

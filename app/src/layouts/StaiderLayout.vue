@@ -591,7 +591,7 @@
                             "
                           >
                             <img
-                              src="/statics/img/staider-logo.png"
+                              src="https://verto.volentix.io/statics/img/staider-logo.png"
                               class="CardsSection__Image-sc-18tl6tu-0 bDysHy"
                             />
                             <div>

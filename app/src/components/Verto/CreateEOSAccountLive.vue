@@ -67,7 +67,7 @@
                             <q-item-label class="q-pb-sm"
                               >Choose a Verto EOS account</q-item-label
                             >
-                            <q-item-label caption>
+                            <q-item-label caption class="q-mb-md">
                               Choose a EOS key from your Verto Wallet
                             </q-item-label>
 
@@ -82,7 +82,7 @@
                               separator
                               rounded
                               outlined
-                              class="select-input q-pt-md"
+                              class="select-input q-px-md"
                               v-model="currentToken"
                               :options="tokensOption"
                             >
@@ -121,7 +121,7 @@
                                   <q-item-section>
                                     <q-item-label
                                       class="ellipsis"
-                                      v-html="currentToken.label"
+                                      v-html="getKeyFormat(currentToken.label)"
                                     />
                                     <q-item-label caption>{{
                                       currentToken.value

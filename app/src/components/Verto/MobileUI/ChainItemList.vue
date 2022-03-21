@@ -50,13 +50,12 @@
                                     v-if="checkRecvPrivateKeyAccess(chain)"
                                     @click="$set(showQr, chain.chain, true)"
                                     unelevated
-                                    color="grey-2"
-                                    text-color="black"
+                                    text-color="white"
                                     no-caps
                                     size="sm"
                                     dense
-                                    class="full-width"
-                                    icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png"
+                                    class="full-width q-ml-sm"
+                                    icon-right="qr_code"
                                 />
                               </div>
                               <div v-if="showQr[chain.chain]" class="qr-code">

@@ -105,7 +105,6 @@ export default {
       this.componentKey += 4455
     },
     tabIndex (val) {
-      this.componentKey += 12222
       this.$emit('update:tab', val)
       if ((this.$store.state.wallets.portfolioTotal && val !== 'chains') || (!this.$store.state.wallets.portfolioTotal && val !== 'receive') || (this.$route.params.accounts === 'receive')) { this.dialog = true }
       // setTimeout(function () { console.log(":::::: "); this.componentKey += 1 }, 2000)
@@ -161,6 +160,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .wrapper {
+    padding-left: 0px !important;
+}
 /deep/ .history-component {
     padding-top: 30px !important
 }

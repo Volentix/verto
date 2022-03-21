@@ -7,9 +7,10 @@
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
               </q-toolbar>
             </q-header>
-    <div>Switch chain to change settings</div>
+    <div  :class="{'text-white':$store.state.settings.lightMode === 'true'}">Switch chain to change settings</div>
+   <div class="q-py-sm text-deep-purple-12" :class="{'text-white':$store.state.settings.lightMode === 'true'}" v-if="changed"> Remember to refresh your wallet to see new changes</div>
     <q-select
-      @input="getSettings()"
+      @input="getSettings(); "
       :dark="$store.state.settings.lightMode === 'true'"
       :light="$store.state.settings.lightMode === 'false'"
       separator
@@ -51,10 +52,10 @@
         <q-item v-else> </q-item>
       </template>
     </q-select>
-    <q-input v-if="currentChain && settings[currentChain.chain]" class="q-mt-md" filled v-model="settings[currentChain.chain].provider" @input="isValidUrl(settings[currentChain.chain].provider) ? updateLocalSettings() : ''" :rules="[val => isValidUrl(settings[currentChain.chain].provider) || 'Invalid url']" label="Provider" />
-    <q-input v-if="currentChain && settings[currentChain.chain]" class="q-mt-md" filled v-model="settings[currentChain.chain].explorer" @input="isValidUrl(settings[currentChain.chain].explorer) ? updateLocalSettings() : ''"  :rules="[val => isValidUrl(settings[currentChain.chain].explorer) || 'Invalid url']" label="Chain explorer" />
-    <q-input readonly v-if="currentChain && settings[currentChain.chain] && settings[currentChain.chain].gas" class="q-mt-md" filled v-model="settings[currentChain.chain].gas" label="Gas station" />
-    <q-btn label="Reset" class="q-mt-md" outline @click="getSettings(true)" />
+    <q-input  :dark="$store.state.settings.lightMode === 'true'" v-if="currentChain && settings[currentChain.chain]" class="q-mt-md" filled v-model="settings[currentChain.chain].provider" @input="changed = true ; isValidUrl(settings[currentChain.chain].provider) ? updateLocalSettings() : ''" :rules="[val => isValidUrl(settings[currentChain.chain].provider) || 'Invalid url']" label="Provider" />
+    <q-input :dark="$store.state.settings.lightMode === 'true'" v-if="currentChain && settings[currentChain.chain]" class="q-mt-md" filled v-model="settings[currentChain.chain].explorer" @input="isValidUrl(settings[currentChain.chain].explorer) ? updateLocalSettings() : ''"  :rules="[val => isValidUrl(settings[currentChain.chain].explorer) || 'Invalid url']" label="Chain explorer" />
+    <q-input  :dark="$store.state.settings.lightMode === 'true'" readonly v-if="currentChain && settings[currentChain.chain] && settings[currentChain.chain].gas" class="q-mt-md" filled v-model="settings[currentChain.chain].gas" label="Gas station" />
+    <q-btn  :dark="$store.state.settings.lightMode === 'true'" label="Reset" class="q-mt-md" outline @click="getSettings(true)" />
   </div>
 </template>
 <script>
@@ -66,6 +67,7 @@ export default {
     return {
       chainsData: [],
       settings: {},
+      changed: false,
       currentChain: null
     }
   },

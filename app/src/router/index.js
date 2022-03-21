@@ -3,15 +3,15 @@ import VueRouter from 'vue-router'
 import Lib from '@/util/walletlib'
 import store from '../store/index.js'
 import otherRoutes from './routes'
-// import login from './_login'
-// import getVtx from './getVtx'
-// import wallet from './wallet'
+import login from './_login'
+import getVtx from './getVtx'
+import wallet from './wallet'
 
 const routes = [
-  ...otherRoutes
-  // ...getVtx,
-  // ...login,
-  // ...wallet
+  // ...otherRoutes,
+  ...getVtx,
+  ...login,
+  ...wallet
 ]
 if (process.env.MODE !== 'ssr') {
   otherRoutes.push({
@@ -67,7 +67,12 @@ export default function (/* { store, ssrContext } */) {
       meta: from.meta,
       path: from.path
     }
-    localStorage.setItem('prev_route', JSON.stringify(fromRoute))
+    try {
+      localStorage.setItem('prev_route', JSON.stringify(fromRoute))
+    } catch (error) {
+      console.log(error)
+    }
+
     if (appStarted != null && routerLoaded != null && ['connectv1', 'receive'].includes(to.name)) {
       try {
         params = Object.assign({}, to.params)

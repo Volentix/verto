@@ -67,8 +67,8 @@
                 </h3>
               </div>
             </span>
-
-            <div class="token-chart q-mt-lg" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
+  <ChartFund v-if="asset.type.toLowerCase() === 'enzf'" style="margin-top:-130px" :height="$q.screen.width > 768 ? '300':'250'" chartColor="#7272fa" :fundID="asset.contract" />
+            <div v-else class="token-chart q-mt-lg" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
               <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
               <span class="text-caption" v-if="!chartData && chartAvailable">
                 Loading historical price (1 month period)</span
@@ -94,7 +94,7 @@
               <PriceChart :dataType="'volume'" v-if="false" />
             </div>
 
-            <ul class="tab-btn" >
+            <ul class="tab-btn" v-if="asset.type.toLowerCase() !== 'enzf'">
               <li @click="getHistoriclPrice(1)">
                 <a
                   href="javascript:void(0)"
@@ -614,6 +614,7 @@
 </div>
 </template>
 <script>
+import ChartFund from 'components/StaiderPrototype/ChartFund'
 import transactEOS from './transactEOS'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Formatter from '@/mixins/Formatter'
@@ -638,6 +639,7 @@ export default {
     Oneinch,
     AccountSelector,
     ImportView,
+    ChartFund,
     // AssetBalancesTable,
     // History,
     PriceChart,
@@ -1074,6 +1076,21 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+ /deep/
+.option-toggle button.active {
+    background: #7271fa !important;
+    color: rgb(252, 252, 252) !important;
+
+}
+ /deep/
+.option-toggle button {
+    color: rgb(0, 0, 0) !important;
+}
+.dark-theme /deep/
+.option-toggle button {
+    color: rgb(255, 255, 255) !important;
+}
+
  .set-max {
                 margin-top: -10px;
                 font-size: 12px;

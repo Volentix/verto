@@ -387,15 +387,18 @@
             <q-list
               separator
               style="width: 100%"
+              :class="{'one-account': tokChain.accounts.length == 1}"
               v-for="(tokChain, index) in chainsData.filter((o) =>
                 checkChain(o)
               )"
+              @click="tokChain.accounts.length == 1 ?    chooseAccount(tokChain.accounts[0]) : '' "
               :key="Math.random() + index"
             >
               <q-expansion-item
                 :default-opened="
                   chainsData.filter((o) => checkChain(o)).length == 1
                 "
+                :expand-icon="tokChain.accounts.length == 1 ? 'keyboard_arrow_right' : 'keyboard_arrow_down'"
                 :dark="$store.state.settings.lightMode === 'true'"
               >
                 <template v-slot:header>
@@ -450,9 +453,7 @@
                   >
                     <q-item
                       @click="
-                        getAccount(item);
-                        setAccount(300);
-                        dialog = false;
+                       chooseAccount(item)
                       "
 
                       :key="Math.random() + index"
@@ -601,6 +602,11 @@ export default {
     this.init()
   },
   methods: {
+    chooseAccount (item) {
+      this.getAccount(item)
+      this.setAccount(300)
+      this.dialog = false
+    },
     getAccount (item) {
       let w = this.formatAccoountOption(
         this.$store.state.wallets.tokens.find((a) => a.index === item.index)

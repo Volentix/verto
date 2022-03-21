@@ -20,7 +20,9 @@ const sleep = (milliseconds) => {
 }
 class Lib {
   constructor () {
-    // https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645
+    this.evms = this.getEvms()
+  }
+  getEvms () {
     let evms = [{
       name: 'Ethereum',
       chain: 'eth',
@@ -62,8 +64,8 @@ class Lib {
       chain: 'tpls',
       nativeToken: 'tpls',
       icon: 'https://pbs.twimg.com/profile_images/1412839310106234882/Z4H3-LxW_400x400.jpg',
-      provider: 'https://rpc.v2.testnet.pulsechain.com',
-      explorer: 'https://scan.v2.testnet.pulsechain.com/tx/',
+      provider: 'https://rpc.v2b.testnet.pulsechain.com',
+      explorer: 'https://scan.v2b.testnet.pulsechain.com/tx/',
       gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
       network_id: 940,
       testnet: true
@@ -90,17 +92,14 @@ class Lib {
     let localSettings = localStorage.getItem('chainSettings')
     if (localSettings) {
       localSettings = JSON.parse(localSettings)
-      this.evms = []
-      evms.forEach(e => {
+
+      evms.forEach((e, i) => {
         if (localSettings[e.chain] && localSettings[e.chain].provider) {
-          this.evms.push(localSettings[e.chain])
-        } else {
-          this.evms.push(e)
+          evms[i] = localSettings[e.chain]
         }
       })
-    } else {
-      this.evms = evms
     }
+    return evms
   }
   async getEtherereumPriceGasPrices () {
     let data = false
@@ -1061,7 +1060,7 @@ class Lib {
     return wallet ? wallet(key, token) : {}
   }
   getEvmData (chain) {
-    return this.evms.find(o => o.chain === chain)
+    return this.getEvms().find(o => o.chain === chain)
   }
   async checkEvmTxStatus (transactonHash, chain) {
     let web3 = this.getWeb3Instance(chain)

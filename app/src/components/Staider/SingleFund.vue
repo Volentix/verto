@@ -772,7 +772,7 @@ export default {
 
     if (this.$route.params.fundID === 'private') {
       this.fundData = {
-        icon: '/statics/img/staider-logo.png',
+        icon: 'https://verto.volentix.io/statics/img/staider-logo.png',
         name: 'Staider Private vault',
         id: this.$route.params.fundID,
         investors: 108

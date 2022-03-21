@@ -70,7 +70,7 @@ class HD {
       'value': 'eos',
       'label': 'EOS'
     },
-    { 'icon': '/statics/img/terra.png',
+    { 'icon': 'https://verto.volentix.io/statics/img/terra.png',
       'value': 'terra',
       'label': 'Terra'
     },

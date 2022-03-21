@@ -13,7 +13,7 @@
           </q-item-section>
           <q-item-section dark>
             <q-item-label  :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-html="scope.opt.name" />
-            <q-item-label caption class="ellipsis">{{ getKeyFormat(scope.opt.key) }}</q-item-label>
+            <q-item-label  caption class="ellipsis">{{ getKeyFormat(scope.opt.key) }}</q-item-label>
           </q-item-section>
         </q-item>
       </template>
@@ -24,7 +24,7 @@
           </q-item-section>
           <q-item-section>
             <q-item-label class="ellipsis" v-html="accountOption.name" />
-            <q-item-label caption class="ellipsis ellipsis_important">{{ getKeyFormat(accountOption.key) }}</q-item-label>
+            <q-item-label  :class="{'text-white': $store.state.settings.lightMode === 'true'}" caption class="ellipsis ellipsis_important">{{ getKeyFormat(accountOption.key) }}</q-item-label>
           </q-item-section>
 
         </q-item>

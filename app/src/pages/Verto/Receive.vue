@@ -13,7 +13,7 @@
                   </q-item-section>
                   <q-item-section dark>
                     <q-item-label v-html="currentToken.label" />
-                    <q-item-label caption class="ellipsis mw200" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">{{ currentToken.value }}</q-item-label>
+                    <q-item-label caption class="ellipsis mw200" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">{{getKeyFormat(currentToken.value) }}</q-item-label>
                   </q-item-section>
                 </q-item>
         </q-toolbar>
@@ -89,12 +89,12 @@
                     <div class="row">
                       <div class="col col-6 q-pr-md q-pt-md">
                         <div class="qrcode-wrapper">
-                          <div class="wallet-address flex justify-between">
+                          <div class="q-mb-md wallet-address flex justify-between">
                             <span class="title">Wallet address</span>
                             <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
                           </div>
-                          <span class="qrcode-widget">
-                            <qrcode v-if="currentToken && currentToken.type" dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                          <span class="qrcode-widget q-pt-md">
+                            <qrcode class="q-mb-md" v-if="currentToken && currentToken.type" dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
                             <qrcode v-if="configData && false" v-show="false" dark :value="configData" :options="{size: 200}"></qrcode>
                             <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
                           </span>
@@ -175,8 +175,8 @@
                 <span class="title">Wallet address</span>
                 <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy"  :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
               </div>
-              <span class="qrcode-widget">
-                <qrcode v-if="currentToken.value" :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+              <span class="qrcode-widget q-pt-md">
+                <qrcode   class="q-mb-md" v-if="currentToken.value" :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
                 <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
               </span>
             </div>
@@ -334,12 +334,12 @@ var SocialSharing = require('vue-social-sharing')
 Vue.use(SocialSharing)
 
 // mport { CruxPay } from '@cruxpay/js-sdk'
-// import HD from '@/util/hdwallet'
+import Formatter from '@/mixins/Formatter'
 
 // let cruxClient
 
 export default {
-
+  mixins: [Formatter],
   components: {
     // desktop components
     ProfileHeader,
@@ -509,7 +509,8 @@ export default {
       })
     },
     goBackPage () {
-      this.$router.push(this.$route.params.return ? this.$route.params.return : { name: 'wallets', params: { openDialog: true } })
+      console.log(this.$route.params.return, 'tes', this.$route)
+      this.$router.push(this.$route.params.return ? this.$route.params.return.path : { name: 'wallets', params: { openDialog: true } })
     }
   }
 }
@@ -687,11 +688,12 @@ export default {
               display: block;
             }
             .exchange-address{
-              font-size: 17px;
+              font-size: 9px;
               font-family: $Titillium;
               font-weight: $light;
               color: #B0B0B0;
               margin-bottom: 20px;
+              margin-top: 20px;
               display: block;
               word-wrap: break-word;
             }
