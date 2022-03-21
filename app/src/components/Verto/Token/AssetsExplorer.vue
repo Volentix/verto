@@ -159,7 +159,7 @@
                   selectedChain = null;
                   $store.state.settings.defaultChainData = null;
                   $store.state.wallets.customTotal.show = false;
-                  setTimeout(() => { initTable(); }, 100)
+                  initAssets()
 
                 "
                 :class="{ active: tab == 'overview' }"
@@ -486,7 +486,7 @@
                   :class="{ 'q-pb-md': tab == 'receive' }"
                   v-if="!showQr[chain.chain]"
                 >
-                  <img :src="chain.icon" />
+                  <img :src="chain.icon"  />
                 </div>
                 <div
                   v-if="
@@ -883,7 +883,7 @@
             <div class="main cursor-pointer">
               <div class="main-top">
                 <div class="mt-img">
-                  <img :src="asset.icon" :onerror="defaultToken(asset.chain)" />
+                  <img :src="asset.icon" style="border-radius:50%" :onerror="defaultToken(asset.chain)" />
                 </div>
                 <div>
                   <h6>
@@ -1563,6 +1563,9 @@ export default {
     this.$store.state.wallets.customTotal.show = false
   },
   methods: {
+    initAssets () {
+      setTimeout(() => { this.initTable() }, 100)
+    },
     setItemAction (data) {
       if (data.tab === 'chains') {
         this.hideList = true
@@ -1669,6 +1672,7 @@ export default {
 
         this.$set(this, 'assetsOptions', this.assetsOptions)
         this.updateTotals()
+        this.getChains()
         this.uniqueKey++
       })
     },
@@ -1699,6 +1703,7 @@ export default {
         }
       })
       this.$set(this, 'assetsOptions', this.assetsOptions)
+      this.getChains()
       this.uniqueKey++
     },
     async verifyPassword () {
@@ -2013,7 +2018,7 @@ export default {
             ))
           .filter(
             (o) => !this.$store.state.settings.disableChains.includes(o.chain)
-          )
+          ).sort((a, b) => this.getChainTotal(b) - this.getChainTotal(a))
       } else if (this.tab === 'import') {
         all = HD.getVertoChains().filter(c => !this.$store.state.settings.importDisabled.includes(c.value)).filter(c => !this.$store.state.settings.disableChains.includes(c.value))
         this.chains = all

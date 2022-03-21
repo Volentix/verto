@@ -3,6 +3,7 @@ import Lib from '@/util/walletlib'
 import { scroll, openURL } from 'quasar'
 import { toSvg } from 'jdenticon'
 import initWallet from '@/util/_Wallets2Tokens'
+
 export default {
   computed: {
     fundTotal () {
@@ -329,7 +330,9 @@ export default {
     },
     triggerTokenAction (token) {
       let found = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === token.type.toLowerCase() && o.chain === token.chain.toLowerCase())
-      if (!found) {
+      if (token.protocol === 'Enzyme') {
+        return openURL('https://staider.finance/vault/0xe00d15b722a3c3a5ae2d4dd68a302ec8fdc2ccba')
+      } else if (!found) {
         this.error.data.token = token
         this.error.msg = 'You seems very excited to ' + token.action.toLowerCase() + ' ' + token.type + '. However your wallet balance for this token is zero.'
 
@@ -386,6 +389,7 @@ export default {
           let c = chainsData.find(p => p.chain === o.chain)
           o.icon = c.icon
           o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : (o.multitoken && o.chain !== 'eos' ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain))
+          console.log(accounts, o.accounts, '  o.accounts ', o.chain)
           o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {
             q.tokenList = this.$store.state.wallets.tokens.filter((f, i, c) => f.chain === q.chain && ((f.multitoken && f.key.toLowerCase() === q.key.toLowerCase() && c.findIndex(t => t.isEvm && t.key.toLowerCase() === q.key.toLowerCase() && f.type === t.type) === i) || (!f.isEvm && q.chain === f.chain && f.name.toLowerCase() === q.name.toLowerCase())))
             q.color = this.getRandomColor()

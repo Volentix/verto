@@ -144,7 +144,7 @@
                 <span class="apy"><b>N/A</b> Up to APY</span>
               </div>
               <div class="vault-wrapper__cta col col-8 flex justify-end">
-                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a" outline rounded label="Deposit">
+                <q-btn color="white" class="shadow1" no-caps text-color="white" to="/vault/0xe00d15b722a3c3a5ae2d4dd68a302ec8fdc2ccba" outline rounded label="Deposit">
                   <div class="flex items-center">
                     <img height="20" class="q-ml-md q-mr-xs" src="statics/staider/coins/usdc.svg" alt="">
                     <img height="20" class="q-mr-xs" src="statics/staider/coins/eth.svg" alt="">

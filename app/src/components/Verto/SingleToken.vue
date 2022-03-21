@@ -36,7 +36,7 @@
 
                 <h2>
 
-                  <img v-if="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="asset.icon" style="max-width: 40px" alt="image" />
+                  <img v-if="asset.icon"  onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="asset.icon" style="max-width: 40px; border-radius:50%" alt="image" />
                   <img
                     v-if="false"
                     style="max-width: 0px"

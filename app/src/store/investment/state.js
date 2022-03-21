@@ -37,7 +37,7 @@ export default function () {
         protocol: 'Enzyme',
         type: 'Staider Index Funds',
         icon:
-          'https://staider.finance/statics/app-logo-128x128.png',
+          '/statics/img/staider-logo.png',
         action: 'Deposit'
 
       },
