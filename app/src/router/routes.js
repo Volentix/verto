@@ -189,6 +189,16 @@ if (process.env.QMODE !== 'bex') {
         {
           path: '/vault/:fundID',
           component: () => import('components/Staider/Vault.vue')
+        },
+        {
+          path: '/privacy-policy',
+          meta: { site: true },
+          component: () => import('pages/StaiderPrototype/PrivacyPolicy.vue')
+        },
+        {
+          path: '/terms-of-Use',
+          meta: { site: true },
+          component: () => import('pages/StaiderPrototype/TermsOfUse.vue')
         }
       ]
     } /*

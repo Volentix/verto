@@ -5,6 +5,11 @@
       <HeaderSection class="backdrop-mobile" :class="{'activate-backdrop-mobile': backdrop}" />
     </q-header>
 
+    <div v-if="false" class="staider-loader flex flex-center">
+      <img src="statics/staider/svg_logo_loader5.svg" width="120px" alt="">
+      <!-- <img src="statics/staider/svg_logo_loader.svg" width="160px" alt=""> -->
+    </div>
+
     <div class="animation_simulation_wrapper flex justify-center items-center">
       <img src="statics/staider/var1.png" class="bg_fixed_animated animate__heartBeat" alt="">
     </div>
@@ -58,6 +63,9 @@ export default {
 
   async created () {
     await this.initConnect()
+  },
+  mounted () {
+    console.log('mounted')
   },
   computed: {
     appSiteMode () {
@@ -217,6 +225,15 @@ export default {
 
     -webkit-animation-iteration-count: infinite;
     animation-iteration-count: infinite;
+  }
+  .staider-loader{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100vw;
+    height: 100vh;
+    background: #16161A !important;
+    z-index: 999999999999999;
   }
 </style>
 <style>
