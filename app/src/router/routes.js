@@ -168,7 +168,7 @@ if (process.env.QMODE !== 'bex') {
         }
       ]
     },    */{
-      path: '/',
+      path: '/777',
       component: () => import('layouts/Staider/MainLayout.vue'),
       children: [
         { meta: {

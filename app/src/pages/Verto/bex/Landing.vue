@@ -154,12 +154,15 @@ export default {
       //     returnto: 'settings'
       //   }
       // })
-      this.$router.push({
+      let routeData = this.$router.resolve({
         name: 'import-restore',
         params: {
           returnto: 'settings'
         }
       })
+      console.log(routeData, 'routeData')
+      window.open(window.location.origin + 'www/index.html#/import-restore', '_blank')
+      // this.$router.push()
     },
     async login () {
       this.passHasError = false

@@ -386,7 +386,9 @@ export default {
           o.chainTotal = accounts.filter(g => g.usd).reduce((a, b) => +(a || 0) + (isNaN(b.usd) || !b.usd ? 0 : +b.usd), 0)
           let evmChain = Lib.evms.find(a => a.chain === o.chain)
           let c = chainsData.find(p => p.chain === o.chain)
-          o.icon = c.icon
+          if (c) {
+            o.icon = c.icon
+          }
           o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : (o.multitoken && o.chain !== 'eos' ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain))
 
           o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {

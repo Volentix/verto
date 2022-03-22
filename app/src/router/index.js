@@ -4,15 +4,20 @@ import Lib from '@/util/walletlib'
 import store from '../store/index.js'
 import otherRoutes from './routes'
 import login from './_login'
-import getVtx from './getVtx'
 import wallet from './wallet'
+const allRoutes = {
+  spa: [...otherRoutes], // Staider
+  pwa: [ // verto
+    ...login,
+    ...wallet
+  ],
+  bex: [ // browser extension
+    ...login,
+    ...wallet
+  ]
+}
 
-const routes = [
-  // ...otherRoutes,
-  ...getVtx,
-  ...login,
-  ...wallet
-]
+const routes = allRoutes[process.env.MODE]
 if (process.env.MODE !== 'ssr') {
   otherRoutes.push({
     path: '*',

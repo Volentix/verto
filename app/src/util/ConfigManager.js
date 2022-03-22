@@ -41,6 +41,7 @@ class ConfigManager {
     const fileName = `support-verto-${(new Date()).getTime()}.debug`
     let data = Object.assign([], store.state.currentwallet.config.keys).map(o => {
       delete o.privateKey
+      delete o.privateKeyEncrypted
       return o
     })
     let cache = localStorage.getItem('walletPublicDatav2')
