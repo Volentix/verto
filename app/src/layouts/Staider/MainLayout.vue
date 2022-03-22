@@ -9,6 +9,13 @@
       <img src="statics/staider/svg_logo_loader5.svg" width="120px" alt="">
       <!-- <img src="statics/staider/svg_logo_loader.svg" width="160px" alt=""> -->
     </div>
+    <div class="staider-loader flex flex-center">
+      <img src="statics/staider/svg_logo_loader.svg" class="q-pa-lg" width="250px" alt="">
+      <img src="statics/staider/svg_logo_loader2.svg" class="q-pa-lg" width="250px" alt="">
+      <img src="statics/staider/svg_logo_loader3.svg" class="q-pa-lg" width="250px" alt="">
+      <img src="statics/staider/svg_logo_loader4.svg" class="q-pa-lg" width="250px" alt="">
+      <img src="statics/staider/svg_logo_loader5.svg" class="q-pa-lg" width="250px" alt="">
+    </div>
 
     <div class="animation_simulation_wrapper flex justify-center items-center">
       <img src="statics/staider/var1.png" class="bg_fixed_animated animate__heartBeat" alt="">

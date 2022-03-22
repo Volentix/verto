@@ -5,7 +5,11 @@
       <HeaderSection2 class="backdrop-mobile" :class="{'activate-backdrop-mobile': backdrop}" />
     </q-header>
     <div class="staider-loader flex flex-center">
-      <img src="statics/staider/svg_logo_loader.svg" width="100px" alt="">
+      <img src="statics/staider/svg_logo_loader.svg" class="q-pa-md" width="100px" alt="">
+      <img src="statics/staider/svg_logo_loader2.svg" class="q-pa-md" width="100px" alt="">
+      <img src="statics/staider/svg_logo_loader3.svg" class="q-pa-md" width="100px" alt="">
+      <img src="statics/staider/svg_logo_loader4.svg" class="q-pa-md" width="100px" alt="">
+      <img src="statics/staider/svg_logo_loader5.svg" class="q-pa-md" width="100px" alt="">
     </div>
     <div class="animation_simulation_wrapper flex justify-center items-center">
       <img src="statics/staider/var1.png" class="bg_fixed_animated animate__heartBeat" alt="">
@@ -245,7 +249,7 @@ export default {
     height: 100vh;
     background: #16161A !important;
     z-index: 999999999999999;
-    display: none;
+    // display: none;
   }
 </style>
 <style>
