@@ -356,16 +356,6 @@
                                 </div>
                               </div>
 
-                              <div
-                                v-if="false"
-                                v-html="summary"
-                                class="col-md-6 summary-data"
-                                :style="
-                                  $q.platform.is.mobile
-                                    ? 'margin-top: auto'
-                                    : ''
-                                "
-                              ></div>
                             </div>
                           </div>
                         </div>
@@ -519,6 +509,7 @@
                       <div class="text-black">
                         <div class="text-h4 --subtitle">Are you sure?</div>
                       </div>
+
                       <q-stepper-navigation class="flex justify-end">
                         <q-btn
                           @click="
@@ -532,6 +523,16 @@
                           label="Submit"
                         />
                       </q-stepper-navigation>
+                       <div
+                       v-if="action == 'Stake'"
+                                v-html="summary"
+                                class="col-md-12 summary-data"
+                                :style="
+                                  $q.platform.is.mobile
+                                    ? 'margin-top: auto'
+                                    : ''
+                                "
+                              ></div>
                     </q-step>
                     <q-step title="Result" :name="4" prefix="3">
                       <q-btn
@@ -1242,8 +1243,9 @@ export default {
   font-size: 20px;
   line-height: 1rem;
 }
-.summary-data {
-  margin-top: -200px;
+.summary-data /deep/ picture{
+display: none;
+  /* margin-top: -200px; */
 }
 .summary-data /deep/ h1 {
   font-weight: 700;

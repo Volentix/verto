@@ -4,8 +4,8 @@
       <div class="words-order-wrapper--list">
         <div class="words-order-wrapper--list__empty">
           <p class="text-body1" :class="{'text-white': $store.state.settings.lightMode === 'true'}">Choose the first and the last word from the precedent list. We just want to make sure you didn't forget to save it</p>
-          <q-select :behavior="$q.screen.width < 600  ? 'dialog' : 'menu'" :set="valid = isChoiceInvalid(0, first)" :error="!valid.success && valid.message != null" :error-message="valid.message"  outlined class="q-pb-lg" v-model="first" :options="arrayAlphabericallyOrdered" label="Select the first word" />
-          <q-select :behavior="$q.screen.width < 600  ? 'dialog' : 'menu'" :set="valid = isChoiceInvalid(arrayMnemonic.length - 1, last)" :error="!valid.success && valid.message != null"  :error-message="valid.message"  outlined v-model="last" :options="arrayAlphabericallyOrdered" label="Select the last word" />
+          <q-select  :set="valid = isChoiceInvalid(0, first)" :error="!valid.success && valid.message != null" :error-message="valid.message"  outlined class="q-pb-lg" v-model="first" :options="arrayAlphabericallyOrdered" label="Select the first word" />
+          <q-select  :set="valid = isChoiceInvalid(arrayMnemonic.length - 1, last)" :error="!valid.success && valid.message != null"  :error-message="valid.message"  outlined v-model="last" :options="arrayAlphabericallyOrdered" label="Select the last word" />
           <ul v-if="false">
             <li v-for="(word, index) in arrayOrdered" :key="index">
               <q-input

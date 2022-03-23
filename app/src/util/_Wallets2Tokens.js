@@ -78,7 +78,7 @@ class Wallets2Tokens {
   }
   initWallet () {
     let watchAccounts = localStorage.getItem('watchAccounts')
-    store.state.currentwallet.config.keys = JSON.parse(localStorage.getItem('keys'))
+    // store.state.currentwallet.config.keys = JSON.parse(localStorage.getItem('keys'))
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
 
     watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || store.state.currentwallet.config.keys.filter(a => a[o.type === 'eos' ? 'name' : 'key'].toLowerCase() === o[o.type === 'eos' ? 'name' : 'key'].toLowerCase()).length === 0)

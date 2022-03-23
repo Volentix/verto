@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.9.260.62",
+  "version": "0.9.260.64",
   "description": "A multi-currency cryptocurrency wallet",
   "productName": "Verto",
   "cordovaId": "org.cordova.verto",
@@ -16,7 +16,7 @@
     "url": "https://github.com/Volentix/verto/issues"
   },
   "scripts": {
-    "dev": "cross-env QENV=development quasar dev",
+    "dev": "cross-env QENV=development quasar dev -m pwa",
     "buildpwa": "cross-env QENV=development quasar build -m pwa",
     "ios": "QENV=development quasar dev -m cordova -T ios",
     "android": "QENV=development quasar dev -m cordova -T android",

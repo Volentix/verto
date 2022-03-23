@@ -540,7 +540,7 @@ class Crosschaindex {
                }
                return undefined
              })
-
+             let returnAmount = 0
              await Promise.all(simulateQueries.map(async route => {
                /*   const execute_msg = route[0].value
                 ?.execute_msg
@@ -597,7 +597,11 @@ class Crosschaindex {
                    key = 'amount'
                  }
                  if (res.data.result[key]) {
-                   data.amount = parseFloat(res.data.result[key] / (10 ** toToken.decimals))
+                   let newAmount = parseFloat(res.data.result[key] / (10 ** toToken.decimals))
+                   if (returnAmount > newAmount) {
+                     return
+                   }
+                   data.amount = returnAmount = newAmount
                    if (route.tx.execute_msg.execute_swap_operations) {
                      route.tx.execute_msg.execute_swap_operations.minimum_receive = parseInt(res.data.result[key] - res.data.result[key] * 0.03).toString()
                    }
