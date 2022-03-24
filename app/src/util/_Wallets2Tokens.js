@@ -88,7 +88,7 @@ class Wallets2Tokens {
     })
     let accounts = (store.state.currentwallet.config.keys || []).concat(watchAccounts).filter(c => !this.refresParams.chains.length || this.refresParams.chains.includes(c.type))
     let eosCount = accounts.filter(o => !o.watch && o.type === 'eos' && o.name !== 'EOS Key').length
-    console.log(watchAccounts.length, eosCount, 'a', store.state.currentwallet.config.keys, 'eosCount', accounts, store.state.currentwallet.config.keys)
+
     if (eosCount) {
       accounts = accounts.filter(o => o.name !== 'EOS Key')
     }

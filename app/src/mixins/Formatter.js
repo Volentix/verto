@@ -325,7 +325,7 @@ export default {
           name: 'crosschain-exchange',
           params: { asset: token, after_experience: experience === 'exchange' ? token.after_experience : null, action: action, experience: experience }
         })
-      }, 100)
+      }, 200)
     },
     triggerTokenAction (token) {
       let found = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === token.type.toLowerCase() && o.chain === token.chain.toLowerCase())
@@ -340,7 +340,9 @@ export default {
 
       if (token.actionTrigger && token.actionTrigger.type === 'link') {
         this.setDefaultWallet(token.chain)
-        this.$router.push(token.actionTrigger.path)
+        setTimeout(() => {
+          this.$router.push(token.actionTrigger.path)
+        }, 200)
       } else if (token.experience === 'deposit_ust') {
         this.exchangeToken(token, 'sell', token.experience)
       }

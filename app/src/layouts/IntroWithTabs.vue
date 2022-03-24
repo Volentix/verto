@@ -457,12 +457,10 @@ export default {
       })
     },
     refreshWallet (name = null) {
-      if (!name) {
-        this.$store.state.tokens.walletTokensData = []
-        this.$store.state.tokens.pending = []
-        this.singleWalletRefresh = null
-        localStorage.removeItem('walletPublicDatav2')
-      }
+      this.$store.state.tokens.walletTokensData = []
+      this.$store.state.tokens.pending = []
+      this.singleWalletRefresh = null
+      localStorage.removeItem('walletPublicDatav2')
 
       return initWallet(name)
     },
