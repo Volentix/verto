@@ -173,7 +173,7 @@ export default {
     getSharePriceEndpoint (param) {
       this.currentOption = param
       // let SharePriceEndPoint = 'https://services.enzyme.finance/api/enzyme/fund/metrics/range?address=' + this.fundID + '&range=' + param
-      let SharePriceEndPoint = 'https://app.enzyme.finance/api/time-series/vault?vault=' + this.fundID + '&period=' + param.toUpperCase() + '&currency=USD&network=1'
+      let SharePriceEndPoint = 'https://app.enzyme.finance/api/time-series/vault?vault=' + this.fundID + '&period=' + param.toUpperCase() + '&currency=USD&network=ethereum'
       // https://services.enzyme.finance/api/enzyme/fund/metrics/range?address=0x185a02fd5576817fa0c9847cd6f2acc6707bfa0a&range=1d
       this.getSharePrice(SharePriceEndPoint)
     },

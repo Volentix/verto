@@ -59,7 +59,7 @@ export default {
           this.$router.push({
             path: '/verto/dashboard'
           })
-        } else {
+        } else if (!window.location.href.includes('restore')) {
           const hasConfig = !!await configManager.hasVertoConfig()
           if (!hasConfig) {
             console.log('moving to setup')

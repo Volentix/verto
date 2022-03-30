@@ -993,11 +993,13 @@ export default {
             })
         }
       } else {
+        let expectedAmount = parseInt(this.amount * this.vault.comptroller.denomination.decimals * this.tokens[0].price / this.tokens[1].price)
         EnzymeV4.getNativeDepositTransaction(
           this.vault.comptroller.id,
           this.vault.comptroller.denomination.id,
           this.amount,
-          this.$store.state.currentwallet.user.address
+          this.$store.state.currentwallet.user.address,
+          expectedAmount
         )
           .then((tx) => {
             console.log(tx, 'tx')
@@ -1181,7 +1183,7 @@ export default {
               address: this.denominationData.id,
               type: this.denominationData.symbol,
               decimals: data ? data.tokenInfo.decimals : null,
-              image: 'https://token.enzyme.finance/' + this.denominationData.id,
+              image: 'https://env.enzyme.finance/ethereum/assets/' + this.denominationData.id + '/logo.png',
               amount: data ? data.balance / 10 ** data.tokenInfo.decimals : 0,
               usd: data
                 ? (data.balance / 10 ** data.tokenInfo.decimals) *

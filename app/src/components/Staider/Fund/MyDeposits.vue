@@ -17,8 +17,8 @@
       <template v-slot:body-cell-asset="props">
         <q-td v-if="props.row.denominationAsset && props.row.denominationAsset.id" :props="props" class="body-table-col ">
           <div class="col-3 flex row items-center">
-            <span class="imgs q-mr-lg">
-              <img style="width: 40px;" :src="'https://token.enzyme.finance/'+props.row.denominationAsset.id" alt="">
+            <span class="imgs q-mr-lg"> 
+              <img style="width: 40px;" :src="'https://env.enzyme.finance/ethereum/assets/' + props.row.denominationAsset.id + '/logo.png'" alt="">
             </span>
             <span class="column pairs">
               <span class="pair text-bold">{{props.row.name}}</span>

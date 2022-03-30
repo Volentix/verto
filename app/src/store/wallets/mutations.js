@@ -13,7 +13,6 @@ const getWalletIndex = wallet => {
 let multitokens = ['terra', 'eos', 'dot', 'ksm', 'sol', 'avax']
 
 export const updateTokens = (state, updatedtokens) => {
-  console.log(updatedtokens, 'updatedtokens')
   state.portfolioTotal = 0
   if (!updatedtokens) {
     updatedtokens = []

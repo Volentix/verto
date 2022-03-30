@@ -9,11 +9,12 @@
       <img src="statics/staider/svg_logo_loader5.svg" width="120px" alt="">
       <!-- <img src="statics/staider/svg_logo_loader.svg" width="160px" alt=""> -->
     </div>
-    <div class="staider-loader flex flex-center">
-      <img src="statics/staider/svg_logo_loader.svg" class="q-pa-lg" width="250px" alt="">
+    <div class="staider-loader flex flex-center" v-show="showLoader">
+     <!--<img src="statics/staider/svg_logo_loader.svg" class="q-pa-lg" width="250px" alt="">
       <img src="statics/staider/svg_logo_loader2.svg" class="q-pa-lg" width="250px" alt="">
       <img src="statics/staider/svg_logo_loader3.svg" class="q-pa-lg" width="250px" alt="">
       <img src="statics/staider/svg_logo_loader4.svg" class="q-pa-lg" width="250px" alt="">
+       -->
       <img src="statics/staider/svg_logo_loader5.svg" class="q-pa-lg" width="250px" alt="">
     </div>
 
@@ -64,6 +65,7 @@ export default {
       // appSiteMode: 'site',
       leftDrawer: false,
       currentPage: '',
+      showLoader: true,
       backdrop: false
     }
   },
@@ -72,7 +74,9 @@ export default {
     await this.initConnect()
   },
   mounted () {
-    console.log('mounted')
+    setTimeout(() => {
+      this.showLoader = false
+    }, 1000)
   },
   computed: {
     appSiteMode () {

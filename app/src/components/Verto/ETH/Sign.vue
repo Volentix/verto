@@ -10,7 +10,7 @@
         <div class="request-signature__container">
           <div class="request-signature__header">
             <div class="request-signature__header-background"></div>
-            <div class="request-signature__header__text">Signature Request</div>
+            <div class="request-signature__header__text" >Signature Request</div>
             {{payloadId}}
             <div class="request-signature__header__tip-container">
               <div class="request-signature__header__tip"></div>
@@ -39,7 +39,7 @@
             style="width: 300px; margin: 0 auto"
             class="cursor-pointer bg-grey-3 q-pa-sm q-mt-md flex flex-center"
           >
-            <a target="_blank" :href="'https://etherscan.io/tx/' + txData.hash"
+            <a target="_blank" :href="evm.explorer + txData.hash"
               ><div>{{ getKeyFormat(txData.hash, 30) }}</div></a
             >
           </div>
@@ -62,7 +62,7 @@
 
             <a
               target="_blank"
-              :href="'https://etherscan.io/tx/' + txData.hash"
+              :href="evm.explorer  + txData.hash"
               ><q-btn
                 flat
                 label="View Tx"
@@ -138,7 +138,7 @@
             </div>
             <div  class="request-signature__account-info">
               <div class="request-signature__account">
-                <div class="request-signature__account-text">ETH transferred:</div>
+                <div class="request-signature__account-text" v-if="evm">{{evm.nativeToken.toUpperCase()}} transferred:</div>
                 <div class="request-signature__account-item">
                   <div class="account-list-item undefined">
                     <div class="account-list-item__top-row">
@@ -190,7 +190,7 @@
                       </div>
                       <div class="account-list-item__account-name text-left">
                        <span v-if="gasData"> {{formatNumber(txData.value / (10 ** 18) * gasData.ethPrice, 0)}} $ <br></span>
-                      {{txData.value / (10 ** 18)}} ETH
+                      {{formatNumber(txData.value / (10 ** 18),3)}} {{evm.nativeToken.toUpperCase()}}
 
                       </div>
                     </div>
@@ -200,7 +200,7 @@
 
               <div class="request-signature__balance">
                 <div class="request-signature__balance-text">Gas fees:</div>
-                <div class="request-signature__balance-value" v-if="gasData">{{formatNumber(gasData.usdVal, 0)}} $ <br><span>{{gasData.ethVal}}  ETH</span> </div>
+                <div class="request-signature__balance-value" v-if="gasData && evm">{{formatNumber(gasData.usdVal, 2)}} $ <br><span>{{gasData.ethVal}}  {{evm.nativeToken.toUpperCase()}}</span> </div>
               </div>
             </div>
             <div class="request-signature__origin-row" v-if="false">
@@ -257,7 +257,7 @@
   </div>
 </template>
 <script>
-import ParseDB from '@/util/ParseDb'
+// import ParseDB from '@/util/ParseDb'
 import Formatter from '@/mixins/Formatter'
 import Lib from '@/util/walletlib'
 import initWallet from '@/util/_Wallets2Tokens'
@@ -300,19 +300,32 @@ export default {
     cancel () {
       this.$q.bex.send('result.listener.' + this.payloadId, { approve: false })
     },
+    test () {
+      let t = {
+        chainId: 56,
+        data: '0x095ea7b300000000000000000000000010ed43c718714eb63d5aa57b78b54704e256024effffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+        from: '0x915f86d27e4e4a58e93e59459119faaf610b5be1',
+        gas: '0xbece',
+        gasPrice: '0x12a05f200',
+        to: '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3'
+      }
+      Lib.gas('bsc', t).then(i => {
+        console.log(i, 'i')
+      })
+    },
     async processTransaction (result) {
       this.txData.hash = result.transaction_id
       this.txData.status = 'Submitted'
       this.txData.explorer_link = result.message
-      this.$q.bex.send('result.listener.' + this.payloadId, { hash: result.transaction_id, approve: true })
-      if (this.txObject) {
+      this.$q.bex.send('result.listener.' + this.payloadId, { result: result.transaction_id, approve: true })
+      /* if (this.txObject) {
         let obj = {
           txId: this.$route.params.txId,
           hash: this.txData.hash,
           error: null
         }
-        await ParseDB.createUseACLObject('TransactionEvents', obj)
-      }
+      //  await ParseDB.createUseACLObject('TransactionEvents', obj)
+      } */
       let status = await Lib.checkEvmTxStatus(
         this.txData.hash,
         this.chain
@@ -327,6 +340,7 @@ export default {
   },
   created () {
     let data = ['gas', 'gasPrice', 'to', 'data', 'from', 'value']
+
     if (this.txObject) {
       this.chain = this.txObject.get('chain')
       data.forEach(element => {
@@ -334,15 +348,21 @@ export default {
       })
     } else if (this.tx) {
       const Web3 = require('web3')
-
-      Lib.gas('eth', this.tx, 'eth')
+      this.evm = Lib.getEvmData(this.tx.chainId)
+      // if(!evm) To be handled later
+      if (!this.txData.value) {
+        this.txData.value = 0
+      }
+      this.chain = this.evm.chain
+      Lib.gas(this.evm.chain, this.tx)
         .then(o => {
+          let g = o.length > 1 ? o[1] : o[0]
           this.gasData = {
             gas: Web3.utils.hexToNumber(this.tx.gas),
-            gasPrice: o[1].gasPrice,
-            ethPrice: o[1].isUsd,
-            ethVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice / (10 ** 18),
-            usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice / (10 ** 18) * o[0].isUsd
+            gasPrice: g.gasPrice,
+            ethPrice: g.isUsd,
+            ethVal: Web3.utils.hexToNumber(this.tx.gas) * g.gasPrice / (10 ** 18),
+            usdVal: Web3.utils.hexToNumber(this.tx.gas) * g.gasPrice / (10 ** 18) * g.isUsd
           }
         }).catch(e => {
           this.error = e.message ? e.message : e
@@ -364,7 +384,8 @@ export default {
   data () {
     return {
       chain: 'eth',
-      token: 'eth',
+      token: null,
+      evm: null,
       error: null,
       gasData: null,
       txData: {

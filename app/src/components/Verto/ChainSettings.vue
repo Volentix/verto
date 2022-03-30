@@ -65,10 +65,11 @@ export default {
   mixins: [Formatter],
   data () {
     return {
-      chainsData: [],
+
       settings: {},
       changed: false,
-      currentChain: null
+      currentChain: null,
+      chainsData: []
     }
   },
   watch: {

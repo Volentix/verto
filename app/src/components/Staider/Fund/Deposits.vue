@@ -25,7 +25,7 @@
         <q-td v-if="props.row.asset && props.row.asset.id" :props="props" class="body-table-col ">
           <div class="col-3 flex row items-center">
             <span class="imgs q-mr-sm">
-              <img style="width: 30px;" :src="'https://token.enzyme.finance/'+props.row.asset.id" alt="">
+              <img style="width: 30px;" :src="'https://env.enzyme.finance/ethereum/assets/' + props.row.asset.id + '/logo.png'" alt="">
             </span>
             <span class="column pairs">
               <span class="pair text-bold">{{props.row.asset.symbol}}</span>

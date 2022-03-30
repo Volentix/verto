@@ -105,6 +105,8 @@ class HD {
       chains.unshift({
         icon: o.icon,
         isEvm: true,
+        chainId: o.network_id,
+        provider: o.provider,
         value: o.chain,
         label: o.name
       })

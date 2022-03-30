@@ -76,14 +76,21 @@
     }
     /*This part is required for navigation to work properly*/
     <% if (htmlWebpackPlugin.options.ctx.mode.bex) { %>
-      html{
+      @media only screen and (max-width: 600px){
+   
+    }  
+    html , body {
+          width: 357px !important;
+          height: 600px !important;
+      }
+    html{
       position: relative;
-        width: 357px !important;
+      
         margin: 0 auto  !important;
-        height: 600px !important;
+        
       }
       body{
-        width: 357px !important;
+       
         margin: 0 auto  !important;
         background-color: #F5F5FE !important;
         position: relative !important;

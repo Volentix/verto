@@ -5,6 +5,7 @@ import abiArray from '../../statics/abi/erc20.json'
 import ParaSwapper from './ParaSwap'
 import CrosschainDex from '../CrosschainDex'
 import Formatter from '@/mixins/Formatter'
+import Lib from '..//walletlib'
 const Format = Formatter.methods
 let ETH = {
   name: 'Ethereum',
@@ -39,7 +40,7 @@ class Enzyme {
         'currency': 'usd',
         'network': 'ethereum'
       },
-      'query': 'query AssetPrices($network: Network!, $currency: Currency!) {\n  assetPrices(network: $network, currency: $currency) {\n    id\n    price\n    change24h\n    __typename\n  }\n}'
+      'query': 'query AssetPrices($network: Deployment!, $currency: Currency!) {\n  assetPrices(network: $network, currency: $currency) {\n    id\n    price\n    change24h\n    __typename\n  }\n}'
     })
 
     let config = {
@@ -69,7 +70,7 @@ class Enzyme {
         'network': 'ethereum',
         'vault': fundAddress
       },
-      'query': 'query VaultMonthlyReturns($currency: Currency!, $network: Network!, $vault: Address!) {\n  vaultMonthlyReturns(currency: $currency, network: $network, vault: $vault) {\n    yearMonth\n    year\n    month\n    monthlyReturn\n    valid\n    __typename\n  }\n}'
+      'query': 'query VaultMonthlyReturns($currency: Currency!, $network: Deployment!, $vault: Address!) {\n  vaultMonthlyReturns(currency: $currency, network: $network, vault: $vault) {\n    yearMonth\n    year\n    month\n    monthlyReturn\n    valid\n    __typename\n  }\n}'
     })
 
     let config = {
@@ -90,9 +91,8 @@ class Enzyme {
           i = vaultMonthlyReturns.length
           vaultMonthlyReturns.push({ year: o.year })
         }
-        console.log(i, 'i', vaultMonthlyReturns, o, months)
+
         vaultMonthlyReturns[i][months[o.month - 1]] = o.monthlyReturn
-        console.log(vaultMonthlyReturns, 'vaultMonthlyReturns')
       })
     }
 
@@ -120,7 +120,7 @@ class Enzyme {
         'network': 'ethereum',
         'vault': fundAddress
       },
-      'query': 'query VaultBalances($currency: Currency!, $network: Network!, $vault: Address!) {\n  vaultBalances(currency: $currency, network: $network, vault: $vault) {\n    assetAddress\n    balance\n    value\n    __typename\n  }\n}'
+      'query': 'query VaultBalances($currency: Currency!, $network: Deployment!, $vault: Address!) {\n  vaultBalances(currency: $currency, network: $network, vault: $vault) {\n    assetAddress\n    balance\n    value\n    __typename\n  }\n}'
     })
 
     let config = {
@@ -226,20 +226,21 @@ class Enzyme {
     return proxy
   }
   // EnzymeV4
-  async getNativeDepositTransaction (comptrollerProxy, denominationAsset, quantity, userAddress) {
+  async getNativeDepositTransaction (comptrollerProxy, denominationAsset, quantity, userAddress, expectedDenominationAmount) {
     let transaction = null
     let data = JSON.stringify({
       'operationName': 'NativeTokenDepositTransaction',
       'variables': {
         'comptrollerProxy': comptrollerProxy,
+        'expectedDenominationAmount': expectedDenominationAmount.toString(),
         'incoming': denominationAsset,
         'maxSlippage': 0.03,
         'network': 'ethereum',
         'quantity': (quantity * (10 ** 18)).toString(),
-        'userAddress': userAddress
+        'userAddress': userAddress,
+        'originAddress': userAddress
       },
-      'query': 'query NativeTokenDepositTransaction($comptrollerProxy: Address!, $incoming: Address!, $maxSlippage: Float!, $network: Network!, $quantity: BigNumber!, $userAddress: Address!) {\n  nativeTokenDepositTransaction(\n    comptrollerProxy: $comptrollerProxy\n    incoming: $incoming\n    maxSlippage: $maxSlippage\n    network: $network\n    quantity: $quantity\n    userAddress: $userAddress\n  ) {\n    reason\n    status\n    transaction {\n      data\n      to\n      value\n      __typename\n    }\n    __typename\n  }\n}'
-    })
+      'query': 'query NativeTokenDepositTransaction($comptrollerProxy: Address!, $expectedDenominationAmount: BigNumber!, $incoming: Address!, $maxSlippage: Float!, $network: Deployment!, $originAddress: Address, $quantity: BigNumber!, $userAddress: Address!) {\n  nativeTokenDepositTransaction(\n    comptrollerProxy: $comptrollerProxy\n    expectedDenominationAmount: $expectedDenominationAmount\n    incoming: $incoming\n    maxSlippage: $maxSlippage\n    network: $network\n    originAddress: $originAddress\n    quantity: $quantity\n    userAddress: $userAddress\n  ) {\n    reason\n    status\n    transaction {\n      data\n      to\n      value\n      __typename\n    }\n    __typename\n  }\n}' })
 
     let config = {
       method: 'post',
@@ -350,9 +351,8 @@ class Enzyme {
         'network': 'ethereum',
         'vault': fundAddress
       },
-      'query': 'query VaultPerformanceLatest($currency: Currency!, $network: Network!, $vault: Address!) {\n  vaultPerformanceLatest(currency: $currency, network: $network, vault: $vault) {\n    totalSupply\n    netShareValue\n    grossAssetValue\n    netAssetValue\n    performance24h\n    performanceMtd\n    performanceQtd\n    performanceYtd\n    performanceSinceInception\n    __typename\n  }\n}'
+      'query': 'query VaultPerformanceLatest($currency: Currency!, $network: Deployment!, $vault: Address!) {\n  vaultPerformanceLatest(currency: $currency, network: $network, vault: $vault) {\n    totalSupply\n    netShareValue\n    grossAssetValue\n    netAssetValue\n    performance24h\n    performanceMtd\n    performanceQtd\n    performanceYtd\n    performanceSinceInception\n    __typename\n  }\n}'
     })
-
     let config = {
       method: 'post',
       url: process.env[store.state.settings.network].CACHE + 'https://app.enzyme.finance/api/graphql',
@@ -381,7 +381,8 @@ class Enzyme {
     if (data && data.length) {
       vaults = await Promise.all(data.map(async v => {
         let f = v.vault
-        f.icon = 'https://token.enzyme.finance/' + f.comptroller.denomination.id
+
+        f.icon = 'https://env.enzyme.finance/ethereum/assets/' + f.comptroller.denomination.id + '/logo.png'
         f.vault = f.name
         f.address = f.id
         f.denominationCoin = f.comptroller.denomination.symbol
@@ -493,8 +494,8 @@ class Enzyme {
         .map(o => {
           if (o.__typename === 'SharesBoughtEvent') {
             o.network = 'Ethereum'
-            o.icon =
-              'https://token.enzyme.finance/' + o.depositAssetAmount.asset.id
+
+            o.icon = 'https://env.enzyme.finance/ethereum/assets/' + o.depositAssetAmount.asset.id + '/logo.png'
             o.denominationCoin = o.depositAssetAmount.asset.symbol
             o.amount =
               o.depositAssetAmount.valueDenomination +
@@ -510,7 +511,8 @@ class Enzyme {
             o.tx = Format.getKeyFormat(o.id.split('/')[0])
           } else if (o.__typename === 'SharesRedeemedEvent') {
             let asset = o.payoutAssetAmounts[0].asset
-            o.icon = 'https://token.enzyme.finance/' + asset.id
+
+            o.icon = 'https://env.enzyme.finance/ethereum/assets/' + asset.id + '/logo.png'
             o.date = new Date(o.timestamp * 1000)
               .toLocaleString()
               .substring(0, 9)
@@ -632,9 +634,8 @@ class Enzyme {
     return trades
   }
   async getGas () {
-    let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://ethgas.watch/api/gas')
-
-    return res.data.fast.gwei
+    let gas = await Lib.getEtherereumPriceGas()
+    return gas
   }
 
   async checkEvmTxStatus (transactonHash) {

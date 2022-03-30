@@ -60,8 +60,8 @@ export default {
       backdrop: false,
       funds: [
         {
-          symbol: 'USDC',
-          icon: 'https://token.enzyme.finance/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          symbol: 'USDC',           
+          icon:  'https://env.enzyme.finance/ethereum/assets/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/logo.png',
           apy: 'N/A',
           btnLabel: 'Deposit',
           network: 'Ethereum',

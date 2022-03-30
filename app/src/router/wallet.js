@@ -121,7 +121,7 @@ export default [
   },
   {
     name: 'connectv1',
-    path: '/verto/connectv1',
+    path: '/verto/connectv1/:svgData',
     component: () => import('pages/Verto/bex/Connect.vue')
   },
   {

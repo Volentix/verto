@@ -31,7 +31,8 @@ class Lib {
       provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
       explorer: 'https://etherscan.io/tx/',
       gas: 'https://ethgas.watch/api/gas',
-      network_id: 1
+      network_id: 1,
+      coinGeckoId: 'ethereum'
     }, {
       name: 'Binance Smart Chain',
       chain: 'bsc',
@@ -40,7 +41,8 @@ class Lib {
       provider: 'https://bsc-dataseed1.binance.org:443',
       explorer: 'https://bscscan.com/tx/',
       gas: 'https://api.bscscan.com/api?module=proxy&action=eth_gasPrice&apikey=JK2Z5XQYR1FMCAQFQDBFNS5FJM6XC7ETTB',
-      network_id: 56
+      network_id: 56,
+      coinGeckoId: 'binancecoin'
     }, {
       name: 'Polygon',
       chain: 'matic',
@@ -49,7 +51,8 @@ class Lib {
       provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
       explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
       gas: 'https://gasstation-mainnet.matic.network/',
-      network_id: 137
+      network_id: 137,
+      coinGeckoId: 'matic-network'
     }, {
       name: 'Avalanche C-Chain',
       chain: 'avaxc',
@@ -58,7 +61,8 @@ class Lib {
       provider: 'https://api.avax.network/ext/bc/C/rpc',
       explorer: 'https://cchain.explorer.avax.network/tx/',
       gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
-      network_id: 43114
+      network_id: 43114,
+      coinGeckoId: 'avalanche-2'
     }, {
       name: 'PulseChain',
       chain: 'tpls',
@@ -77,7 +81,8 @@ class Lib {
       provider: 'https://rpcapi.fantom.network/',
       explorer: 'https://ftmscan.com/tx/',
       gas: '', // FTM tokens are required to pay gas fees. The Covalent API response returns gas_* fields in fiat units
-      network_id: 250
+      network_id: 250,
+      coinGeckoId: 'fantom'
     // }, { // Commented until they go live
     //   name: 'Moonbeam Polkadot',
     //   chain: 'mbp',
@@ -1059,8 +1064,8 @@ class Lib {
 
     return wallet ? wallet(key, token) : {}
   }
-  getEvmData (chain) {
-    return this.getEvms().find(o => o.chain === chain)
+  getEvmData (chainOrChainId) {
+    return this.getEvms().find(o => o[isNaN(chainOrChainId) ? 'chain' : 'network_id'] === chainOrChainId)
   }
   async checkEvmTxStatus (transactonHash, chain) {
     let web3 = this.getWeb3Instance(chain)
@@ -1105,17 +1110,29 @@ class Lib {
           response = await axios.get(process.env[store.state.settings.network].CACHE + evmData.gas)
         }
       }
+      let gas = gasLimit || 21000, gasPrice = null
+      if (transaction.gas) {
+        gas = transaction.gas
+      }
+      if (transaction.gasPrice) {
+        gasPrice = transaction.gasPrice
+      }
 
       gasData = {
-        gas: gasLimit || 21000,
-        gasPrice: null,
+        gas: gas,
+        gasPrice: gasPrice,
         label: 'Fee',
         value: 0, // USD Price
         nativeToken: evmData.nativeToken
       }
+
+      if (!tokenPrice) {
+        tokenPrice = await this.getCoinGeckoPrice(evmData.coinGeckoId)
+      }
     }
-    const convertGasPrice = (gasObj, nativeTokenPrice) => {
+    const convertGasPrice = (gasObj, nativeTokenPrice = tokenPrice) => {
       // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
+
       gasObj.isUsd = nativeTokenPrice || tokenPrice
       gasObj.value = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? gasObj.isUsd : 1)
       gasObj.requiredNativeAmount = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas
@@ -1230,14 +1247,13 @@ class Lib {
 
         return gasOptions
       },
-
       async bsc () {
         /*
           The difference between Binance Chain and Ethereum is that there is no notion of gas.
           As a result, fees for the rest transactions are fixed.
           https://docs.binance.org/guides/concepts/fees.html
           */
-
+        console.log(transaction, 'transaction')
         if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
@@ -1274,8 +1290,8 @@ class Lib {
 
     return token ? token.id : null
   }
-  async getCoinGeckoPrice (asset = null, id = null) {
-    id = id || this.getCoinGeckoId(asset)
+  async getCoinGeckoPrice (asset) {
+    let id = typeof asset === 'string' ? asset : this.getCoinGeckoId(asset)
     return id ? (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=' + id + '&vs_currencies=usd')).data[id].usd : null
   }
   isEthValidAddress (rawInput) {

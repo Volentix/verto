@@ -1918,7 +1918,7 @@ export default {
               owner: t.owner,
               poolsCount: 1,
               amount: a.balance,
-              icon: 'https://token.enzyme.finance/' + a.address,
+              icon: 'https://env.enzyme.finance/ethereum/assets/' + a.address + '/logo.png',
               protocol: protocolData ? protocolData.label : null,
               protocolIcon: protocolData ? protocolData.icon : 'https://etherscan.io/images/main/empty-token.png'
             }

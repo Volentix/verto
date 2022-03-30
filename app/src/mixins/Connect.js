@@ -2,7 +2,7 @@ import Enzyme from '@/util/Staider/Enzyme'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 const Parse = require('parse')
 const walletConnectProvider = new WalletConnectProvider({
-  infuraId: '97f755cb8e3841d19f3923a18246f2d0',
+  infuraId: '0dd5e7c7cbd14603a5c20124a76afe63',
   clientMeta: {
     description: 'WalletConnect Developer App',
     url: 'https://walletconnect.org',
@@ -20,6 +20,7 @@ const walletConnectProvider = new WalletConnectProvider({
     ]
   }
 })
+
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 // import web3 from 'web3'
 const random = () => { return (Math.random() + 1).toString(36).substring(7) }

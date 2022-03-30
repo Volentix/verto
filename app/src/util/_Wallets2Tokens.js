@@ -39,7 +39,7 @@ class Wallets2Tokens {
   }
   isFoundInCache (wallet, cacheData = []) {
     let found = cacheData.find(o => o.key.toLowerCase() === wallet.key.toLowerCase() && o.name.toLowerCase() === wallet.name.toLowerCase() && o.chain.toLowerCase() === wallet.type.toLowerCase())
-    console.log(found, cacheData, wallet)
+
     return found
   }
 
@@ -92,7 +92,6 @@ class Wallets2Tokens {
     if (eosCount) {
       accounts = accounts.filter(o => o.name !== 'EOS Key')
     }
-    console.log(this.tableData.length, eosCount, 'eosCount', accounts)
 
     this.tableDataCache = this.getWalletFromCache()
     const self = this
@@ -100,7 +99,7 @@ class Wallets2Tokens {
     this.tableData = !this.refresParams.account && !this.refresParams.chains.length && !this.refresParams.fromCache ? accounts : accounts.filter(
       w => !this.isFoundInCache(w, this.tableDataCache)
     )
-    console.log(this.tableDataCache.length, this.tableData.length, Object.assign([], this.tableData), 'wallet', this.refresParams)
+
     this.tableData.sort(function (a, b) {
       return a.type === 'eth' ? -1 : 1
     })
@@ -189,7 +188,7 @@ class Wallets2Tokens {
         this.getTerraBalance(wallet)
       }
     })
-    console.log(Object.assign([], this.tableData, 2))
+
     this.tableData
       .map(async wallet => {
         if (wallet.type.toLowerCase() === 'eos') {

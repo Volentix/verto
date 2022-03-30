@@ -463,7 +463,7 @@ class Crosschaindex {
                  data.txParams.gasPrice = web3.utils.toHex(parseInt((g * 1000000000)).toString())
                }
                data.fee.native = (gas * (gasPrice) * 1000000000) / 10 ** 18
-               data.fee.usd = data.fee.native * (await Lib.getCoinGeckoPrice(null, 'ethereum'))
+               data.fee.usd = data.fee.native * (await Lib.getCoinGeckoPrice('ethereum'))
 
                resolve({
                  pair: data

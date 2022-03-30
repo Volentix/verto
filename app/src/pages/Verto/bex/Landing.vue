@@ -29,7 +29,7 @@
       </div>
     </div>
   </div>
-  <q-page class="column items-center justify-start login-page login-page-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" v-else>
+  <div class="column items-center justify-start login-page login-page-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" v-else>
     <div class="full-width full-height">
       <img :src="'statics/login_ui_' + ($store.state.settings.lightMode === 'true' ? 'dark':'light') +'.png'" alt="head-login" class="head-login" />
       <div class="form_wrapper full-height column q-pa-lg">
@@ -56,7 +56,7 @@
       </div>
     </div>
     <notify-message/>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -161,7 +161,7 @@ export default {
         }
       })
       console.log(routeData, 'routeData')
-      window.open(window.location.origin + 'www/index.html#/import-restore', '_blank')
+      window.open(window.location.origin + '/www/index.html#/import-restore', '_blank')
       // this.$router.push()
     },
     async login () {
