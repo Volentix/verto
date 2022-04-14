@@ -302,7 +302,7 @@ class Lib {
   }
   removePrivateData (data) {
     if (typeof data !== 'object' && !data.length) return data
-    return JSON.parse(JSON.stringify(data)).map(o => {
+    return Object.assign([], data).map(o => {
       o.privateKeyEncrypted = null
       delete o.privateKeyEncrypted
       o.privateKey = null
@@ -422,14 +422,8 @@ class Lib {
   }
 
   removeExpiredData (days = 3) {
-    const keepData = [
-      'skin',
-      'hideEosSetup',
-      'disableIntro_defi',
-      'closewizard',
-      'disable_freeospopup',
-      'globalSettings',
-      'version'
+    const removeData = [
+      'walletPublicDatav2'
     ]
     let date = localStorage.getItem('walletDataExpiration')
     let now = new Date()
@@ -440,15 +434,11 @@ class Lib {
     }
 
     if (!date || now.getTime() > saved.getTime()) {
-      let keys = Object.keys(localStorage),
-        i = keys.length
-
-      while (i--) {
-        if (!keepData.includes(keys[i])) {
-          localStorage.removeItem(keys[i])
-        }
-      }
+      removeData.forEach((key) => {
+        localStorage.removeItem(key)
+      })
     }
+
     localStorage.setItem('walletDataExpiration', now)
   }
   getCoingeckoChain (chain) {
@@ -657,37 +647,46 @@ class Lib {
               { auth: { username: 'ckey_a9e6f6ab90584877b86b151eef3' } }
             )
             .then(res => {
+              console.log(res.data, 'res.data')
               if (res.data.data.items) {
                 let transactions = []
                 res.data.data.items.filter(o => o.successful).forEach((a, index) => {
                   let tx = {}
-
+                  console.log(11, 'tx')
                   let date = new Date(a.block_signed_at)
                   tx.timeStamp = date.getTime() / 1000
                   tx.chain = token
+                  tx.failed = !a.successful
                   tx.friendlyHash = a.tx_hash.substring(0, 6) + '...' + a.tx_hash.substr(a.tx_hash.length - 5)
                   let decodedBlock = null
+                  console.log(13, 'tx')
                   if (a.log_events && a.value === '0') {
                     decodedBlock = a.log_events.find(o => o.decoded && o.decoded.name === 'Transfer')
                     if (decodedBlock) {
                       tx.to = decodedBlock.decoded.params.find(o => o.name === 'to').value
                       tx.amount = decodedBlock.decoded.params.find(o => o.name === 'value').value
-                      tx.amount = Web3.utils.fromWei(tx.amount.toString(), 'ether')
+                      tx.amount = tx.amount ? tx.amount : 0
+                      tx.amount = Web3.utils.fromWei(tx.amount?.toString(), 'ether')
                       tx.symbol = 'N/A'
-                      tx.image = ''
+                      tx.image = '/statics/empty-token.png'
                       if (store.state.tokens.evmTokens[chain]) {
                         let foundToken = store.state.tokens.evmTokens[chain].find(o => o.address === a.to_address)
                         tx.symbol = foundToken ? foundToken.symbol : tx.symbol
                         tx.image = foundToken ? foundToken.logoURI : tx.image
                       }
+                    } else {
+                      tx.symbol = 'ETH'
+                      tx.image = '/statics/empty-token.png'
                     }
                   }
+                  console.log(14, 'tx')
                   if (!decodedBlock) {
                     tx.to = a.to_address
-                    tx.amount = Web3.utils.fromWei(a.value.toString(), 'ether')
+                    tx.amount = Web3.utils.fromWei(a.value?.toString(), 'ether')
                     tx.symbol = evmData.nativeToken.toUpperCase()
                     tx.image = evmData.icon
                   }
+                  console.log(15, 'tx')
                   tx.hash = a.tx_hash
                   tx.explorerLink = evmData.explorer + '/' + tx.hash
                   tx.from = a.from_address
@@ -701,10 +700,10 @@ class Lib {
                   tx.dateFormatted = date.toISOString().split('T')[0]
                   tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
                   tx.active = false
-                  tx.gasTotal = tx.gas_spent
+                  tx.gasTotal = tx.gas_spent ? tx.gas_spent : 0
                   tx.dateFormatted = date.toISOString().split('T')[0]
                   tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
-
+                  console.log(15, 'tx')
                   transactions.push(tx)
                 })
                 resolve({
@@ -1964,8 +1963,6 @@ class Lib {
           data = typeof info.txData === 'object' ? info.txData.data : info.txData
         }
 
-        web3Value = '0x0'
-
         let rawTx = {
           from,
           to: sendTo,
@@ -1975,6 +1972,7 @@ class Lib {
           chainId: evmData.network_id
         }
 
+        console.log(rawTx, 'rawTx')
         if (info && (typeof info === 'object') && info.gasData) {
           rawTx.gas = info.gasData.gas
           rawTx.gasPrice = info.gasData.gasPrice

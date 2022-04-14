@@ -3,7 +3,7 @@
   <div
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
     class="wrapper q-pr-md"
-    v-if="asset.type && !($q.platform.is.mobile||$isbex)"
+    v-if="asset.chain && !($q.platform.is.mobile||$isbex)"
   >
     <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" style="margin-left: 15px; height: 77vh;">
       <div class="row" >
@@ -346,8 +346,8 @@
                 <q-tab v-if="$store.state.wallets.portfolioTotal" name="send" label="Send" />
            <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
                <q-tab name="stake" v-if="asset.type == 'hex' && asset.chain == 'eth'" @click="$router.push('/verto/stake/eth/hex')"  label="Stake" />
-                <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal" @click="exchangeToken({asset:asset, action: 'buy'})"  label="Buy" />
-                <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal" name="sell" @click="exchangeToken({asset:asset, action: 'sell'})" label="Sell" />
+                <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal && canSwap" @click="exchangeToken({asset:asset, action: 'buy'})"  label="Buy" />
+                <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal && canSwap" name="sell" @click="exchangeToken({asset:asset, action: 'sell'})" label="Sell" />
               </q-tabs>
 
               <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
@@ -683,6 +683,9 @@ export default {
     } */
   },
   computed: {
+    canSwap () {
+      return this.asset && this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain === this.asset.chain && ['eth', 'terra'].includes(this.asset.chain)
+    },
     isTxValid () {
       let valid = false
 
@@ -731,6 +734,7 @@ export default {
         localStorage.setItem('not_valuable', JSON.stringify(not_valuable))
         this.isValuable = true
       }
+      this.$store.state.currentwallet.userData.walletData = null
       initWallet()
     },
     markAsNotValuable () {
@@ -742,6 +746,7 @@ export default {
       } else {
         localStorage.setItem('not_valuable', JSON.stringify([this.asset]))
       }
+      this.$store.state.currentwallet.userData.walletData = null
       this.isValuable = false
       this.asset.usd = 0
       initWallet()

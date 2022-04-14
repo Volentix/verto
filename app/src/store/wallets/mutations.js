@@ -28,13 +28,16 @@ export const updateTokens = (state, updatedtokens) => {
 
   let not_valuable = localStorage.getItem('not_valuable')
   not_valuable = not_valuable ? JSON.parse(not_valuable) : []
-
+  console.log(not_valuable, 'not_valuable')
   updatedtokens = updatedtokens.map((o, index) => {
     o.index = getWalletIndex(o)
 
     if (not_valuable.length && not_valuable.find(z => z.chain === o.chain && z.type === o.type)) {
       o.tokenPrice = 0
       o.usd = 0
+      o.notValuable = true
+    } else {
+      o.notValuable = false
     }
     if (store.state.settings.globalSettings.blacklist && store.state.settings.globalSettings.blacklist[o.chain] && store.state.settings.globalSettings.blacklist[o.chain].includes(o.type.toLowerCase())) {
       o.tokenPrice = 0
@@ -95,7 +98,7 @@ export const updateTokens = (state, updatedtokens) => {
     .reduce((a, c) => a + c, 0)
 
   if (total && !isNaN(total)) state.portfolioTotal = total
-
+  console.log(total, state.portfolioTotal)
   state.tokens = updatedtokens
 
   localStorage.setItem(

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import Lib from '@/util/walletlib'
+
 import CW20s from '@/statics/json/cw20.json'
 import EosWrapper from '@/util/EosWrapper'
 const Format = {
@@ -41,40 +42,6 @@ class Wallets2Tokens {
     let found = cacheData.find(o => o.key.toLowerCase() === wallet.key.toLowerCase() && o.name.toLowerCase() === wallet.name.toLowerCase() && o.chain.toLowerCase() === wallet.type.toLowerCase())
 
     return found
-  }
-
-  async getVaultPerformance (fundAddress) {
-    let performance = null
-    let data = JSON.stringify({
-      'operationName': 'VaultPerformanceLatest',
-      'variables': {
-        'currency': 'usd',
-        'network': 'ethereum',
-        'vault': fundAddress
-      },
-      'query': 'query VaultPerformanceLatest($currency: Currency!, $network: Network!, $vault: Address!) {\n  vaultPerformanceLatest(currency: $currency, network: $network, vault: $vault) {\n    totalSupply\n    netShareValue\n    grossAssetValue\n    netAssetValue\n    performance24h\n    performanceMtd\n    performanceQtd\n    performanceYtd\n    performanceSinceInception\n    __typename\n  }\n}'
-    })
-
-    let config = {
-      method: 'post',
-      url: process.env[store.state.settings.network].CACHE + 'https://app.enzyme.finance/api/graphql',
-      headers: {
-        'Content-type': 'application/json' },
-      data: data
-    }
-
-    let response = await axios(config)
-    if (response && response.data && response.data.data) {
-      performance = response.data.data.vaultPerformanceLatest
-      performance.aum = Format.formatNumber(performance.grossAssetValue, 2)
-      performance.apy = Format.formatNumber(performance.performanceYtd * 100, 2)
-      performance.apyStyle = performance.performanceYtd < 0 ? 'red' : 'green'
-      performance.sharePrice = Format.formatNumber(performance.netShareValue)
-      let change = performance.performance24h / performance.netShareValue * 100
-      performance.dailyChange = Format.formatNumber(change, 2) + '%'
-      performance.dailyChangeStyle = change < 0 ? 'red' : 'green'
-    }
-    return performance
   }
   initWallet () {
     let watchAccounts = localStorage.getItem('watchAccounts')
@@ -184,7 +151,6 @@ class Wallets2Tokens {
           wallet.usd = result.usd
         })
       } else if (wallet.type === 'terra') {
-        console.log(wallet, 'terra')
         this.getTerraBalance(wallet)
       }
     })
@@ -244,12 +210,12 @@ class Wallets2Tokens {
                     url = t.logo_url && t.logo_url.length ? t.logo_url : self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
                   }
                 } */
+
+                  let type = t.contract_ticker_symbol ? t.contract_ticker_symbol.toLowerCase() : ''
                   self.tableData.push({
                     isEvm: true,
                     disabled: false,
-                    type: t.contract_ticker_symbol
-                      ? t.contract_ticker_symbol.toLowerCase()
-                      : '',
+                    type: type,
                     name: wallet.name,
                     tokenPrice: t.quote_rate,
                     key: wallet.key.toLowerCase(),
@@ -262,10 +228,10 @@ class Wallets2Tokens {
                     chain: e.chain,
                     to:
                       '/verto/wallets/' + e.chain + '/' +
-                      t.contract_ticker_symbol.toLowerCase() +
+                      type +
                       '/' +
                       wallet.key,
-                    icon: self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
+                    icon: self.getTokenImage(e.chain, type)
                   })
                 })
                 this.updateWallet()
@@ -401,6 +367,38 @@ class Wallets2Tokens {
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
+  async getVaultPerformance (fundAddress) {
+    let performance = null
+    let data = JSON.stringify({
+      'operationName': 'VaultPerformanceLatest',
+      'variables': {
+        'currency': 'usd',
+        'network': 'ethereum',
+        'vault': fundAddress
+      },
+      'query': 'query VaultPerformanceLatest($currency: Currency!, $network: Deployment!, $vault: Address!) {\n  vaultPerformanceLatest(currency: $currency, network: $network, vault: $vault) {\n    totalSupply\n    netShareValue\n    grossAssetValue\n    netAssetValue\n    performance24h\n    performanceMtd\n    performanceQtd\n    performanceYtd\n    performanceSinceInception\n    __typename\n  }\n}'
+    })
+    let config = {
+      method: 'post',
+      url: process.env[store.state.settings.network].CACHE + 'https://app.enzyme.finance/api/graphql',
+      headers: {
+        'Content-type': 'application/json' },
+      data: data
+    }
+
+    let response = await axios(config)
+    if (response && response.data && response.data.data) {
+      performance = response.data.data.vaultPerformanceLatest
+      performance.aum = Format.formatNumber(performance.grossAssetValue, 2)
+      performance.apy = Format.formatNumber(performance.performanceYtd * 100, 2)
+      performance.apyStyle = performance.performanceYtd < 0 ? 'red' : 'green'
+      performance.sharePrice = Format.formatNumber(performance.netShareValue)
+      let change = performance.performance24h / performance.netShareValue * 100
+      performance.dailyChange = Format.formatNumber(change, 2) + '%'
+      performance.dailyChangeStyle = change < 0 ? 'red' : 'green'
+    }
+    return performance
+  }
   async getCw20TokenPrice (amount, contract, decimals = 6) {
     let val = 0
     if (!this.cw20Pairs.length) {
@@ -418,7 +416,9 @@ class Wallets2Tokens {
       if (asset) {
         let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://fcd.terra.dev/wasm/contracts/' + contr.contract_addr + '/store?query_msg={"simulation":{"offer_asset":{"amount":"' + amount + '","info":{"' + (asset ? 'native_token' : 'token') + '":{"' + (asset ? 'denom' : 'contract_addr') + '":"' + (asset ? asset.native_token.denom : token.token.contract_addr) + '"}}}}}')
         if (res.data && res.data.result) {
-          val = 1 / (res.data.result.return_amount / amount)
+          let r = (res.data.result.return_amount / amount)
+          val = r ? 1 / r : 0
+          val = isFinite(val) ? val : 0
         }
       }
     }
@@ -687,6 +687,9 @@ class Wallets2Tokens {
       if (i) {
         image = i
       }
+    }
+    if (type.toLowerCase() === 'plsx') {
+      image = 'https://pulsex.com/brand/downloads/PLSX_coin.png'
     }
     return image
   }

@@ -418,7 +418,40 @@ export default {
 
       return walletData.chainsData
     },
-
+    isAssetValuable (asset) {
+      let not_valuable = localStorage.getItem('not_valuable')
+      let found = -1
+      if (not_valuable) {
+        not_valuable = JSON.parse(not_valuable)
+        found = not_valuable.findIndex(o => o.chain === asset.chain && o.type === asset.type)
+      }
+      return found
+    },
+    markAsValuable (asset) {
+      let not_valuable = localStorage.getItem('not_valuable')
+      if (not_valuable) {
+        not_valuable = JSON.parse(not_valuable)
+        let found = this.isAssetValuable(asset)
+        console.log(found, 'found')
+        if (found === -1) return
+        not_valuable.splice(found, 1)
+        localStorage.setItem('not_valuable', JSON.stringify(Lib.removePrivateData(not_valuable)))
+      }
+      this.$store.state.currentwallet.userData.walletData = null
+      initWallet()
+    },
+    markAssetNotValuable (asset) {
+      let not_valuable = localStorage.getItem('not_valuable')
+      if (not_valuable) {
+        not_valuable = JSON.parse(not_valuable)
+        not_valuable.push(asset)
+        localStorage.setItem('not_valuable', JSON.stringify(Lib.removePrivateData(not_valuable)))
+      } else {
+        localStorage.setItem('not_valuable', JSON.stringify(Lib.removePrivateData([asset])))
+      }
+      this.$store.state.currentwallet.userData.walletData = null
+      initWallet({ fromCache: true })
+    },
     async setCurrentWallet (chain) {
       this.$store.state.currentwallet.wallet = chain
 
@@ -445,7 +478,7 @@ export default {
       })
 
       let amount = isNaN(value) ? '0.00' : formatter.format(value)
-      // if (parseFloat(num) >= 9999) amount = this.nFormatter2(num, decimals, 1)
+      if (parseFloat(num) >= 9999999) amount = this.nFormatter2(num, decimals, 1)
       if (parseFloat(amount) === 0 && parseFloat(num) !== 0 && !isNaN(amount) && decimals !== 0 && Math.abs(parseFloat(num)) < 0.00001) {
         if (scientific) {
           amount = parseFloat(num).toExponential().replace(/e\+?/, ' x10^')

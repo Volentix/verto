@@ -5,14 +5,14 @@
         <!-- Public keys removed -->
         <div class="text-body1 text-bold">
           <q-icon :name="'img:'+chain.icon" class="q-pr-sm" />
-          {{chain.label}} accounts {{(field == 'key' ? '' : (field == 'privateKey' ? 'Private keys' : '' )) }}
+          {{chain.label}}  {{(field == 'key' ? '' : (field == 'privateKey' ? 'Private keys' : '' )) }}
         </div>
              <q-btn v-close-popup class="close_qr_code_popup absolute-top-right q-pa-md" dense flat icon="close" />
       </q-card-section>
       <q-scroll-area style="height: 45vh;" :key="deletedAccountNames.length">
         <q-card-section  v-show="!deletedAccountNames.includes(account.name)" class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
-          <div class="text-body1 q-pt-md flex justify-between items-center copy-key" v-if="account[field] || (showPrivateKeys[index] && decryptedKeys[index])">
-            <div class="flex justify-between" @click="copyToClipboard(account[field])">
+          <div class="text-body1 q-pt-md flex justify-between items-center copy-key" v-if="getAccountData(account)[field] || (showPrivateKeys[index] && decryptedKeys[index])">
+            <div class="flex justify-between" @click="copyToClipboard(getAccountData(account)[field])">
               <div class="flex">
                 <span class="identicon" v-html="avatar(account.name)" />
                 <span class="account_name text-bold q-ml-sm q-mr-sm " >{{account.name}} <span
@@ -23,18 +23,18 @@
                             ></span>
               </div>
               <span class="flex flex-center text-cur" >
-                {{getKeyFormat(decryptedKeys[index] ? decryptedKeys[index] : account[field], 4)}}
+                {{getKeyFormat(decryptedKeys[index] ? decryptedKeys[index] : getAccountData(account)[field], 4)}}
               </span>
 
             </div>
             <div class="flex">
-              <q-btn dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="o_file_copy" @click="copyToClipboard(account[field])" />
-              <q-btn dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="qr_code" />
+              <q-btn dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="o_file_copy" @click="copyToClipboard(getAccountData(account)[field])" />
+              <q-btn dense v-if="getAccountData(account)[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="qr_code" />
               <q-btn dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="close" @click="deleteAccount(account)" />
-               <div class="qr_code_wrapper column justify-center items-center" :class="{ 'min-size': !$q.platform.is.mobile, 'show' : (account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
+               <div class="qr_code_wrapper column justify-center items-center" :class="{ 'min-size': !$q.platform.is.mobile, 'show' : (getAccountData(account)[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
                 <div class="flex flex-center account_name_text">{{account.name}}</div>
-                <q-btn class="close_qr_code_popup" dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="close" />
-                <qrcode v-if="(account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]]" dark :value="decryptedKeys[index] ? decryptedKeys[index] : account[field]" :size="200" :options="{size: 100}"></qrcode>
+                <q-btn class="close_qr_code_popup" dense v-if="getAccountData(account)[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="close" />
+                <qrcode v-if="(getAccountData(account)[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]]" dark :value="decryptedKeys[index] ? decryptedKeys[index] : getAccountData(account)[field]" :size="200" :options="{size: 100}"></qrcode>
                 <div class="flex flex-center scan_text q-pt-md" style="bottom:0px">Scan the qr code</div>
               </div>
             </div>
@@ -141,6 +141,17 @@ export default {
   methods: {
     avatar (name) {
       return toSvg(name, 30)
+    },
+    getAccountData (account) {
+      if (this.field === 'privateKey') {
+        let keys = this.$store.state.currentwallet.config.keys.find(o => o.key.toLowerCase() === account.key.toLowerCase())
+        if (keys) {
+          account.privateKey = keys.privateKey
+          account.privateKeyEncrypted = keys.privateKeyEncrypted
+        }
+      }
+      console.log(account, this.field)
+      return account
     },
     async verifyPassword () {
       this.passwordValid = false
