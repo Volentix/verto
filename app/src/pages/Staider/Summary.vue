@@ -414,7 +414,7 @@ export default {
         theme: {
           palette: 'palette10'
         },
-        colors: [],
+        colors: ['#1f2e6a', '#365c3f'],
         labels: [],
         dataLabels: {
           // enabled: false,
@@ -457,24 +457,31 @@ export default {
   },
   watch: {
     '$store.state.currentwallet.user': function (val) {
-      if (val) { this.getUserData() }
+      if (val) {
+        this.getUserData()
+      }
     } },
   async  created () {
-    if (this.$store.state.currentwallet.user) { this.getUserData() }
+    if (this.$store.state.currentwallet.user) {
+      this.getUserData()
+    }
   },
   methods: {
     async getUserData () {
       let data = (await EnzymeV4.getUserVaults(this.$store.state.currentwallet.user.address))
 
       if (data.length) {
-        this.chartOptionsGeneral.labels = Object.assign([], data).map(f => f.name)
+        console.log(data, 'data')
+
         let ids = Object.assign([], data).map(f => f.vault.id)
         this.investorData = await EnzymeV4.getAggregateVaultsData(ids)
-        console.log(ids, 'ids')
+
         this.datasVaults = await EnzymeV4.getInvestorData(this.$store.state.currentwallet.user.address)
+        this.investorData.totalPValue = this.formatNumber(this.datasVaults.reduce((a, b) => a + b.totalUsd, 0), 2)
         this.seriesGeneral = this.investorData.repartition
+        this.chartOptionsGeneral.labels = Object.assign([], data).map(f => f.vault.name)
         data.forEach(async f => {
-        //  this.dataDeposits = this.dataDeposits.concat(await Enzyme.getDeposits(f.address))
+        // .dataDeposits = this.dataDeposits.concat(await Enzyme.getDeposits(f.address))
           this.dataDeposits = this.dataDeposits.concat(await EnzymeV4.getActivity(f.vault.id, 'deposit', this.$store.state.currentwallet.user.address))
         })
         // this.$set(this, 'investorData', data)

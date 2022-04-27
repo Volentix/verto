@@ -338,10 +338,11 @@ export default {
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    let tableData = await this.$store.state.wallets.tokens
+    // let tableData = await this.$store.state.wallets.tokens
     let params = this.$store.state.currentwallet.params
 
-    this.currentWallet = tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && w.name.toLowerCase() === params.accountName.toLowerCase())
+    this.currentWallet = this.$store.state.currentwallet.config.keys.find(w => w.name.toLowerCase() === params.accountName.toLowerCase())
+
     if (params.chainID.toLowerCase() === 'eth' && this.currentWallet.privateKey && this.currentWallet.privateKey.substring(0, 2) === '0x') {
       this.currentWallet.privateKey = this.currentWallet.privateKey.substring(2)
     }

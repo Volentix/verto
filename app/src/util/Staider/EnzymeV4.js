@@ -86,7 +86,6 @@ class Enzyme {
     if (response && response.data && response.data.data && response.data.data.vaultMonthlyReturns) {
       response.data.data.vaultMonthlyReturns.filter(o => o.valid).map(o => {
         let i = vaultMonthlyReturns.findIndex(y => y.year === o.year)
-        console.log(i, 'i')
         if (i === -1) {
           i = vaultMonthlyReturns.length
           vaultMonthlyReturns.push({ year: o.year })
@@ -281,10 +280,11 @@ class Enzyme {
         a + b.grossAssetValue,
       0
     )
+    /*
     investor.totalPValue = Format.formatNumber(
       total,
       2
-    )
+    ) */
 
     investor.repartition = Object.assign([], vaults).map(
       f =>
@@ -386,10 +386,11 @@ class Enzyme {
         f.vault = f.name
         f.address = f.id
         f.denominationCoin = f.comptroller.denomination.symbol
-        f.myshares = Format.formatNumber(v.shares, 2) + ' $US'
+        f.myshares = Format.formatNumber(v.shares, 2)
         let p = await this.getVaultPerformance(f.id)
         f.sharePrice = p.sharePrice + ' $US'
-        f.value = Format.formatNumber((p.netShareValue * parseFloat(v.shares)), 2) + ' $US'
+        f.totalUsd = (p.netShareValue * parseFloat(v.shares))
+        f.value = Format.formatNumber(f.totalUsd, 2) + ' $US'
         f.apy = p.apy + '%'
         f.apyStyle = p.apyStyle
         f.network = 'Ethereum'

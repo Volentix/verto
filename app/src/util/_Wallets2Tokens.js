@@ -47,13 +47,13 @@ class Wallets2Tokens {
     let watchAccounts = localStorage.getItem('watchAccounts')
     // store.state.currentwallet.config.keys = JSON.parse(localStorage.getItem('keys'))
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-
-    watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || store.state.currentwallet.config.keys.filter(a => a[o.type === 'eos' ? 'name' : 'key'].toLowerCase() === o[o.type === 'eos' ? 'name' : 'key'].toLowerCase()).length === 0)
+    let keys = JSON.parse(JSON.stringify(store.state.currentwallet.config.keys))
+    watchAccounts = watchAccounts.filter(o => !keys || keys.filter(a => a[o.type === 'eos' ? 'name' : 'key'].toLowerCase() === o[o.type === 'eos' ? 'name' : 'key'].toLowerCase()).length === 0)
     watchAccounts.map(a => {
       a.key = a.key.trim()
       a.name = a.name.trim()
     })
-    let accounts = (store.state.currentwallet.config.keys || []).concat(watchAccounts).filter(c => !this.refresParams.chains.length || this.refresParams.chains.includes(c.type))
+    let accounts = (keys || []).concat(watchAccounts).filter(c => !this.refresParams.chains.length || this.refresParams.chains.includes(c.type))
     let eosCount = accounts.filter(o => !o.watch && o.type === 'eos' && o.name !== 'EOS Key').length
 
     if (eosCount) {
@@ -1022,6 +1022,7 @@ class Wallets2Tokens {
   }
   updateWallet () {
     let data = this.tableData.concat(this.tableDataCache)
+    console.log(data, 'data', this.tableData, this.tableDataCach)
     store.commit('wallets/updateTokens', data)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }

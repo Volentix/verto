@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.9.260.69",
+  "version": "0.9.260.70",
   "description": "A multi-currency cryptocurrency wallet",
   "productName": "Verto",
   "cordovaId": "org.cordova.verto",
@@ -17,6 +17,7 @@
   },
   "scripts": {
     "dev": "cross-env QENV=development quasar dev -m pwa",
+    "staider": "cross-env QENV=development quasar dev -m spa",
     "buildpwa": "cross-env QENV=development quasar build -m pwa",
     "ios": "QENV=development quasar dev -m cordova -T ios",
     "android": "QENV=development quasar dev -m cordova -T android",
