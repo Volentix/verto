@@ -1,0 +1,93 @@
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In  -->
+<svg version="1.1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="587px" height="562px" viewBox="0 0 587 562" style="enable-background:new 0 0 587 562;"
+	 xml:space="preserve" >
+<style type="text/css">
+	.st0{opacity:0.5;}
+	.st1{fill:none;stroke:#FFFECC;stroke-miterlimit:10;}
+  .st2,.st3,.st4,.st5,.st6,.st7,.st8,.st9,.st10,.st11,.st12,.st13,.st14,.st15,.st16,.st17,.st18{transform-origin: center;}
+	.st2{opacity:0.45;animation-delay: 0.45s;}
+	.st3{fill:none;stroke:#FFFECC;stroke-width:1.1;stroke-miterlimit:10;}
+	.st4{opacity:0.4;animation-delay: 0.4s;}
+	.st5{fill:none;stroke:#FFFECC;stroke-width:1.21;stroke-miterlimit:10;}
+	.st6{opacity:0.35;animation-delay: 0.35s;}
+	.st7{fill:none;stroke:#FFFECC;stroke-width:1.331;stroke-miterlimit:10;}
+	.st8{opacity:0.3;animation-delay: 0.3s;}
+	.st9{fill:none;stroke:#FFFECC;stroke-width:1.4641;stroke-miterlimit:10;}
+	.st10{opacity:0.25;animation-delay: 0.25s;}
+	.st11{fill:none;stroke:#FFFECC;stroke-width:1.6105;stroke-miterlimit:10;}
+	.st12{opacity:0.2;animation-delay: 0.2s;}
+	.st13{fill:none;stroke:#FFFECC;stroke-width:1.7716;stroke-miterlimit:10;}
+	.st14{opacity:0.15;animation-delay: 0.15s;}
+	.st15{fill:none;stroke:#FFFECC;stroke-width:1.9487;stroke-miterlimit:10;}
+	.st16{opacity:0.1;animation-delay: 0.1s;}
+	.st17{fill:none;stroke:#FFFECC;stroke-width:2.1436;stroke-miterlimit:10;}
+	.st18{fill:yellow;opacity: 0;}
+	.st19{fill:#FFFFFF;opacity: 0;}
+  @-webkit-keyframes infinte_rotation{
+    0%{
+      transform: matrix(1, 0, 0, 1, 1, 0) rotate(0deg);
+      opacity: 0;
+    }
+    90%{
+      transform: matrix(1, 0, 0, 1, 30, 0) rotate(0deg);
+      opacity: 1;
+    }
+    100%{
+      transform: matrix(1, 0, 0, 1, 110, 0) rotate(0deg);
+      opacity: 0;
+    }
+  }
+  @keyframes infinte_rotation{
+    0%{
+      transform: matrix(1, 0, 0, 1, 1, 0) rotate(0deg);
+      opacity: 0;
+    }
+    90%{
+      transform: matrix(1, 0, 0, 1, 30, 0) rotate(0deg);
+      opacity: 1;
+    }
+    100%{
+      transform: matrix(1, 0, 0, 1, 110, 0) rotate(0deg);
+      opacity: 0;
+    }
+  }
+  .animate__infinte_rotation2{
+    -webkit-animation-name:infinte_rotation;
+    animation-name:infinte_rotation;
+    -webkit-animation-duration:2s;
+    -webkit-animation-direction: alternate-reverse;
+    animation-direction: alternate-reverse;
+    animation-duration:2s;
+    -webkit-animation-duration:2s;
+    animation-duration:2s;
+    -webkit-animation-timing-function:cubic-bezier(0.1, -0.6, 0.2, 0);
+    animation-timing-function:cubic-bezier(0.1, -0.6, 0.2, 0);
+
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+  }
+  .animate__infinte_rotation1{
+    -webkit-animation-name:infinte_rotation;
+    animation-name:infinte_rotation;
+    -webkit-animation-duration:2s;
+    animation-duration:2s;
+    -webkit-animation-duration:2s;
+    animation-duration:2s;
+    -webkit-animation-timing-function:cubic-bezier(0.1, -0.6, 0.2, 0);
+    animation-timing-function:cubic-bezier(0.1, -0.6, 0.2, 0);
+
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+  }
+</style>
+<defs>
+</defs>
+<g id="XMLID_15_">
+	<g id="XMLID_16_">
+		<path id="XMLID_65_" class="st18 animate__infinte_rotation1" d="M328.2,299.2c8.7,0,15.5,6.8,15.5,15.5c0,8.7-6.8,15.5-15.5,15.5h-83.9 c-19.6,0-37.4-9.6-49.7-25.5c-11.9-14.6-19.2-35.1-19.2-57s7.3-42.4,19.2-57c12.8-16,30.1-25.5,49.7-25.5h83.9 c0.5,0,0.5,0,0.9,0c29.2-0.5,57.9,6.8,82.6,22.8v39.2l0,0c-21.4-21.4-51.5-31.5-81.7-31c-0.5,0-0.9,0-1.8,0h-83.9 c-10,0-19.2,5.5-26,14.1c-7.8,9.6-12.3,22.8-12.3,37.9c0,15.1,4.6,28.3,12.3,37.9c6.8,8.7,16,14.1,26,14.1h83.9V299.2z"/>
+		<path id="XMLID_17_" class="st19 animate__infinte_rotation2" d="M258.9,262.7c-8.7,0-15.5-6.8-15.5-15.5c0-8.7,6.8-15.5,15.5-15.5h83.9 c19.6,0,37.4,9.6,49.7,25.5c11.9,14.6,19.2,35.1,19.2,57c0,21.9-7.3,42.4-19.2,57c-12.8,16-30.1,25.5-49.7,25.5h-83.9 c-0.5,0-0.5,0-0.9,0c-29.2,0.5-57.9-6.8-82.6-22.8v-39.2l0,0c21.4,21.4,51.5,31.5,81.7,31c0.5,0,0.9,0,1.8,0h83.9 c10,0,19.2-5.5,26-14.1c7.8-9.6,12.3-22.8,12.3-37.9c0-15.1-4.6-28.3-12.3-37.9c-6.8-7.8-16-13.2-26-13.2H258.9z"/>
+	</g>
+</g>
+</svg>

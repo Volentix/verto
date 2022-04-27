@@ -160,7 +160,9 @@ node_modules
 
 .quasar
 .thumbs.db
-app/dist
+app/dist/pwa
+app/dist/bex
+app/dist/ssr
 app/build
 .nuxt.
 .app/src-bex/www
