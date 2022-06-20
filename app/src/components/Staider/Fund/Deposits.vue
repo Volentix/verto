@@ -1,9 +1,6 @@
 <template>
   <div>
-    <q-tabs v-if="false" v-model="tab" inline-label class="bg-primary text-white shadow-2">
-      <q-tab name="all" icon="mail" label="All deposits" />
-      <q-tab name="user_deposits" icon="alarm" label="My deposit" />
-    </q-tabs>
+
     <q-table
       flat
       :dark="$store.state.settings.lightMode === 'true'"
@@ -12,6 +9,7 @@
       :visible-columns="visibleColumns"
       :columns="columns"
       row-key="date"
+     :no-data-label="'No '+(action == 'deposits' ? 'deposits' : 'withdrawals')+' have been made for this account'"
     >
       <template v-slot:body-cell-depositor="props">
         <q-td v-if="props.row.investor && props.row.investor.id"  :props="props" class="body-table-col ">
@@ -27,7 +25,7 @@
         <q-td v-if="props.row.asset && props.row.asset.id" :props="props" class="body-table-col ">
           <div class="col-3 flex row items-center">
             <span class="imgs q-mr-sm">
-              <img style="width: 30px;" :src="'https://token.enzyme.finance/'+props.row.asset.id" alt="">
+              <img style="width: 30px;" :src="'https://env.enzyme.finance/ethereum/assets/' + props.row.asset.id + '/logo.png'" alt="">
             </span>
             <span class="column pairs">
               <span class="pair text-bold">{{props.row.asset.symbol}}</span>
@@ -57,14 +55,14 @@ export default {
       if (this.deposits) {
         u = this.deposits.filter(o => (this.action ? [(this.action === 'deposits' ? 'SharesBoughtEvent' : 'SharesRedeemedEvent')] : ['SharesBoughtEvent', 'SharesRedeemedEvent']).includes(o.__typename))
 
-        u = u.filter(c => c.investor.id.toLowerCase() === this.userAddress.toLowerCase() || !this.userAddress).map(d => {
+        u = u.filter(c => !this.userAddress || c.investor.id.toLowerCase() === this.userAddress.toLowerCase()).map(d => {
           if (d.__typename === 'SharesRedeemedEvent') {
             d.investmentAmount = this.formatNumber(d.shares, 4)
           }
           return d
         })
       }
-      console.log(u, ' u')
+
       return u
     }
   },
@@ -92,7 +90,7 @@ export default {
       this.visibleColumns = ['asset', 'Amount', 'shares', 'price', 'date', 'tx']
       let data = this.funds.map(async f => {
         this.deposits = this.deposits.concat(await Enzyme.getDeposits(f.address))
-        console.log(this.deposits, ' this.deposits')
+
         return f
       })
       await Promise.all(data)

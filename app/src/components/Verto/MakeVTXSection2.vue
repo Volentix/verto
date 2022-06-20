@@ -169,7 +169,7 @@ export default {
               this.depositCoin.value = ethAccount.type
               this.depositCoin.icon = ethAccount.icon
               this.destinationCoin.value = 'eth'
-              this.destinationCoin.icon = 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
+              this.destinationCoin.icon = 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
               this.txMessage = 'Swap ' + this.depositCoin.value + ' to ETH and Swap ETH to VTX'
               this.showTxInfoDialog = true
             }

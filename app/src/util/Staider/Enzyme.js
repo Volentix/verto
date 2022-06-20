@@ -3,6 +3,8 @@ const Web3 = require('web3')
 import store from '@/store'
 import abiArray from '../../statics/abi/erc20.json'
 import ParaSwapper from './ParaSwap'
+import Formatter from '@/mixins/Formatter'
+const Format = Formatter.methods
 let ETH = {
   name: 'Ethereum',
   chain: 'eth',
@@ -55,13 +57,78 @@ class Enzyme {
     }
     return proxy
   }
+  async getInvestorData (userAddress) {
+    let investor = null
+    let data = (await this.getUserInvestments(userAddress.toLowerCase()))
+    console.log(data, 'data 1')
+    if (data && data.funds.length) {
+      investor = {}
+      investor.datasVaults = data.funds.map(f => {
+        f.icon = 'https://token.enzyme.finance/' + f.denominationAsset.id
+        f.vault = f.name
+        f.denominationCoin = f.denominationAsset.symbol
+        f.myshares = Format.formatNumber(f.investorShares, 2) + ' $US'
+        f.sharePrice = Format.formatNumber(f.calculations.USD.price, 2) + ' $US'
+        f.value = Format.formatNumber(f.calculations.USD.price * f.investorShares, 2) + ' $US'
+        f.apy = Format.formatNumber(f.performance['1y'].USD.price * 100, 2) + '%'
+        f.apyStyle = f.performance['1y'].USD.price < 0 ? 'red' : 'green'
+        f.network = 'Ethereum'
+        return f
+      })
+      investor.repartition = Object.assign({}, data).funds.map(f => f.calculations.USD.price * f.investorShares / data.aggregate.value.current.USD * 100)
+      investor.totalPValue = Format.formatNumber(data.aggregate.value.current.USD, 2)
+      let AvApy = investor.datasVaults.reduce((a, b) => (a ? a.performance['1y'].USD.price : 0) + (b ? b.performance['1y'].USD.price : 0), 0) * 100 / investor.datasVaults.length
+      investor.avApy = {
+        color: AvApy < 0 ? 'red' : 'green',
+        value: Format.formatNumber(AvApy, 2)
+      }
+      let sinceInception = data.aggregate.value.current.USD - data.aggregate.value.previous.USD
+
+      investor.sinceInception = {
+        color: sinceInception < 0 ? 'red' : 'green',
+        value: Format.formatNumber(sinceInception, 2)
+      }
+      investor.avgSharePrice = Format.formatNumber(investor.datasVaults.reduce((a, b) => (a ? a.calculations.USD.price : 0) + (b ? b.calculations.USD.price : 0), 0) / investor.datasVaults.length, 2)
+      let thisMonth = investor.datasVaults.reduce((a, b) => (a ? a.performance['1m'].USD.price : 0) + (b ? b.performance['1m'].USD.price : 0), 0) * 100 / investor.datasVaults.length
+      investor.thisMonth = {
+        color: thisMonth < 0 ? 'red' : 'green',
+        value: Format.formatNumber(thisMonth, 2)
+      }
+    }
+    return investor
+  }
   async getDeposits (fundAddress) {
     let data = null
     let response = await axios.post(process.env[store.state.settings.network].CACHE + 'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme',
       { 'operationName': 'FundInvestmentSharesChanges', 'variables': { 'id': fundAddress }, 'query': 'query FundInvestmentSharesChanges($id: ID!) {  fund(id: $id) {    id    investmentSharesChanges(first: 1000) {      ...InvestmentSharesChangeWithInvestor      __typename    }    __typename  }}fragment InvestmentSharesChangeWithInvestor on InvestmentSharesChangeInterface {  ...InvestmentSharesChange  investor {    id    __typename  }  __typename}fragment InvestmentSharesChange on InvestmentSharesChangeInterface {  shares  timestamp  fundState {    id    portfolio {      id      holdings {        id        asset {          id          __typename        }        price {          price          __typename        }        __typename      }      __typename    }    currencyPrices {      ...CurrencyPrice      __typename    }    __typename  }  ...SharesBoughtEvent  ...SharesRedeemedEvent  __typename}fragment CurrencyPrice on CurrencyPrice {  id  price  currency {    id    __typename  }  __typename}fragment SharesBoughtEvent on SharesBoughtEvent {  id  investmentAmount  asset {    ...Asset    __typename  }  transaction {    id    __typename  }  __typename}fragment Asset on Asset {  id  name  symbol  decimals  type  __typename}fragment SharesRedeemedEvent on SharesRedeemedEvent {  id  fund {    accessor {      denominationAsset {        ...Asset        __typename      }      __typename    }    __typename  }  payoutAssetAmounts {    ...AssetAmount    __typename  }  transaction {    id    __typename  }  __typename}fragment AssetAmount on AssetAmount {  asset {    ...Asset    __typename  }  amount  price {    price    __typename  }  __typename}' })
 
     if (response && response.data && response.data.data) {
-      data = response.data.data.fund.investmentSharesChanges
+      data = response.data.data.fund.investmentSharesChanges.map(o => {
+        o.network = 'Ethereum'
+
+        if (o.asset) {
+          o.icon = 'https://token.enzyme.finance/' + o.asset.id
+          o.denominationCoin = o.asset.symbol
+          o.amount = o.investmentAmount + ' ' + o.asset.symbol
+          o.sharePrice = Format.formatNumber(o.investmentAmount / o.shares, 2) + ' $US'
+        } else {
+          let asset = o.payoutAssetAmounts[0].asset
+          o.icon = 'https://token.enzyme.finance/' + asset.id
+          o.amount = o.payoutAssetAmounts[0].amount + ' ' + asset.symbol
+          o.denominationCoin = asset.symbol
+          o.sharePrice = Format.formatNumber(o.investmentAmount / o.shares, 2) + ' $US'
+        }
+        o.date = (new Date(o.timestamp * 1000)).toLocaleString().substring(0, 9)
+        o.price = o.fundState.currencyPrices.find(o => o.currency.id === 'USD').price
+
+        o.tx = Format.getKeyFormat(o.transaction.id)
+        for (let k in o) {
+          if (!isNaN(o[k]) && !o[k].toString().includes('0x')) {
+            o[k] = Format.formatNumber(o[k], 2)
+          }
+        }
+        return o
+      })
     }
     return data
   }
@@ -73,6 +140,16 @@ class Enzyme {
       fund = response.data.data.fund
     }
     return fund
+  }
+  async isInvestor (fundAddress, investorAddress) {
+    let found = false
+    let comptrollerProxy = await this.getComptrollerProxy(fundAddress)
+    let response = await axios.post(process.env[store.state.settings.network].CACHE + 'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme',
+      { 'operationName': 'FundPolicies', 'variables': { 'comptrollerProxy': comptrollerProxy }, 'query': 'query FundPolicies($comptrollerProxy: ID!) {   comptrollerProxy(id: $comptrollerProxy) {     id     policySettings {       id       policy {         id         __typename       }       ...AdapterBlacklistSetting       ...AdapterWhitelistSetting       ...AssetBlacklistSetting       ...AssetWhitelistSetting       ...InvestorWhitelistSetting       ...MaxConcentrationSetting       ...MinMaxInvestmentSetting       ...BuySharesCallerWhitelistSetting       ...GuaranteedRedemptionSetting       __typename     }     __typename   } }  fragment AdapterBlacklistSetting on AdapterBlacklistSetting {   listed   enabled   __typename }  fragment AdapterWhitelistSetting on AdapterWhitelistSetting {   listed   enabled   __typename }  fragment AssetBlacklistSetting on AssetBlacklistSetting {   listed   enabled   __typename }  fragment AssetWhitelistSetting on AssetWhitelistSetting {   listed   enabled   __typename }  fragment InvestorWhitelistSetting on InvestorWhitelistSetting {   enabled   listedInvestors: listed(first: 1000) {     id     __typename   }   __typename }  fragment MaxConcentrationSetting on MaxConcentrationSetting {   enabled   maxConcentration   __typename }  fragment MinMaxInvestmentSetting on MinMaxInvestmentSetting {   enabled   minInvestmentAmount   maxInvestmentAmount   __typename }  fragment BuySharesCallerWhitelistSetting on BuySharesCallerWhitelistSetting {   enabled   listed   __typename }  fragment GuaranteedRedemptionSetting on GuaranteedRedemptionSetting {   enabled   startTimestamp   duration   __typename }' })
+    if (response && response.data && response.data.data) {
+      found = response.data.data.comptrollerProxy.policySettings.find(o => o.__typename === 'InvestorWhitelistSetting').listedInvestors.map(o => o.id.toLowerCase()).includes(investorAddress.toLowerCase())
+    }
+    return found ? 'whitelisted' : false
   }
   async getUserInvestments (userAddress) {
     let funds = null

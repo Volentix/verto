@@ -21,7 +21,7 @@
                         <q-item-section style="margin-left: 0px;" class="">
                             <q-item-label class="row justify-end full-width items-center">
                                 <q-avatar v-if="false" round size="32px" color="primary">
-                                    <img onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="transaction.image" >
+                                    <img  :src="transaction.image" >
                                 </q-avatar>
                                 <div>&nbsp;&nbsp;-{{formatNumber(transaction.amountFriendly)}} <b>{{transaction.symbol}}</b></div>
                             </q-item-label>
@@ -189,7 +189,7 @@
                             <q-item-label class="row justify-end full-width items-center">
                               <div>&nbsp;&nbsp;+{{formatNumber(transaction.amountFriendly)}} <b>{{transaction.symbol}}</b></div>
                               <q-avatar v-if="false" round size="32px">
-                                  <img onerror="this.src='https://etherscan.io/images/main/empty-token.png'" :src="transaction.image">
+                                  <img  :src="transaction.image">
                               </q-avatar>
                             </q-item-label>
                             <!-- <q-item-label caption>

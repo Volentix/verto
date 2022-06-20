@@ -95,7 +95,7 @@ export default {
       depositCoin: {
         label: 'ETH',
         value: 'eth',
-        image: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
+        image: 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
       },
       depositCoinOptions: null,
       depositCoinUnfilter: null,

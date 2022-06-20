@@ -67,7 +67,7 @@
                             <q-item-label class="q-pb-sm"
                               >Choose a Verto EOS account</q-item-label
                             >
-                            <q-item-label caption>
+                            <q-item-label caption class="q-mb-md">
                               Choose a EOS key from your Verto Wallet
                             </q-item-label>
 
@@ -82,7 +82,7 @@
                               separator
                               rounded
                               outlined
-                              class="select-input q-pt-md"
+                              class="select-input q-px-md"
                               v-model="currentToken"
                               :options="tokensOption"
                             >
@@ -121,7 +121,7 @@
                                   <q-item-section>
                                     <q-item-label
                                       class="ellipsis"
-                                      v-html="currentToken.label"
+                                      v-html="getKeyFormat(currentToken.label)"
                                     />
                                     <q-item-label caption>{{
                                       currentToken.value
@@ -435,10 +435,10 @@
                         {{ accountsInVerto.length }}  already added in Verto.
                         You can add {{ accountNames.length }} more.
                       </p>
-                     <p :class="{ 'text-white': $store.state.settings.lightMode === 'true'}"  v-if="!(accountsInVerto.length && !accountNames.length) && accountNames.length !== 0" class="text-body2">You can click on multiple accounts name to import multiples accounts <br/> or <q-btn @click="accountNameList = accountNames" outline size="sm" class="q-mt-sm" label="Select all" /></p>
+                     <p :class="{ 'text-white': $store.state.settings.lightMode === 'true'}"  v-if="!(accountsInVerto.length && !accountNames.length) && accountNames.length !== 0 && !spinnervisible" class="text-body2">You can click on multiple accounts name to import multiples accounts <br/> or <q-btn @click="accountNameList = accountNames" outline size="sm" class="q-mt-sm" label="Select all" /></p>
                      <p  v-if="status" class="text-green">{{status}}</p>
                       <q-select
-                        v-if="accountNames.length"
+                        v-if="accountNames.length && !spinnervisible"
                         label="Select EOS Accounts in the list"
                         :dark="$store.state.settings.lightMode === 'true'"
                         :light="$store.state.settings.lightMode === 'false'"
@@ -456,7 +456,7 @@
                       />
 
                       <q-input
-                        v-if="accountNames.length"
+                        v-if="accountNames.length && !spinnervisible"
                         v-model="vertoPassword"
                         :dark="$store.state.settings.lightMode === 'true'"
                         :light="$store.state.settings.lightMode === 'false'"
@@ -486,7 +486,7 @@
 
                     <q-stepper-navigation
                       class="flex justify-end"
-
+                      v-if="!spinnervisible"
                     >
                       <q-btn
                          v-if="tab == 'import' &&  (accountsInVerto.length != 0 ||  accountNames.length != 0)"
@@ -769,7 +769,7 @@ import HD from '@/util/hdwallet'
 import { JsonRpc } from 'eosjs'
 import transactEOS from './transactEOS'
 import AccountSelector from './Exchange/AccountSelector.vue'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import { sleep } from '@/util/utils'
 export default {
   mixins: [Formatter],

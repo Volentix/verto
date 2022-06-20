@@ -133,9 +133,9 @@ export default {
     },
     goToReceive () {
       let a = this.$store.state.investment.defaultAccount
-      console.log(a, 'a')
+
       if (a) {
-        this.$router.push({ name: 'receive', params: { return: this.$route, chainID: a.chain, tokenID: a.type, name: a.name, value: a.value, icon: a.icon } })
+        this.$router.push({ name: 'receive', params: { return: this.$route, chainID: a.chain, tokenID: a.type, name: a.name, value: a.chain === 'eos' ? a.label : a.key, icon: a.icon } })
       } else {
         this.goTo('manage/receive')
       }

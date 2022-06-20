@@ -62,9 +62,9 @@
             <q-tab name="investments"  label="Investments" class="read" />
         </q-tabs>
 
-        <ChainItemList v-if="!['history'].includes(tabIndex)" :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" :getImportLink="getImportLink"/>
+        <ChainItemList v-if="!['history'].includes(tabIndex)" :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :defaultToken="defaultToken" :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" :getImportLink="getImportLink"/>
         <History v-else-if="tabIndex == 'history'" :refresh="true" style="height:100vh" />
-        <AssetDialog :key="componentKey" v-if="(tabIndex !== 'chains' && !$store.state.investment.defaultAccount) || ((tabIndex == 'investments' && $store.state.investment.defaultAccount)) " :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys" :getImportLink="getImportLink"/>
+        <AssetDialog :defaultToken="defaultToken" :key="componentKey" v-if="(tabIndex !== 'chains' && !$store.state.investment.defaultAccount) || ((tabIndex == 'investments' && $store.state.investment.defaultAccount)) " :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys" :getImportLink="getImportLink"/>
 
     </div>
 </template>
@@ -76,7 +76,7 @@ import History from '../History.vue'
 import { setTimeout } from 'timers'
 export default {
   name: 'TabAssetExplorer',
-  props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'initTable', 'selectedChain', 'showPrivateKeys', 'alertSecurity', 'tokenSearchVal', 'getImportLink'],
+  props: ['chains', 'tab', 'defaultToken', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'initTable', 'selectedChain', 'showPrivateKeys', 'alertSecurity', 'tokenSearchVal', 'getImportLink'],
   components: { AssetDialog, ChainItemList, History },
   data () {
     return {
@@ -91,7 +91,7 @@ export default {
     this.tabIndex = this.tab
     if (this.$store.state.investment.defaultAccount) {
       // this.tabIndex = 'assets'
-      this.componentKey += 1
+      this.componentKey += 987
     }
   },
   watch: {
@@ -102,10 +102,9 @@ export default {
         this.tabIndex = 'chains'
         this.dialog = false
       }
-      this.componentKey += 1
+      this.componentKey += 4455
     },
     tabIndex (val) {
-      this.componentKey += 1
       this.$emit('update:tab', val)
       if ((this.$store.state.wallets.portfolioTotal && val !== 'chains') || (!this.$store.state.wallets.portfolioTotal && val !== 'receive') || (this.$route.params.accounts === 'receive')) { this.dialog = true }
       // setTimeout(function () { console.log(":::::: "); this.componentKey += 1 }, 2000)
@@ -161,6 +160,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .wrapper {
+    padding-left: 0px !important;
+}
 /deep/ .history-component {
     padding-top: 30px !important
 }

@@ -33,7 +33,7 @@
                 <img src="https://files.coinswitch.co/public/coins/bnb.png" :class="{'active': chainCoin === 5}" width="20" alt="">
                 <img src="https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png?1616489452" :class="{'active': chainCoin === 6}" width="20" alt="">
                 <img src="https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png" :class="{'active': chainCoin === 7}" width="20" alt="">
-                <img src="https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png" :class="{'active': chainCoin === 8}" width="20" alt="">
+                <img src="https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png" :class="{'active': chainCoin === 8}" width="20" alt="">
                 <img src="https://files.coinswitch.co/public/coins/btc.png" :class="{'active': chainCoin === 9}" width="20" alt="">
                 <img src="https://files.coinswitch.co/public/coins/dash.png" :class="{'active': chainCoin === 10}" width="20" alt="">
                 <img src="https://files.coinswitch.co/public/coins/ltc.png" :class="{'active': chainCoin === 11}" width="20" alt="">
@@ -131,12 +131,63 @@
               />
             </div>
           </div>
-          <div class="standard-content--footer">
+          <br/>
+           <q-checkbox   v-model="modpath" class="text-white" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"  label="Modify HD paths" color="white" />
+           <div v-if="modpath">
+
+          <span class="text-white text-body1">Select chain to edit path</span>
+                <q-select
+
+      :dark="$store.state.settings.lightMode === 'true'"
+      :light="$store.state.settings.lightMode === 'false'"
+      separator
+      filled
+      dense
+      class="select-input col-md-12 bg-deep-purple-12 q-mt-md"
+      v-model="currentChain"
+      :options="chainsData"
+    >
+      <template v-slot:option="scope">
+        <q-item
+          class="custom-menu"
+          v-bind="scope.itemProps"
+          v-on="scope.itemEvents"
+        >
+          <q-item-section avatar>
+            <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
+          </q-item-section>
+          <q-item-section dark>
+            <q-item-label class="ellipsis" v-html="scope.opt.label" />
+ <q-item-label caption class="ellipsis" v-html="scope.opt.path" />
+          </q-item-section>
+        </q-item>
+      </template>
+
+      <template v-slot:selected>
+        <q-item v-if="currentChain">
+          <q-item-section v-if="currentChain.icon" avatar>
+            <q-icon
+              class="option--avatar"
+              :name="`img:${currentChain.icon}`"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="ellipsis" v-html="currentChain.label" />
+             <q-item-label v-if="currentChain.path" caption class="ellipsis text-white" v-html="currentChain.path" />
+          </q-item-section>
+        </q-item>
+        <q-item v-else> </q-item>
+      </template>
+    </q-select>
+    <div class="text-white q-pt-sm" v-if="currentChain.value == 'btc'">Ex: Ledger ( m/49'/0'/0'/0/0 )</div>
+    <q-input @input="out"  filled class="bg-deep-purple-12 q-mt-sm"  v-if="currentChain.path" v-model="currentChain.path" />
+     </div>     <div class="standard-content--footer">
             <q-btn class="action-link back" rounded flat outline color="black" text-color="white" label="Back" to="/create-password" />
             <q-btn class="action-link next" rounded flat outline color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic(true)" :disable="!mnemonicValidated" />
           </div>
         </div>
       </div>
+
     </video-bg>
   </q-page>
 </template>
@@ -160,11 +211,17 @@ export default {
   },
   data () {
     return {
+      modpath: null,
       step: 2,
       chainCoin: 1,
       isPwd: true,
       words: 24,
       downloaded: false,
+      currentChain: {
+        label: 'Click to select chain',
+        value: null
+      },
+      chainsData: [],
       wordOptions: [
         {
           label: 'Verto (24 words)',
@@ -210,6 +267,11 @@ export default {
     }, 500)
   },
   async mounted () {
+    let chains = Object.keys(HD.paths)
+    this.chainsData = HD.getVertoChains().filter(o => chains.includes(o.chain)).map(o => {
+      o.path = HD.paths[o.value]
+      return o
+    })
     // console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
   },
   watch: {
@@ -242,6 +304,11 @@ export default {
 
       this.step = 2
     },
+    async out () {
+      this.$store.state.currentwallet.config.mnemonic = this.mnemonic
+      let data = await HD.Wallet('btc', 0, this.currentChain.path)
+      console.log(data, 'data', this.currentChain.path)
+    },
     async saveMnemonic (isRecovering = false) {
       if ((this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) || this.downloaded === true) {
         // console.log('we are good with order')
@@ -266,7 +333,10 @@ export default {
             this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
             //   this.$router.push('wallet')
           }
-          this.$router.push({ path: '/create-keys' })
+          this.$router.push({ params: {
+            chains: this.modpath ? this.chainsData : []
+          },
+          name: 'create-keys' })
         }
       } else {
         this.$q.notify({ color: 'negative', message: 'The words are not yet in the right order' })
@@ -312,7 +382,7 @@ export default {
   line-height: 2;
 }
 /deep/ .q-textarea .q-field__native {
-  max-height: 132px;
+  max-height: 72px;
 }
 .app-logo-row{
   position: relative;
@@ -322,6 +392,10 @@ export default {
     left: 0px;
     z-index: 9;
   }
+}
+/deep/ .q-checkbox__icon {
+    color: white;
+
 }
 /deep/ .video-page-wrapper{
   -webkit-backdrop-filter: blur(10px);

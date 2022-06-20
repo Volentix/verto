@@ -89,7 +89,7 @@
                     class="value"
                     v-if="
                       fundRefData &&
-                      fundRefData.staiderData
+                      fundRefData.staiderData && fundRefData.staiderData.calculations
                     "
                     > <span
                           class="value"
@@ -113,7 +113,7 @@
                       <span v-if="
                       fundRefData &&
                       fundRefData.staiderData
-                    " class="aum"> Initial investment:
+                    " class="aum"> Daily change:
                       <span
                         :class="[
                           fundRefData.change24h >= 0
@@ -136,8 +136,7 @@
 
               </div>
 
-              <p class="text-body1" v-if="fundRefData && fundRefData.staiderData">
-                This fund accepts {{fundRefData.staiderData.denominationAsset.symbol}} or ETH as deposit.<br/>
+              <p class="text-body1" v-if="fundRefData && fundRefData.staiderData && fundRefData.staiderData.calculations">
                 Asset under management: <span class="text-bold text-green-6 text-body1" v-if="fundRefData.staiderData.calculations &&
                       Object.keys(fundRefData.staiderData.calculations)
                         .length > 0">
@@ -151,7 +150,10 @@
                     }} {{ fundRefData.currency.toUpperCase() }}
 
                     </span>
-                    <span v-else>0</span>
+                    <span v-else>0</span> <br/>
+<span class="text-body2 text-grey q-mt-md"> This fund accepts deposits in {{fundRefData.staiderData.denominationAsset.symbol}} or ETH.</span>
+              </p>
+              <p>
 
               </p>
             </span>
@@ -261,9 +263,51 @@
                     }}
                   </p>
                 </div>
-                <div class="bid-inr bid-inr2">
-                  <div id="clock" class="timer">
+                <div class="bid-inr bid-inr2 ">
+                  <div id="clock" class="timer "  style="width:300px">
+
+                  <div class="text-body1" v-if="whitelistStatus == 'pending' && $store.state.currentwallet.user" >
+<span class="text-bold">Fetching whitelist status</span>
+                   <q-linear-progress
+                indeterminate
+                color="grey-5"
+                size="xs"
+                class="q-mt-sm"
+
+              />
+               <q-linear-progress
+                indeterminate
+                color="grey-5"
+                size="xs"
+                class="q-mt-sm"
+
+              />
+               <q-linear-progress
+                indeterminate
+                color="grey-5"
+                size="xs"
+                class="q-mt-sm"
+
+              />
+              </div>
+              <div class="text-body1" v-else-if="whitelistStatus == false">
+              <span class="text-bold">Whitelisting required</span>
+              <q-btn
+                      style="width: 250px"
+                      label="Submit request"
+                      size="lg"
+                      color="white"
+                      class="q-mt-md"
+                      text-color="black"
+                      @click="
+                        openPopup(
+                            'whitelistBtn'
+                        )
+                      "
+                    />
+              </div>
                     <q-btn
+                      v-if="!$store.state.currentwallet.user || whitelistStatus == 'whitelisted'"
                       style="width: 250px"
                       :label="
                         $store.state.currentwallet.user
@@ -283,7 +327,7 @@
                       "
                     /><br />
                     <q-btn
-                      v-if="$store.state.currentwallet.user"
+                      v-if="$store.state.currentwallet.user && whitelistStatus == 'whitelisted'"
                       style="width: 250px"
                       label="Withdraw"
                       @click="
@@ -431,47 +475,40 @@
                           fundRefData.staiderData.denominationAsset.symbol
                         }}</span
                       >
-                      <h5 v-if="fundRefData.sharePriceMetrics">
-                        Best Month
-                      </h5>
-                      <p v-if="fundRefData.sharePriceMetrics">
-                        <span
-                         :class="[
-                          fundRefData.sharePriceMetrics.bestMonth[
-                                fundRefData.currentCurrency
-                              ].price * 100 >= 0
-                            ? 'text-green-6'
-                            : 'text-pink-12'
-                        ]"
-                          v-if="
-                            Object.keys(fundRefData.sharePriceMetrics)
-                              .length > 0
-                          "
-                          >{{
-                            formatNumber(
-                              fundRefData.sharePriceMetrics.bestMonth[
-                                fundRefData.currentCurrency
-                              ].price * 100,
-                              2
-                            )
-                          }}
-                          %</span
-                        >
-                        <span v-else>N/A</span>
-                      </p>
+
                     </td>
 
                     <td>
-                      <h5>Daily change</h5>
+                      <h5>Initial investments</h5>
+                      <span  @click="clickBtn('connectBtn')"  class="text-green-6 cursor-pointer" v-if="!$store.state.currentwallet.user">Connect wallet</span>
                       <span
-                        :class="[
-                          fundRefData.change24h >= 0
+                        v-else
+                        :class="'text-green-6'"
+                        style="font-weight: 400"
+                        >{{!totalInvestments || !fundRefData || !fundRefData.staiderData ? '-' : fundRefData.staiderData.denominationAsset.symbol +' '+formatNumber(totalInvestments,2)}}</span
+                      >
+
+                    </td>
+
+                    <td>
+                      <h5 >APY</h5>
+                        <span  @click="clickBtn('connectBtn')"  class="text-green-6 cursor-pointer" v-if="!$store.state.currentwallet.user">Connect wallet</span>
+                      <span
+                        v-else-if="userAPY"
+                       :class="[
+                          userAPY >= 0
                             ? 'text-green-6'
                             : 'text-pink-12',
                         ]"
                         style="font-weight: 400"
-                        >{{ fundRefData.change24h }}%</span
                       >
+                        {{userAPY > 0? '+': ''}}{{formatNumber(userAPY, 2)}}%
+                      </span>
+                      <span v-else class="text-green-6">-</span>
+
+                    </td>
+
+                    <td>
                       <h5>Average Month</h5>
                       <p>
                         <span
@@ -483,118 +520,13 @@
                             : 'text-pink-12'
                         ]"
                           v-if="
-                            Object.keys(fundRefData.sharePriceMetrics)
+                      fundRefData &&
+                      fundRefData.staiderData && Object.keys(fundRefData.sharePriceMetrics)
                               .length > 0
                           "
                           >{{
                             formatNumber(
                               fundRefData.sharePriceMetrics.averageMonth[
-                                fundRefData.currentCurrency
-                              ].price * 100,
-                              2
-                            )
-                          }}
-                          %</span
-                        >
-                        <span v-else>N/A</span>
-                      </p>
-                    </td>
-
-                    <td>
-                      <h5 v-if="fundRefData.staiderData">Share price</h5>
-                      <span
-                        v-if="fundRefData.staiderData"
-                        :class="['text-green-6']"
-                        style="font-weight: 400"
-                      >
-                        <span
-                          class="value"
-                          v-if="
-                            Object.keys(fundRefData.staiderData.calculations)
-                              .length > 0
-                          "
-                          >{{
-                            formatNumber(
-                              fundRefData.staiderData.calculations[
-                                fundRefData.currentCurrency
-                              ].price,
-                              2
-                            )
-                          }}
-                          {{ fundRefData.currency.toUpperCase() }}</span
-                        >
-                        <span class="value" v-else>{{ "N/A" }}</span>
-                      </span>
-                      <h5>Worst Month</h5>
-                      <p>
-                        <span
-                        :class="[
-                          fundRefData.sharePriceMetrics.worstMonth[
-                                fundRefData.currentCurrency
-                              ].price * 100 >= 0
-                            ? 'text-green-6'
-                            : 'text-pink-12'
-                        ]"
-                          v-if="
-                            Object.keys(fundRefData.sharePriceMetrics)
-                              .length > 0
-                          "
-                          >{{
-                            formatNumber(
-                              fundRefData.sharePriceMetrics.worstMonth[
-                                fundRefData.currentCurrency
-                              ].price * 100,
-                              2
-                            )
-                          }}
-                          %</span
-                        >
-                        <span v-else>N/A</span>
-                      </p>
-                    </td>
-
-                    <td>
-                      <h5>Quarter to date </h5>
-                     <span
-                     :class="[
-                          fundRefData.sharePriceMetrics.quarterToDate[
-                                fundRefData.currentCurrency
-                              ].price * 100 >= 0
-                            ? 'text-green-6'
-                            : 'text-pink-12'
-                        ]"
-                          v-if="
-                            Object.keys(fundRefData.sharePriceMetrics)
-                              .length > 0
-                          "
-                          >{{
-                            formatNumber(
-                              fundRefData.sharePriceMetrics.quarterToDate[
-                                fundRefData.currentCurrency
-                              ].price * 100,
-                              2
-                            )
-                          }}
-                          %</span
-                        >
-                        <span v-else>N/A</span>
-                      <h5>Month to date </h5>
-                      <p>
-                        <span
-                          :class="[
-                          fundRefData.sharePriceMetrics.monthToDate[
-                                fundRefData.currentCurrency
-                              ].price * 100 >= 0
-                            ? 'text-green-6'
-                            : 'text-pink-12'
-                        ]"
-                          v-if="
-                            Object.keys(fundRefData.sharePriceMetrics)
-                              .length > 0
-                          "
-                          >{{
-                            formatNumber(
-                              fundRefData.sharePriceMetrics.monthToDate[
                                 fundRefData.currentCurrency
                               ].price * 100,
                               2
@@ -731,7 +663,7 @@ import DexInteraction from '../../mixins/DexInteraction'
 // import { JsonRpc } from 'eosjs'
 import ChartFund from './Fund/ChartFund'
 import SignleTokenDialog from '../Verto/MobileUI/SingleTokenDialog.vue'
-import initWallet from '@/util/Wallets2Tokens'
+
 // import Godex from './Exchange/Godex.vue'
 import Lib from '@/util/walletlib'
 import Enzyme from '../../util/Staider/Enzyme'
@@ -763,8 +695,13 @@ export default {
     },
     '$store.state.currentwallet.user': async function (val) {
       if (val && this.$route.params.fundID !== 'private') {
+        this.getInvestments()
+        this.getUserAPY()
         this.sharesNumber = await Enzyme.getUserShares(
           this.$route.params.fundID,
+          this.$store.state.currentwallet.user.address
+        )
+        this.whitelistStatus = await Enzyme.isInvestor(this.$route.params.fundID,
           this.$store.state.currentwallet.user.address
         )
       }
@@ -808,15 +745,6 @@ export default {
     } */
   },
   computed: {
-    fundTotal () {
-      let total = 0
-      if (this.$store.state.wallets.customTotal.show) {
-        total = this.nFormatter2(this.$store.state.wallets.customTotal.usd, 3)
-      } else {
-        total = this.nFormatter2(this.$store.state.investment.investmentTotal + this.$store.state.wallets.portfolioTotal, 3)
-      }
-      return total
-    },
     fundRefData () {
       return this.$store.state.investment.fundData ? this.$store.state.investment.fundData[this.$route.params.fundID] : null
     },
@@ -837,13 +765,14 @@ export default {
       }
       return valid
     }
+
   },
   async created () {
     // this.setAssetData()
-    this.isTokenValuable()
+
     if (this.$route.params.fundID === 'private') {
       this.fundData = {
-        icon: '/statics/img/staider-logo.png',
+        icon: 'https://verto.volentix.io/statics/img/staider-logo.png',
         name: 'Staider Private vault',
         id: this.$route.params.fundID,
         investors: 108
@@ -854,381 +783,41 @@ export default {
         this.$route.params.fundID,
         this.$store.state.currentwallet.user.address
       )
+      this.getInvestments()
+      this.getUserAPY()
+      this.whitelistStatus = await Enzyme.isInvestor(this.$route.params.fundID,
+        this.$store.state.currentwallet.user.address
+      )
     }
   },
   methods: {
+    setAsset () {
+
+    },
+    async getUserAPY () {
+      if (this.userAPY) return
+      let data = (await Enzyme.getUserInvestments(this.$store.state.currentwallet.user.address))
+      if (data && data.funds) {
+        let fund = data.funds.find(a => a.address.toLowerCase() === this.$route.params.fundID.toLowerCase())
+        if (fund) {
+          this.userAPY = fund.performance['1y'].USD.price * 100
+        }
+      }
+    },
+    async getInvestments () {
+      if (!this.$store.state.currentwallet.user || this.totalInvestments) return
+
+      let deposits = await Enzyme.getDeposits(this.$route.params.fundID)
+      deposits = deposits.filter(o => (o.investor.id.toLowerCase() === this.$store.state.currentwallet.user.address.toLowerCase()) && ['SharesBoughtEvent', 'SharesRedeemedEvent'].includes(o.__typename))
+
+      let totalDeposits = deposits.filter(o => ['SharesBoughtEvent'].includes(o.__typename)).reduce((a, b) => a + (b ? parseFloat(b.investmentAmount) : 0), 0)
+      let totalWithdrawals = deposits.filter(o => ['SharesRedeemedEvent'].includes(o.__typename)).reduce((a, b) => a + (b ? parseFloat(b.payoutAssetAmounts[0].amount) : 0), 0)
+      this.totalInvestments = totalDeposits - totalWithdrawals
+    },
     openPopup (id) {
       document.getElementById(id).click()
-    },
-    isTokenValuable () {
-      let not_valuable = localStorage.getItem('not_valuable')
-      let found = -1
-      if (not_valuable) {
-        not_valuable = JSON.parse(not_valuable)
-        console.log(not_valuable, 'not_valuable')
-        found = not_valuable.findIndex(
-          (o) => o.chain === this.asset.chain && o.type === this.asset.type
-        )
-      }
-      if (found >= 0) {
-        this.isValuable = false
-      } else {
-        this.isValuable = true
-      }
-      return found
-    },
-    markAsValuable () {
-      let not_valuable = localStorage.getItem('not_valuable')
-      if (not_valuable) {
-        not_valuable = JSON.parse(not_valuable)
-        let found = this.isTokenValuable()
-        if (found === -1) return
-        not_valuable.splice(found, 1)
-        localStorage.setItem('not_valuable', JSON.stringify(not_valuable))
-        this.isValuable = true
-      }
-      initWallet()
-    },
-    markAsNotValuable () {
-      let not_valuable = localStorage.getItem('not_valuable')
-      if (not_valuable) {
-        not_valuable = JSON.parse(not_valuable)
-        not_valuable.push(this.asset)
-        localStorage.setItem('not_valuable', JSON.stringify(not_valuable))
-      } else {
-        localStorage.setItem('not_valuable', JSON.stringify([this.asset]))
-      }
-      this.isValuable = false
-      this.asset.usd = 0
-      initWallet()
-    },
-    setAsset (asset) {
-      try {
-        let data = (this.$route.params.assets || []).find(
-          (o) => o.type === asset.type && o.chain === asset.chainID
-        )
-
-        if (data) {
-          this.setAssetData(data)
-        } else if (asset) {
-          this.setAssetData(asset)
-        }
-      } catch (e) {
-        console.log('e', e)
-      }
-    },
-    async setAssetData (data) {
-      let asset = data || this.assetData
-      asset = {
-        chain: 'eth',
-        type: 'eth',
-        usd: '3455',
-        icon: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
-      }
-      if (asset && asset.chainID) {
-        asset.chain = asset.chainID
-      }
-      if (!asset && this.$route.params.asset) {
-        this.asset = this.$route.params.asset
-      } else {
-        this.asset = asset
-      }
-      if (this.asset.type === 'vtx') {
-        this.$store.state.settings.defaultChainData = this.asset
-      }
-      this.depositCoin = {
-        label: this.asset.type.toUpperCase(),
-        value: this.asset.type,
-        icon: this.asset.icon
-      }
-      /*
-      this.destinationCoinOptions = this.$store.state.settings.coins[this.asset.chain === 'eos' ? 'defibox' : 'oneinch'].filter(
-        (o) =>
-          ['eos', 'usdt'].includes(o.value.toLowerCase()) ||
-        this.asset.type !== 'vtx'
-      )
-
-      this.destinationCoinUnfilter = this.destinationCoinOptions
-      if (this.asset.chain === 'eth' || this.asset.chain === 'eos') {
-        let pref = {
-          eth: ['usdt', 'link'],
-          eos: ['eos', 'vtx', 'uni']
-        }
-        if (pref[this.asset.chain]) {
-          let preferredToken = pref[this.asset.chain].filter(
-            (o) => o !== this.asset.type
-          )[0]
-          this.destinationCoin = this.destinationCoinOptions.find(
-            (o) => preferredToken === o.value.toLowerCase()
-          )
-        }
-      }
-      if (this.asset.chain !== 'eos') {
-        this.tab = 'send'
-      } else {
-        let rpc = new JsonRpc(
-          process.env[this.$store.state.settings.network].CACHE +
-          'https://eos.greymass.com:443'
-        )
-        this.pairs = (
-          await rpc.get_table_rows({
-            json: true,
-            code: 'swap.defi',
-            scope: 'swap.defi',
-            table: 'pairs',
-            limit: -1
-          })
-        ).rows
-      }
-
-      if (this.depositCoin.value === this.destinationCoin.value) {
-        this.depositCoin = this.destinationCoinOptions.find(
-          (o) => o.value.toLowerCase() !== this.depositCoin.value
-        )
-      }
-      if (!this.$store.state.wallets.tokens.find(o => o.chain === this.asset.chain && o.type !== 'verto') || !this.$store.state.wallets.portfolioTotal) {
-        this.tab = 'import'
-      }
-      this.setPaymentOptions()
-      */
-      this.getHistoriclPrice()
-    },
-    exchangeToken (params) {
-      this.$router.push({
-        name: 'crosschain-exchange',
-        params: params
-      })
-    },
-    getEchangeData () {
-      /*  const self = this
-      let exchange = {
-        eos () {
-          let from = this.tab === 'buy' ? this.asset.type : this.destinationCoin.value.toLowerCase()
-          let to = this.tab === 'sell' ? this.destinationCoin.value.toLowerCase() : this.asset.type
-          return self.getEosPairData(
-            from,
-            to,
-            this.pairs,
-            1
-          )
-        }
-      }
-      // console.log(exchange[this.asset.chain]())
-      */
-    },
-    getTxData () {
-      let transactionObject = {
-        actions: [],
-        send: false
-      }
-
-      if (this.tab === 'send') {
-        transactionObject.actions.push({
-          account: this.asset.contract,
-          name: 'transfer',
-          authorization: [
-            {
-              actor: this.$store.state.investment.defaultAccount.name,
-              permission: 'active'
-            }
-          ],
-          data: {
-            from: this.$store.state.investment.defaultAccount.name,
-            to: this.sendTo.trim(),
-            memo: this.memo,
-            quantity:
-              parseFloat(this.depositQuantity).toFixed(this.asset.precision) +
-              ' ' +
-              this.asset.type.toUpperCase()
-          }
-        })
-        transactionObject.send = true
-      }
-
-      return transactionObject
-    },
-    getMarketData (id) {
-      this.marketData = null
-      this.$axios
-        .get(
-          process.env[this.$store.state.settings.network].CACHE +
-            'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' +
-            id +
-            '&price_change_percentage=24h,7d,30d,200d,1y'
-        )
-        .then((res) => {
-          if (res && res.data && res.data[0]) {
-            let data = res.data[0]
-            if (!this.asset.icon) {
-              this.asset.icon = data.image
-            }
-            if (!this.asset.rateUsd) {
-              this.asset.rateUsd = data.current_price
-            }
-            this.marketData = {
-              change_24h: this.formatNumberWithSign(
-                data.price_change_percentage_24h,
-                1
-              ),
-              change_30d: this.formatNumberWithSign(
-                data.price_change_percentage_30d_in_currency,
-                1
-              ),
-              change_7d: this.formatNumberWithSign(
-                data.price_change_percentage_7d_in_currency,
-                1
-              ),
-              change_1y: this.formatNumberWithSign(
-                data.price_change_percentage_1y_in_currency,
-                1
-              ),
-              high_24h: this.formatNumberWithSign(data.high_24h),
-              total_volume: this.nFormatter2(data.total_volume),
-              total_supply: this.nFormatter2(data.total_supply),
-              market_cap: this.nFormatter2(data.market_cap),
-              // tokenName: data.name,
-              color:
-                data.price_change_percentage_24h >= 0
-                  ? 'text-green-6'
-                  : 'text-pink-12'
-            }
-          }
-        })
-    },
-    async getHistoriclPrice (days = 30) {
-      console.log('getHistoriclPrice called')
-      this.chartData = false
-      this.chartAvailable = true
-      let id = this.asset.coinGeckoId
-      try {
-        if (!id) {
-          let token = this.$store.state.tokens.list.find(
-            (t) =>
-              t.symbol.toLowerCase() === this.asset.type &&
-              ((!t.platforms.hasOwnProperty('eos') &&
-                !t.platforms.hasOwnProperty('ethereum')) ||
-                this.asset.chain ===
-                  (t.platforms.hasOwnProperty('eos')
-                    ? 'eos'
-                    : this.asset.chain))
-          )
-
-          id = token ? token.id : null
-          // console.log('token ', token)
-        }
-        if (id) {
-          this.getMarketData(id)
-          let response = await this.$axios.get(
-            process.env[this.$store.state.settings.network].CACHE +
-              'https://api.coingecko.com/api/v3/coins/' +
-              id +
-              '/market_chart?vs_currency=usd&days=' +
-              days
-          )
-          this.chartData = response.data
-          this.intervalHistory = days
-
-          if (response.data.prices && !this.asset.rateUsd) {
-            this.asset.rateUsd =
-              response.data.prices[response.data.prices.length - 1][1]
-          }
-        } else {
-          this.chartAvailable = false
-        }
-      } catch (e) {
-        console.log('e', e)
-      }
-    },
-    setSuccessData (status) {
-      this.success = status
-      this.spinnerVisible = false
-    },
-    filterDestinationCoin (val, update, abort) {
-      update(() => {
-        const needle = val.toLowerCase()
-        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(
-          (v) =>
-            v.value.toLowerCase().indexOf(needle) > -1 ||
-            v.label.toLowerCase().indexOf(needle) > -1
-        )
-      })
-    },
-    getBalance () {
-      let item = this.paymentOptions.find(
-        (o) =>
-          this.$store.state.investment.defaultAccount.name &&
-          o.name.toLowerCase() ===
-            this.$store.state.investment.defaultAccount.name.toLowerCase() &&
-          o.type === this.asset.type
-      )
-      if (item) this.assetBalance = item.amount
-    },
-    setPaymentOptions () {
-      this.paymentOptions = this.$store.state.investment.accountTokens.map(
-        (o, i, all) => {
-          o.label = o.type
-          o.value = o.type
-          o.amount = isNaN(o.amount) ? 0 : o.amount
-          o.image = o.icon
-          return o
-        }
-      )
-      if (this.paymentOptions.length) {
-        this.paymentOption = this.paymentOptions.find(
-          (o) => o.type === this.paymentOptions[0].chain
-        )
-        if (
-          !this.paymentOption &&
-          this.paymentOptions.length === 1 &&
-          this.paymentOptions[0].chain === 'eos'
-        ) {
-          this.paymentOption = this.paymentOptions[0]
-        }
-      }
-      this.getBalance()
-    },
-    triggerAction () {
-      this.error = false
-      if (
-        this.tab === 'sell' ||
-        this.tab === 'buy' ||
-        this.tab === 'add liquidity'
-      ) {
-        this.goToExchange()
-      } else if (this.tab === 'send' && this.fromPreview) {
-        this.spinnerVisible = true
-        this.$refs.transact.setTxData(this.getTxData())
-      } else if (this.tab === 'send' && !this.fromPreview) {
-        this.fromPreview = true
-      }
-    },
-    goToExchange () {
-      if (this.tab === 'buy') {
-        let temp = this.destinationCoin
-        this.destinationCoin = this.depositCoin
-        this.depositCoin = temp
-      } else {
-        this.depositCoin.fromAmount = this.depositQuantity
-      }
-
-      this.checkPair()
-      if (this.dex) {
-        let depositCoin = this.depositCoin
-        let destinationCoin = this.destinationCoin
-        this.$router.push({
-          path: '/verto/exchange/:coinToSend/:coinToReceive',
-          name: 'exchange-v3',
-          params: {
-            depositCoin: depositCoin,
-            destinationCoin: destinationCoin,
-            dex: this.dex,
-            tab: this.tab
-          }
-        })
-      } else {
-        this.error = 'unswappable'
-      }
     }
+
   },
   destroyed () {
     this.$store.state.wallets.customTotal.show = false
@@ -1238,12 +827,16 @@ export default {
   },
   data () {
     return {
+      totalInvestments: null,
+      userTotalInvestment: null,
       fundData: {
         icon: '/statics/img/staider-logo.png',
         name: 'Staider Private vault',
         id: this.$route.params.fundID,
         investors: 108
       },
+      userAPY: null,
+      whitelistStatus: 'pending',
       currency: 'usd',
       tab: 'assets',
       marketData: null,
@@ -1277,7 +870,7 @@ export default {
         label: 'ETH',
         value: 'eth',
         image:
-          'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
+          'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
       }
     }
   },
@@ -2176,7 +1769,7 @@ export default {
   padding: 0;
   border-style: none;
 }
-/*! CSS Used from: https://ethernal-blue.ansarians.com/assets/css/app.css */
+
 .heading {
   color: #ffffff;
 }

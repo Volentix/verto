@@ -206,7 +206,7 @@
         <span>No account found {{ chain }}</span>
       </div>
     </div>
-    <div  class="row justify-center">
+    <div  class=" full-width">
       <q-btn
         class="account_selector"
         dense
@@ -219,6 +219,7 @@
         :label="formatLabel(accountOption.label)"
         @click="dialog = true"
       />
+
       <q-item
         v-if="!accountOption && allSelector"
         class="text-left full-width account_selector_top"
@@ -257,8 +258,9 @@
         'bg-grey-1 text-black': $store.state.settings.lightMode !== 'true',
         'bg-blue-verto text-white': $store.state.settings.lightMode === 'true'
       }">
+
         <q-item-section @click="dialog = true" avatar>
-          <q-img size="lg" :src="`${accountOption.icon}`" />
+          <q-img size="lg" :src="`${getChainIcon(accountOption.chain)}`" />
         </q-item-section>
 
         <q-item-section>
@@ -385,15 +387,18 @@
             <q-list
               separator
               style="width: 100%"
+              :class="{'one-account': tokChain.accounts.length == 1}"
               v-for="(tokChain, index) in chainsData.filter((o) =>
                 checkChain(o)
               )"
+              @click="tokChain.accounts.length == 1 ?    chooseAccount(tokChain.accounts[0]) : '' "
               :key="Math.random() + index"
             >
               <q-expansion-item
                 :default-opened="
                   chainsData.filter((o) => checkChain(o)).length == 1
                 "
+                :expand-icon="tokChain.accounts.length == 1 ? 'keyboard_arrow_right' : 'keyboard_arrow_down'"
                 :dark="$store.state.settings.lightMode === 'true'"
               >
                 <template v-slot:header>
@@ -448,14 +453,12 @@
                   >
                     <q-item
                       @click="
-                        getAccount(item);
-                        setAccount(300);
-                        dialog = false;
+                       chooseAccount(item)
                       "
 
                       :key="Math.random() + index"
                       v-for="(item, index) in tokChain.accounts"
-                      :class="{ selected: item.selected , 'bg-blue-grey-5': accountOption && accountOption.index == item.index}"
+                      :class="{ selected: item.selected , 'bg-grey-3': accountOption && accountOption.index == item.index && $store.state.settings.lightMode !== 'true', 'bg-blue-grey-5': accountOption && accountOption.index == item.index && $store.state.settings.lightMode === 'true'}"
                       clickable
                       :active="item.hidden"
                       active-class="bg-teal-1 text-grey-8"
@@ -464,6 +467,7 @@
                         <div
                           class="header-wallet full-width flex justify-between"
                         >
+
                           <q-item-section avatar>
 
                             <span class="identicon" v-html="toAvatar(item.name)" />
@@ -478,19 +482,22 @@
                             <span class="item-name--name text-bold" v-else>
                               {{ item.name }}</span
                             >
-                            <span
-                              class="item-name--staked"
-                              v-if="item.staked && item.staked !== 0 && false"
-                              >Staked : {{ nFormatter2(item.staked, 3) }}</span
-                            >
+
                             <span
                               class="item-name--staked"
                              v-if="item.tokenList && (item.isEvm || item.chain == 'eos')"
                               >{{ item.tokenList.length }} token{{
                                 item.tokenList.length > 1 ? "s" : ""
-                              }}</span
+                              }} - <span class="text-deep-purple-12" v-if="item.watch"><q-icon color="text-deep-purple-12" name="visibility" /> </span> </span
+                            >
+                             <span
+                             @click="$router.push(getImportLink(item.chain))"
+                              class="item-name--staked text-body2 text-deep-purple cursor-pointer"
+                              v-if="item.watch"
+                              ><span>+ Import private key</span></span
                             >
                           </q-item-section>
+
                           <q-item-section side>
                             <span class="item-info--amountUSD" v-if="item.total"
                               >${{
@@ -527,12 +534,7 @@
                           class="header-wallet full-width flex justify-between"
                         >
                           <q-item-section class="item-name">
-                            <span
-                              class="item-name--name"
-                              v-if="item && item.isEvm"
-                            >
-                              {{ getAccountLabel(item) }}</span
-                            >
+
                             <span
                               >No {{ tokChain.chain.toUpperCase() }} account
                               found</span
@@ -595,11 +597,16 @@ export default {
     }
   },
   created () {
-    this.init()
     this.chainsData = this.setChains()
     this.chainsData = this.chainsData.filter((o) => this.checkChain(o))
+    this.init()
   },
   methods: {
+    chooseAccount (item) {
+      this.getAccount(item)
+      this.setAccount(300)
+      this.dialog = false
+    },
     getAccount (item) {
       let w = this.formatAccoountOption(
         this.$store.state.wallets.tokens.find((a) => a.index === item.index)
@@ -630,6 +637,7 @@ export default {
             amount: w.amount,
             name: w.name,
             key: w.key,
+            watch: w.watch,
             index: w.index,
             usd: w.usd,
             chain: 'eos',
@@ -653,6 +661,7 @@ export default {
             key: w.key,
             amount: w.amount,
             chain: 'eth',
+            watch: w.watch,
             index: w.index,
             isEvm: w.isEvm || this.isEvm(w.type),
             type: w.type,
@@ -665,14 +674,16 @@ export default {
           })
       )
 
-      tableData.filter(
+      this.chainsData.filter(
         (w, i, a) =>
           w.chain !== 'eth' &&
           w.chain !== 'eos' &&
-          this.checkChain(w) &&
-          a.findIndex((t) => t.key === w.key && t.chain === w.chain) === i &&
-          this.accountOptions.push(this.formatAccoountOption(w))
-      )
+          this.checkChain(w)
+      ).forEach(chain => {
+        chain.accounts.forEach(a => {
+          this.accountOptions.push(this.formatAccoountOption(a))
+        })
+      })
 
       this.accountOptions = this.accountOptions.filter((o) => o && o.name)
       if (this.$store.state.wallets.metamask.accounts.length) {
@@ -702,7 +713,9 @@ export default {
             a.name.toLowerCase() ===
               this.$store.state.currentwallet.wallet.name.toLowerCase()
         )
-      } else */ if (
+      } else */
+
+      if (
         !this.withTokenBalance &&
         this.$store.state.investment.defaultAccount &&
         this.$store.state.investment.defaultAccount !== undefined &&
@@ -744,6 +757,7 @@ export default {
       this.accountOptions = this.accountOptions.filter(
         (o) => !this.chain || o.chain === this.chain
       )
+
       if (
         !this.accountOptions &&
         this.autoSelectChain &&
@@ -758,7 +772,7 @@ export default {
           ? this.accountOptions[0]
           : !this.showPortfolio
       }
-      // console.log(this.accountOptions, this.accountOption, this)
+
       if (!this.showPortfolio) {
         this.setAccount()
       }
@@ -779,7 +793,7 @@ export default {
             let tokens = this.$store.state.wallets.tokens.filter(
               (w) =>
                 w.chain === this.accountOption.chain &&
-                w.key === this.accountOption.key &&
+                w.key.toLowerCase() === this.accountOption.key.toLowerCase() &&
                 (this.accountOption.chain !== 'eos' ||
                   w.name.toLowerCase() ===
                     this.accountOption.name.toLowerCase())
@@ -918,6 +932,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.removeWatch {
+    top: 22px;
+    right: -20px;
+}
 .item-info {
   max-width: 40px !important;
 }

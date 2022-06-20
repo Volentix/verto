@@ -27,7 +27,7 @@
             readonly
           >
             <template v-slot:prepend>
-              <q-btn icon="file_copy" label="Copy key" outline rounded @click="copyToClipboard(dialog.key, 'Key')" />
+              <q-btn icon="file_copy" label="Copy" outline rounded @click="copyToClipboard(dialog.key, 'Key')" />
             </template>
           </q-input>
           </div>

@@ -41,7 +41,7 @@
                     <q-item class="q-my-sm" clickable v-ripple>
 
                         <q-item-section avatar>
-                            <q-icon size="md" class="option--avatar" :name="'img:https://defibox.oss-accelerate.aliyuncs.com/eos/'+ stakeData.contract0 +'-'+ stakeData.symbol0.toLowerCase() +'.png'" />
+                            <q-icon size="md" class="option--avatar" :name="'img:https://defibox.s3.ap-northeast-1.amazonaws.com/eos/'+ stakeData.contract0 +'-'+ stakeData.symbol0.toLowerCase() +'.png'" />
                         </q-item-section>
 
                         <q-item-section>
@@ -51,7 +51,7 @@
                     </q-item>
                     <q-item class="q-my-sm" clickable v-ripple>
                         <q-item-section avatar>
-                            <q-icon size="md" class="option--avatar" :name="'img:https://defibox.oss-accelerate.aliyuncs.com/eos/'+ stakeData.contract1 +'-'+ stakeData.symbol1.toLowerCase() +'.png'" />
+                            <q-icon size="md" class="option--avatar" :name="'img:https://defibox.s3.ap-northeast-1.amazonaws.com/eos/'+ stakeData.contract1 +'-'+ stakeData.symbol1.toLowerCase() +'.png'" />
                         </q-item-section>
 
                         <q-item-section>

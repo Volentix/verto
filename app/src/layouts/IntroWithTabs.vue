@@ -52,7 +52,7 @@
                     ${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
                   </div>
                   <div class="text-h3 total" v-else>
-                    ${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }}
+                    ${{ fundTotal }}
                   </div>
 
               <p class="text-body2 text-center test text-grey" v-if="$store.state.wallets.tokens.length && loadingIndicator"><span class="text-bold">Updating {{getChainLabel($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].chain)}} wallet</span><br/><span class="deep-purple-12">{{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].name}}</span> {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total ? '($'+formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total,0)+')' : ''}} <br> {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].type.toUpperCase()}} balance:  (${{formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].usd,2)}})...</p>
@@ -87,7 +87,7 @@
               <ul class="left-menu">
                 <li class="q-pb-md flex text-center cursor-pointer tools-label-li" v-if="$store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" >
                   <a @click="chainTools.show = !chainTools.show" class="tools-label">
-                    <q-icon size="md"  class="q-pr-sm" :name="'img:'+$store.state.settings.defaultChainData.icon" />
+                    <q-icon size="md"  class="q-pr-sm" :name="'img:'+icons[$store.state.settings.defaultChainData.chain]" />
                     <span>Chains Tools
                       <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " />
                     </span>
@@ -99,25 +99,32 @@
                     <q-icon :name="path.icon"/><span>{{path.title}}</span></router-link
                   >
                 </li>
-                <li :class="{ active: $route.path == '/verto/dashboard' }">
+                <li @click="trigger++" :class="{ active: $route.path == '/verto/dashboard' }">
                   <router-link to="/verto/dashboard">
                     <i class="fas fa-columns change-c"></i
                     ><span>Dashboard</span></router-link
                   >
                 </li>
                 <li
-                  v-if="false"
+                  @click="setAccountGoTo('/verto/crosschain-exchange', 'eth')"
                   :class="{ active: $route.path == '/verto/crosschain-exchange' }"
                 >
-                  <router-link to="/verto/crosschain-exchange"
+                  <a href="javascript:void(0)"
                     ><i class="fas fa-exchange-alt change-c"></i
-                    ><span>Exchange</span></router-link
+                    ><span>Exchange</span></a
                   >
                 </li>
-                <li :class="{ active: $route.path == '/verto/history' }">
-                  <router-link to="/verto/history"
+                <li :class="{ active: $route.path == '/verto/farms' }">
+                  <router-link to="/verto/farms"
+                    ><i class="fas fa-rocket"></i><span>Farms </span>
+
+                      </router-link
+                  >
+                </li>
+                <li @click="setAccountGoTo('/verto/history', 'eth')" :class="{ active: $route.path == '/verto/history' }">
+                  <a href="javascript:void(0)"
                     ><i class="fas fa-stream change-c"></i
-                    ><span>History</span></router-link
+                    ><span>History</span></a
                   >
                 </li>
                 <li
@@ -262,7 +269,8 @@
           />
           <q-breadcrumbs-el v-else class="text-capitalize" :class="{'text-white': $store.state.settings.lightMode === 'true'}" :label="$route.name" />
         </q-breadcrumbs>
-        <router-view class="main-container" :key="$route.path" v-if="toggleView " />
+
+        <router-view class="main-container" :key="$route.path+trigger" v-if="toggleView" />
       </q-page-container>
 
       <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus && false" elevated class=" text-white">
@@ -291,7 +299,8 @@
 
 <script>
 import { version } from '../../package.json'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
+import HD from '@/util/hdwallet'
 // import Lib from '@/util/walletlib'
 import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
@@ -311,6 +320,7 @@ export default {
   data () {
     return {
       version: {},
+      trigger: 0,
       toggleView: true,
       keys: {
         send: 1
@@ -354,6 +364,10 @@ export default {
           title: 'Transact'
         }]
       },
+      icons: {
+        eth: 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png',
+        eos: 'https://files.coinswitch.co/public/coins/eos.png'
+      },
       drawer: false,
       chainTools: {
         show: true,
@@ -375,7 +389,7 @@ export default {
       this.loadingIndicator = true
       setTimeout(() => {
         this.loadingIndicator = false
-      }, 3000)
+      }, 5000)
     },
     '$store.state.settings.defaultChainData': function () {
       if (this.$store.state.settings.defaultChainData) {
@@ -388,6 +402,9 @@ export default {
     }
   },
   methods: {
+    terra () {
+      HD.Wallet('terra')
+    },
     goTo (path) {
       this.$router.push(`/verto/${path}`)
     },
@@ -420,6 +437,12 @@ export default {
       })
       this.toggleView = true
     },
+    setAccountGoTo (path, chain) {
+      if (!this.$store.state.investment.defaultAccount) {
+        this.setDefaultWallet(chain)
+      }
+      this.$router.push(path)
+    },
     goToAccounts (tab = 'receive') {
       this.$store.state.settings.accountTab = tab
       this.$router.push({ name: 'accounts', params: { accounts: 'accounts', tab: tab } })
@@ -434,12 +457,10 @@ export default {
       })
     },
     refreshWallet (name = null) {
-      if (!name) {
-        this.$store.state.tokens.walletTokensData = []
-        this.$store.state.tokens.pending = []
-        this.singleWalletRefresh = null
-        localStorage.removeItem('walletPublicDatav2')
-      }
+      this.$store.state.tokens.walletTokensData = []
+      this.$store.state.tokens.pending = []
+      this.singleWalletRefresh = null
+      localStorage.removeItem('walletPublicDatav2')
 
       return initWallet(name)
     },
@@ -452,6 +473,7 @@ export default {
   },
   created () {
     this.$store.dispatch('tokens/getTokenList')
+    this.$store.dispatch('settings/getSettings')
     if (this.$isbex) {
       this.$q.platform.is.mobile = true
     }
@@ -539,7 +561,7 @@ h2 {
   padding: 10px 20px;
 }
 
-.left ul li a i {
+.left ul li a i , .left ul li.tools /deep/ .q-icon {
   margin-right: 30px;
   color: #7e838d;
   font-size: 22px;
@@ -989,7 +1011,7 @@ h2 {
 }
 /deep/ .desktop-version {
   padding-left: 0vh !important;
-  padding-top: 0vh !important;
+/*  padding-top: 0vh !important; */
 }
 .top /deep/ .account_selector .q-btn__content {
   font-size: 12px;

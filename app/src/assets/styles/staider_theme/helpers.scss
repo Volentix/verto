@@ -1,0 +1,71 @@
+@import "assets/styles/staider_theme/colors.scss";
+@import "assets/styles/staider_theme/fonts.scss";
+body {
+  font-family: $MainFont;
+  overflow: hidden !important;
+}
+.container{
+  // max-width: 1248px;
+  max-width: calc(100% - 180px);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  @media screen and (max-width: 768px) {
+    max-width: calc(100% - 40px);
+  }
+}
+.hide{
+  opacity: 0;
+}
+.shadow1{
+  box-shadow: $shadow1;
+}
+.shadow2{
+  box-shadow: $shadow2;
+}
+/deep/ .q-btn.q-btn-item{
+  min-height: 40px !important;
+  font-family: $MainFont !important;
+  font-size: 14px !important;
+  font-weight: 200 !important;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+/deep/ .initial{
+  &.q-btn.q-btn-item{
+    min-height: unset !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    padding-left: 0px;
+    padding-right: 0px;
+    transform: scale(.7);
+  }
+}
+.text-shadow1{
+  text-shadow: $textShadow1;
+}
+.backdrop{
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+.section-backdrop{
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  background: rgba(#16161a, .5);
+}
+.zindex9{
+  position: relative;
+  z-index: 9;
+}
+.red{
+  color: $MainRed;
+}
+.green{
+  color: $MainGreen;
+}
+.rmv-br{
+  /deep/ br{
+    display: none !important;
+  }
+}

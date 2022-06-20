@@ -3,7 +3,7 @@
   <div
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
     class="wrapper q-pr-md"
-    v-if="asset.type && !($q.platform.is.mobile||$isbex)"
+    v-if="asset.chain && !($q.platform.is.mobile||$isbex)"
   >
     <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" style="margin-left: 15px; height: 77vh;">
       <div class="row" >
@@ -36,7 +36,7 @@
 
                 <h2>
 
-                  <img v-if="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="asset.icon" style="max-width: 40px" alt="image" />
+                  <img v-if="asset.icon"  onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="asset.icon" style="max-width: 40px; border-radius:50%" alt="image" />
                   <img
                     v-if="false"
                     style="max-width: 0px"
@@ -50,7 +50,7 @@
                 </h2>
                 <h3   class="q-pl-lg q-pr-md">
 
-                 <span class="historicalPrice"> ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,18).split(".")[0] : formatNumber(asset.rateUsd, 18).split(".")[0]
+                 <span class="historicalPrice"> ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,18).split(".")[0] : formatNumber(asset.rateUsd, 3).split(".")[0]
                   }} </span><span
                   class="g-txt"
                     style="
@@ -67,8 +67,8 @@
                 </h3>
               </div>
             </span>
-
-            <div class="token-chart q-mt-lg" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
+  <ChartFund v-if="asset.type.toLowerCase() === 'enzf'" style="margin-top:-130px" :height="$q.screen.width > 768 ? '300':'250'" chartColor="#7272fa" :fundID="asset.contract" />
+            <div v-else class="token-chart q-mt-lg" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
               <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
               <span class="text-caption" v-if="!chartData && chartAvailable">
                 Loading historical price (1 month period)</span
@@ -94,7 +94,7 @@
               <PriceChart :dataType="'volume'" v-if="false" />
             </div>
 
-            <ul class="tab-btn" >
+            <ul class="tab-btn" v-if="asset.type.toLowerCase() !== 'enzf'">
               <li @click="getHistoriclPrice(1)">
                 <a
                   href="javascript:void(0)"
@@ -346,8 +346,8 @@
                 <q-tab v-if="$store.state.wallets.portfolioTotal" name="send" label="Send" />
            <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
                <q-tab name="stake" v-if="asset.type == 'hex' && asset.chain == 'eth'" @click="$router.push('/verto/stake/eth/hex')"  label="Stake" />
-                <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal" @click="exchangeToken({asset:asset, action: 'buy'})"  label="Buy" />
-                <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal" name="sell" @click="exchangeToken({asset:asset, action: 'sell'})" label="Sell" />
+                <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal && canSwap" @click="exchangeToken({asset:asset, action: 'buy'})"  label="Buy" />
+                <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal && canSwap" name="sell" @click="exchangeToken({asset:asset, action: 'sell'})" label="Sell" />
               </q-tabs>
 
               <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
@@ -614,6 +614,7 @@
 </div>
 </template>
 <script>
+import ChartFund from 'components/StaiderPrototype/ChartFund'
 import transactEOS from './transactEOS'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Formatter from '@/mixins/Formatter'
@@ -629,7 +630,7 @@ import AccountSelector from './Exchange/AccountSelector.vue'
 import { JsonRpc } from 'eosjs'
 import { QScrollArea } from 'quasar'
 import SignleTokenDialog from './MobileUI/SingleTokenDialog.vue'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 // import Godex from './Exchange/Godex.vue'
 import Lib from '@/util/walletlib'
 export default {
@@ -638,6 +639,7 @@ export default {
     Oneinch,
     AccountSelector,
     ImportView,
+    ChartFund,
     // AssetBalancesTable,
     // History,
     PriceChart,
@@ -681,6 +683,9 @@ export default {
     } */
   },
   computed: {
+    canSwap () {
+      return this.asset && this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain === this.asset.chain && ['eth', 'terra'].includes(this.asset.chain)
+    },
     isTxValid () {
       let valid = false
 
@@ -729,6 +734,7 @@ export default {
         localStorage.setItem('not_valuable', JSON.stringify(not_valuable))
         this.isValuable = true
       }
+      this.$store.state.currentwallet.userData.walletData = null
       initWallet()
     },
     markAsNotValuable () {
@@ -740,6 +746,7 @@ export default {
       } else {
         localStorage.setItem('not_valuable', JSON.stringify([this.asset]))
       }
+      this.$store.state.currentwallet.userData.walletData = null
       this.isValuable = false
       this.asset.usd = 0
       initWallet()
@@ -767,9 +774,9 @@ export default {
       } else {
         this.asset = asset
       }
-      if (this.asset.type === 'vtx') {
-        this.$store.state.settings.defaultChainData = this.asset
-      }
+      // if (this.asset.type === 'vtx') {
+      this.$store.state.settings.defaultChainData = this.asset
+      //    }
       this.depositCoin = {
         label: this.asset.type.toUpperCase(),
         value: this.asset.type,
@@ -911,14 +918,14 @@ export default {
           }
         })
     },
-    async getHistoriclPrice (days = 30) {
-      console.log('getHistoriclPrice called')
+    async getHistoriclPrice (days = 1) {
       this.chartData = false
       this.chartAvailable = true
       let id = this.asset.coinGeckoId
+
       try {
         if (!id) {
-          id = Lib.getCoinGeckoId(this.asset)
+          id = Lib.getCoinGeckoId({ address: this.asset.contract, type: this.asset.type })
         }
         if (id) {
           this.getMarketData(id)
@@ -1065,7 +1072,7 @@ export default {
       destinationCoin: {
         label: 'ETH',
         value: 'eth',
-        image: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
+        image: 'https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png'
       }
     }
   },
@@ -1074,6 +1081,21 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+ /deep/
+.option-toggle button.active {
+    background: #7271fa !important;
+    color: rgb(252, 252, 252) !important;
+
+}
+ /deep/
+.option-toggle button {
+    color: rgb(0, 0, 0) !important;
+}
+.dark-theme /deep/
+.option-toggle button {
+    color: rgb(255, 255, 255) !important;
+}
+
  .set-max {
                 margin-top: -10px;
                 font-size: 12px;

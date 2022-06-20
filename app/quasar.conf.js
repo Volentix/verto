@@ -36,6 +36,7 @@ module.exports = function (ctx) {
       components: [
         'QOptionGroup',
         'QBanner',
+        'QForm',
         'QPopupProxy',
         'QSpinner',
         'QBadge',
@@ -133,7 +134,7 @@ module.exports = function (ctx) {
     build: {
       uglifyOptions: {
         keep_fnames: true,
-      //  compress: { drop_console: true }
+       compress: { drop_console: true }
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -173,7 +174,7 @@ module.exports = function (ctx) {
               minify: false,
               hash: false
             })
-          ) 
+          )
           cfg.optimization.splitChunks = {
             cacheGroups: {
               vendor: {
@@ -201,6 +202,21 @@ module.exports = function (ctx) {
             fix: true
           }
         })
+        cfg.module.rules.push({
+          test: /\.(glb)$/,
+          loader: 'file-loader',
+          exclude: /node_modules/
+        })
+        // cfg.module.rules.push({
+        //   test: /\.(hdr)$/,
+        //   loader: 'file-loader',
+        //   exclude: /node_modules/
+        // })
+        // cfg.module.rules.push({
+        //   test: /\.(fbx)$/,
+        //   loader: 'file-loader',
+        //   exclude: /node_modules/
+        // })
       }
     },
 
@@ -211,6 +227,9 @@ module.exports = function (ctx) {
       // },
       // https: true,
       // port: 8080,
+      watchOptions: {
+        poll: 1000 // Check for changes every second
+      },
       open: true // opens browser window automatically
     },
 

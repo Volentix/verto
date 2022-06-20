@@ -241,7 +241,7 @@
 import DexInteraction from '../../mixins/DexInteraction'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 // import Oneinch from '../../components/Verto/Exchange/Oneinch'
 // import Coinswitch from '../../components/Verto/Exchange/Coinswitch'
 // import Swapeos from '../../components/Verto/Exchange/Swapeos'

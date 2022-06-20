@@ -18,7 +18,7 @@
                     >
                         <q-item-section avatar top>
                           <q-avatar  v-if="!showQr[chain.chain]">
-                            <img :src="chain.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
+                              <img :src="chain.icon" :onerror="defaultToken(chain.chain)" />
                           </q-avatar>
                         </q-item-section>
                         <q-item-section class="chain_and_total_account_section">
@@ -35,7 +35,7 @@
                                   dense
                                 >
                                   <q-avatar size="xs">
-                                    <img :src="item.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
+                                    <img :src="item.icon" :onerror="defaultToken(item.chain)" />
                                   </q-avatar>
                                   <span class="q-pl-sm">{{item.type.toUpperCase()}}</span>
                                   <span class="q-pl-sm text-grey">${{ formatNumber(item.usd, 0) }}</span>
@@ -50,13 +50,12 @@
                                     v-if="checkRecvPrivateKeyAccess(chain)"
                                     @click="$set(showQr, chain.chain, true)"
                                     unelevated
-                                    color="grey-2"
-                                    text-color="black"
+                                    text-color="white"
                                     no-caps
                                     size="sm"
                                     dense
-                                    class="full-width"
-                                    icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png"
+                                    class="full-width q-ml-sm"
+                                    icon-right="qr_code"
                                 />
                               </div>
                               <div v-if="showQr[chain.chain]" class="qr-code">
@@ -184,7 +183,7 @@
                     >
                         <q-item-section avatar top>
                           <q-avatar>
-                              <img :src="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
+                              <img :src="asset.icon" :onerror="defaultToken(asset.chain)"/>
                           </q-avatar>
                         </q-item-section>
                         <q-item-section>
@@ -291,10 +290,9 @@
 
 <script>
 import { version } from '../../../../package.json'
-
 export default {
   name: 'ChainItem',
-  props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal', 'getImportLink'],
+  props: ['chains', 'tab', 'chainAction', 'defaultToken', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal', 'getImportLink'],
   data () {
     return {
       lightMode: true,

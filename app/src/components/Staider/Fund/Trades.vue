@@ -135,7 +135,6 @@ export default {
     openURL
   },
   async created () {
-    console.log(this.trades, 'this.trades', Enzyme)
     this.trades = await Enzyme.getTrades(this.$route.params.fundID)
 
     if (this.trades) {

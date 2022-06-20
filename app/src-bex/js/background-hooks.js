@@ -6,53 +6,99 @@ import WalletConnect from '@walletconnect/client'
 // import store from '@/store'
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/background-hooks
 export default function attachBackgroundHooks (bridge /* , allActiveConnections */) {
-  console.log('idle setting')
+  const resolve_ = (accounts, chainId) => {
+    return new Promise((resolve, reject) => {
+      resolve({
+        accounts: accounts,
+        chainId: chainId
+      })
+    })
+  }
+  const normalizeHex = (n) => n.toString().includes('0x') ? parseInt(n, 16) : n
 
-  const connect = async (connector, accounts) => {
-    connector.connected = false
-    connector._connected = false
-    if (!connector.connected) {
-      await connector.approveSession({
-        accounts: accounts,
-        chainId: 1
-      })
-    } else {
-      await connector.updateSession({
-        accounts: accounts,
-        chainId: 1
-      })
-    }
+  const connect = async (connector, accounts, chainId = 1, provider = 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63') => {
+    await connector.createSession({ chainId: chainId })
+    await connector.approveSession({
+      accounts: accounts,
+      chainId: chainId,
+      rpcUrl: provider,
+      peerId: connector.peerId
+    })
+  }
+  const openPopup = (path = 'www/index.html') => {
+    chrome.windows.create({
+      url: chrome.runtime.getURL(path),
+      type: 'popup',
+      height: 600,
+      width: 357,
+      top: 0,
+      left: screen.width - 350,
+      focused: true
+    })
   }
   bridge.on('connector.listener', event => {
     let connectorArray = []
 
     let connexion = connectorArray.find(o => o.domain === event.data.domain)
     let connector = null
+
     if (!connexion) {
       connector = new WalletConnect({ uri: event.data.uri })
+
       connectorArray.push({ connector: connector, domain: event.data.domain })
       connector = connectorArray[connectorArray.length - 1].connector
     } else {
       connector = connexion.connector
-      connect(connector, event.data.accounts)
-      return
+      // connect(connector, event.data.accounts)
+      // return
     }
 
     if (event.data.accept) {
       // Approve Session
       setTimeout(async () => {
-        connect(connector, event.data.accounts)
+        await connect(connector, event.data.accounts, event.data.chainId, event.data.provider)
 
-        connector.on('call_request', (error, payload) => {
+        // Subscribe to connection events
+
+        connector.on('connect', (error, payload) => {
           if (error) {
             throw error
+          }
+          return resolve_(event.data.accounts, event.data.chainId)
+
+          // Get provided accounts and chainId
+          // const { accounts, chainId } = payload.params[0];
+        })
+
+        connector.on('call_request', async (error, payload) => {
+          console.log(payload, 'payload')
+
+          if (error) {
+            throw error
+          }
+
+          if (payload.method === 'wallet_switchEthereumChain') {
+            connector.updateSession({
+              chainId: normalizeHex(payload.params[0].chainId),
+              networkId: normalizeHex(payload.params[0].chainId),
+              accounts: event.data.accounts
+            })
+            return connector.approveRequest({
+              id: payload.id,
+              result: payload.params[0].chainId
+            })
+            // return resolve_(event.data.accounts, event.data.chainId)
+          } else if (payload.method === 'eth_sendTransaction') {
+            payload.params[0].chainId = connector.chainId
+            localStorage.setItem('call_request', JSON.stringify(payload))
+            openPopup()
           }
 
           bridge.on('result.listener.' + payload.id, event => {
             if (event.data.approve) {
               connector.approveRequest({
                 id: payload.id,
-                result: event.data.hash
+                result: event.data.result
               })
             } else {
               connector.rejectRequest({
@@ -61,29 +107,18 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
               })
             }
           })
-
-          localStorage.setItem('call_request', JSON.stringify(payload))
-          chrome.windows.create({
-            url: chrome.runtime.getURL('www/index.html'),
-            type: 'popup',
-            height: 600,
-            width: 357,
-            top: 0,
-            left: screen.width - 350,
-            focused: true
-          })
         })
-        connector.on('session_request', (error, payload) => {
+        connector.on('session_request', async (error, payload) => {
           if (error) {
             throw error
           }
-          alert(payload)
-          connect(connector, event.data.accounts)
-          /*
+
+          await connect(connector, event.data.accounts, event.data.chainId, event.data.provider)
+
           connector.approveRequest({
             id: payload.id,
             result: event.data.accounts
-          }) */
+          })
         })
 
         connector.on('disconnect', (error, payload) => {
@@ -123,10 +158,12 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
       bridge.send(event.eventResponseKey)
       */
   })
+
   bridge.on('app.connect', event => {
-    localStorage.setItem('wallet_connect_svg', JSON.stringify(event.data))
+    let data = JSON.stringify(event.data)
+    // localStorage.setItem('wallet_connect_svg', data)
     chrome.windows.create({
-      url: chrome.runtime.getURL('www/index.html'),
+      url: chrome.runtime.getURL('www/index.html#/verto/connectv1/' + encodeURIComponent(data)),
       type: 'popup',
       height: 600,
       width: 357,

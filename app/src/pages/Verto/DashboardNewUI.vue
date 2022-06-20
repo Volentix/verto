@@ -18,25 +18,7 @@
     >
       <div class="desktop-version full-height"  >
         <div class="row full-height">
-          <div class="col col-md-3" v-if="false">
-            <div class="wallets-container" style="height: 100%">
-              <profile-header
-                @setAsset="setAsset"
-                :isMobile="false"
-                class="marg"
-                version="type2222"
-              />
-              <wallets
-                data-title="Interact with your account"
-                class="full-height max-height"
-                data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names"
-                :isMobile="false"
-                :showWallets="false"
-                :isWalletsPage="false"
-                :isWalletDetail="false"
-              />
-            </div>
-          </div>
+
           <div :class="{
               'bg-white': $store.state.settings.lightMode === 'false'
             }" class="col col-md-12 q-pr-md">
@@ -144,12 +126,14 @@
               <NftsExplorer
                 v-if="false && $store.state.settings.network != 'mainnet'"
               />
+              <keep-alive>
               <AssetsExplorer
                 @assetsChanged="assetsChanged"
                 ref="assetsComponent"
                 v-show="!assetSelected && tab == 'dashboard'"
                 @setAsset="setAsset"
               />
+              </keep-alive>
 
               <SingleToken
                 v-show="$store.state.settings.show.tab == 'token' || tab == ''"
@@ -163,54 +147,7 @@
           </div>
         </div>
       </div>
-      <div class="mobile-version" v-if="false">
-        <!-- <profile-header class="marg" version="type2222" /> -->
-        <!-- <q-btn color="white" flat text-color="black" class="full-width" label="Public Proposals" to="/verto/card-wps/public-proposals" /> -->
-        <!-- <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" /> -->
-        <div class="wallets-container" style="height: 100%">
-          <profile-header class="marg" version="type2222" />
-          <AssetsExplorer
-            v-show="!assetSelected"
-            @setAsset="setAsset"
-            v-if="false"
-          />
-          <wallets
-            :showWallets="true"
-            :isWalletsPage="false"
-            :isWalletDetail="false"
-          />
-        </div>
-        <div
-          class="cards-wrapper--content q-pl-md q-pr-md"
-          v-if="$store.state.currentwallet.wallet.empty"
-        >
-          <!-- <startNodeSection :banner="1" /> -->
-          <!-- <hr style="height:0px;opacity:0" /> -->
-          <!-- <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  /> -->
-          <hr style="height: 10px; opacity: 0" />
-          <makeVTXSection2
-            v-if="true && $store.state.settings.network == 'mainnet'"
-          />
-          <!-- <card-make-VTX /> -->
-          <!-- <hr style="height:0px;opacity:0" /> -->
-          <!-- <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" /> -->
-          <!-- <hr style="height:0px;opacity:0" /> -->
-          <!-- <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-                <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
-            </div> -->
-          <hr style="height: 30px; opacity: 0" />
-          <!-- <card-WPS /> -->
-          <!-- <hr style="height:0px;opacity:0" /> -->
-          <!-- <card-convert-any-to-VTX /> -->
-          <!-- <hr style="height:0px;opacity:0" /> -->
-          <!-- <card-import-EOS-account /> -->
-          <!-- <hr style="height:0px;opacity:0" /> -->
-          <!-- <card-create-wallet /> -->
-          <!-- <hr style="height:0px;opacity:0" /> -->
-          <!-- <convert-any-coin /> -->
-        </div>
-        <br /><br />
-      </div>
+
       <q-dialog v-model="alert" v-if="false">
         <q-card class="q-px-md" style="min-width: 550px">
           <q-card-section>
@@ -238,13 +175,13 @@
 
 <script>
 import store from '../../store'
-import ProfileHeader from '../../components/Verto/ProfileHeader'
+// import ProfileHeader from '../../components/Verto/ProfileHeader'
 // import CardMakeVTX from '../../components/Verto/CardMakeVTX'
 // import CardWPS from '../../components/Verto/CardWPS'
 // import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
 // import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
 // import CardCreateWallet from '../../components/Verto/CardCreateWallet'
-import Wallets from '../../components/Verto/Wallets'
+// import Wallets from '../../components/Verto/Wallets'
 // import AppsSection from '../../components/Verto/AppsSection'
 // import StartNodeSection from '../../components/Verto/StartNodeSection'
 // import maxDeFiYield from '../../components/Verto/maxDeFiYield'
@@ -253,7 +190,7 @@ import Wallets from '../../components/Verto/Wallets'
 // import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
 // import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSection2'
 // import MakeVTXSection from '../../components/Verto/MakeVTXSection'
-import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
+// import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 // import ExchangeSection from '../../components/Verto/ExchangeSection'
 // import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 //
@@ -279,7 +216,7 @@ import CrosschainDex from '@/util/CrosschainDex'
 // import Bridge from '@/util/Bridge'
 import MultiTransaction from '../../components/Verto/Defi/MultiTransaction'
 // const eos = new EosWrapper()
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 // import TestnetPools from '../../components/Verto/Defi/TestnetPools'
@@ -294,8 +231,8 @@ export default {
     MultiTransaction,
     HexChart,
     // NftsExplorer,
-    ProfileHeader,
-    Wallets,
+    //   ProfileHeader,
+    //   Wallets,
     GodexV2,
     // AppsSection,
     SingleToken,
@@ -310,7 +247,7 @@ export default {
     // liquidityPoolsTable,
     // AssetBalancesTable,
     // MakeVTXSection,
-    MakeVTXSection2,
+    //  MakeVTXSection2,
     TokenPrices
     // ExchangeSection,
     // ExchangeSection3
@@ -354,14 +291,9 @@ export default {
           : this.customSlider
       }, 12000)
     }
-
-    if (!this.$store.state.wallets.tokens.length) {
+    if (this.$route.params.walletToRefresh) {
       setTimeout(() => {
-        initWallet()
-      }, 500)
-    } else if (this.$route.params.walletToRefresh) {
-      setTimeout(() => {
-        initWallet(this.$route.params.walletToRefresh)
+        initWallet(this.$route.params.walletToRefresh || { fromCache: true })
       }, 500)
     }
 

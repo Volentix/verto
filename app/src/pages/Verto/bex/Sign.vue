@@ -37,7 +37,7 @@ import {
   version
 } from '../../../../package.json'
 import Lib from '@/util/walletlib'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'

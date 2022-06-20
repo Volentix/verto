@@ -6,7 +6,7 @@ import {
   JsSignatureProvider
 } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   components: {},
   data () {
@@ -21,7 +21,7 @@ export default {
   methods: {
 
     getEOSTokenImageUrl (symbol, contract) {
-      return this.invalidImages.find(o => o === symbol.toLowerCase()) ? 'https://dbds.340wan.com/static/img/eos.png' : 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + contract + '-' + symbol.toLowerCase() + '.png'
+      return this.invalidImages.find(o => o === symbol.toLowerCase()) ? 'https://dbds.340wan.com/static/img/eos.png' : 'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' + contract + '-' + symbol.toLowerCase() + '.png'
     },
     async sendTransaction (transactionObject, externalRpc = null, header = null, step = null) {
       let transactionHeader = header || {

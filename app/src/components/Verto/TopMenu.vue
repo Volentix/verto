@@ -76,7 +76,7 @@
         <!-- <div class="date">{{ refreshDate() }}</div> -->
         <!-- <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' /> -->
       </div>
-      <div class="col col-5 flex justify-end q-pt-xs q-pr-md items-center menu">
+      <div class="col col-6 flex justify-end q-pt-xs q-pr-md items-center menu">
         <!-- to="/verto/create-polkadot-account" -->
        <!-- <router-link to="/verto/create-polkadot-account" >Polkadot</router-link> -->
         <q-btn v-if="false" @click="$store.state.settings.activityBar = !$store.state.settings.activityBar" dense unelevated round icon="notifications_none" :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}" class="q-ml-md q-mr-md">
@@ -162,7 +162,32 @@
           :light="$store.state.settings.lightMode === 'false'"
           :dark="$store.state.settings.lightMode === 'true'"
           >
-            <q-item :key="index" v-for="(chain, index) in chains" dense :to="getImportLink(chain.chain)" clickable v-close-popup>
+            <q-item :key="index" v-for="(chain, index) in chains.filter(c => !this.$store.state.settings.importDisabled.includes(c.value))" dense :to="getImportLink(chain.chain)" clickable v-close-popup>
+              <q-item-section avatar>
+                <q-avatar
+                  :icon="'img:'+chain.icon"
+                  text-color="white"
+                />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{chain.label}}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+          <q-btn-dropdown
+          no-caps
+          icon="token"
+          label="Import Token"
+          flat
+          dense
+          :color="$store.state.settings.lightMode === 'true' ? 'white':'purple-5'"
+        >
+          <q-list
+          :light="$store.state.settings.lightMode === 'false'"
+          :dark="$store.state.settings.lightMode === 'true'"
+          >
+            <q-item :key="index" v-for="(chain, index) in chains.filter( o => o.isEvm)" dense @click="importChain = chain.value; keying++" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar
                   :icon="'img:'+chain.icon"
@@ -249,7 +274,7 @@
       <FreeCPUDialog />
     </q-dialog>
     </div>
-
+     <ImportToken v-if="importChain" :currentChainSymbol="importChain" :key="importChain+keying" />
     <div v-if="$q.platform.is.mobile || $isbex">
        <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="dialog" :maximized="$q.platform.is.mobile">
         <q-card :dark="$store.state.settings.lightMode === 'true'" style="width:100%;">
@@ -358,9 +383,10 @@
 // import { VTextMarquee } from 'vue-text-marquee'
 import Vue from 'vue'
 import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import EosRPC from '@/util/EosWrapper'
 import Formatter from '@/mixins/Formatter'
+import ImportToken from '@/components/Verto/Token/ImportToken'
 import configManager from '@/util/ConfigManager'
 import Lib from '@/util/walletlib'
 import HD from '@/util/hdwallet'
@@ -368,14 +394,16 @@ export default {
   name: 'TopMenu',
   mixins: [Formatter],
   components: {
-
+    ImportToken
   },
   props: ['openSearch'],
   data () {
     return {
       lightMode: true,
+      keying: 1111,
       optionsUnfiltered: [],
       temp: false,
+      importChain: null,
       animate: true,
       chains: [],
       searchVal: '',
@@ -397,25 +425,8 @@ export default {
           value: 'testnet'
         }
       ],
-      dialog: false,
-      thumbStyle: {
-        right: '5px',
-        borderRadius: '8px',
-        backgroundColor: '#C7CBCE',
-        width: '8px',
-        opacity: 0.75
-      },
-      barStyle: {
-        right: '2px',
-        borderRadius: '14px',
-        backgroundColor: '#BCC2C7',
-        width: '14px',
-        opacity: 0.2,
-        marginTop: '-3px',
-        marginBottom: '-3px',
-        paddingTop: '3px',
-        paddingBottom: '3px'
-      }
+      dialog: false
+
     }
   },
   created () {
@@ -423,7 +434,7 @@ export default {
       (o) => o.value.toLowerCase() === this.$store.state.settings.network
     )
     // this.options = CrosschainDex.getAllCoins()
-    this.chains = HD.getVertoChains()
+    this.chains = HD.getVertoChains().filter(c => !this.$store.state.settings.disableChains.includes(c.value))
     window.localStorage.setItem(
       'skin',
       window.localStorage.getItem('skin') !== null
@@ -442,9 +453,6 @@ export default {
   watch: {
     '$store.state.tokens.list': function () {
       this.getTokens()
-    },
-    '$store.state.wallets.tokens': function () {
-      this.chains = this.setChains()
     }
   },
   methods: {

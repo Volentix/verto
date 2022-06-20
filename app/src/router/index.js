@@ -4,15 +4,20 @@ import Lib from '@/util/walletlib'
 import store from '../store/index.js'
 import otherRoutes from './routes'
 import login from './_login'
-import getVtx from './getVtx'
 import wallet from './wallet'
+const allRoutes = {
+  spa: [...otherRoutes], // Staider
+  pwa: [ // verto
+    ...login,
+    ...wallet
+  ],
+  bex: [ // browser extension
+    ...login,
+    ...wallet
+  ]
+}
 
-const routes = [
-  ...otherRoutes,
-  ...getVtx,
-  ...login,
-  ...wallet
-]
+const routes = allRoutes[process.env.MODE]
 if (process.env.MODE !== 'ssr') {
   otherRoutes.push({
     path: '*',
@@ -67,7 +72,12 @@ export default function (/* { store, ssrContext } */) {
       meta: from.meta,
       path: from.path
     }
-    localStorage.setItem('prev_route', JSON.stringify(fromRoute))
+    try {
+      localStorage.setItem('prev_route', JSON.stringify(fromRoute))
+    } catch (error) {
+      console.log(error)
+    }
+
     if (appStarted != null && routerLoaded != null && ['connectv1', 'receive'].includes(to.name)) {
       try {
         params = Object.assign({}, to.params)

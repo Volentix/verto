@@ -15,7 +15,7 @@
             <template v-slot:body-cell-asset="props">
               <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
-                  <span class="imgs q-mr-lg">
+                  <span class="imgs q-mr-sm">
                     <img :src="'https://token.enzyme.finance/'+props.row.icon" alt="">
                   </span>
                   <span class="column pairs">
@@ -32,7 +32,8 @@
               <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
                   <span class="column pairs">
-                    <span class="pair text-bold">{{props.row.balance > 0 ? formatNumber(props.row.balance, 3) : 0}} {{props.row.assetThicker}}</span>
+                    <span  class="pair q-pr-xs allocation text-grey-3">{{formatNumber(props.row.allocation, 2)}}% </span>
+                    <span class="pair text-bold">{{props.row.balance > 0 ? formatNumber(props.row.balance, 3) : 0}} {{props.row.assetThicker.toUpperCase()}}</span>
                   </span>
                 </div>
               </q-td>
@@ -550,11 +551,10 @@ export default {
       },
       columns: [
         { name: 'asset', align: 'left', label: 'Asset', field: row => row.name, sortable: true, format: val => `${val}` },
+        { name: 'price', align: 'left', label: `Price`, field: row => row.name, sortable: true, format: val => `${val}` },
         { name: 'balance', align: 'left', label: 'Balance', field: row => row.name, sortable: true, format: val => `${val}` },
-        { name: 'price', align: 'left', label: `Price(${window.localStorage.getItem('currency').toUpperCase()})`, field: row => row.name, sortable: true, format: val => `${val}` },
-        { name: 'dailyChange', align: 'left', label: 'Daily Change', field: row => row.name, sortable: true, format: val => `${val}` },
-        { name: 'value', align: 'left', label: `Value(${window.localStorage.getItem('currency').toUpperCase()})`, field: row => row.name, sortable: true, format: val => `${val}` },
-        { name: 'allocation', align: 'left', label: 'Allocation', field: row => row.name, sortable: true, format: val => `${val}` }
+        { name: 'value', align: 'left', label: `Value`, field: row => row.name, sortable: true, format: val => `${val}` },
+        { name: 'dailyChange', align: 'left', label: 'Daily Change', field: row => row.name, sortable: true, format: val => `${val}` }
       ],
       datasCoins: [],
       MonthlyReturnscolumns: [
@@ -653,7 +653,7 @@ export default {
         this.sharePriceMetrics = metrics.data.data
         // console.log('this.sharePriceMetrics', this.sharePriceMetrics.monthly)
         // let testObject = { name: 'ucef' }
-        console.log('this.sharePriceMetrics.monthly', this.sharePriceMetrics)
+
         if (undefined !== this.sharePriceMetrics.monthly) {
           this.sharePriceMetrics.monthly.map(m => {
             const unixTime = m.timestamp
@@ -678,7 +678,6 @@ export default {
     updateFundData () {
       if (this.$store.state.investment.fundData) {
         let data = this.$data
-        console.log(data, 'data')
         data.currentCurrency = 'USD'
         this.$store.state.investment.fundData[this.$route.params.fundID] = data
       } else {

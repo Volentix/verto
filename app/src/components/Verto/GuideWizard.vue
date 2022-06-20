@@ -250,7 +250,7 @@ const actions = [
     items: [
       {
         label: 'Stake VTX now',
-        icon: 'img:https://defibox.oss-accelerate.aliyuncs.com/eos/volentixgsys-vtx.png',
+        icon: 'img:https://defibox.s3.ap-northeast-1.amazonaws.com/eos/volentixgsys-vtx.png',
         methods: ['showAccountDropdown'],
         to: '/verto/stake',
         type: 'vtx'

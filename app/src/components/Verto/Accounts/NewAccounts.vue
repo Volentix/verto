@@ -100,7 +100,7 @@
 <script>
 import Formatter from '@/mixins/Formatter'
 import HD from '@/util/hdwallet'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 export default {
   props: ['chain'],
   mixins: [Formatter],
@@ -112,7 +112,7 @@ export default {
       vertoPasswordWrong: false,
       accountNameError: false,
       vertoPassordValid: false,
-      index: 0,
+      indexAccount: 0,
       isPwd: true,
       addToVerto: false,
       nameAlreadyUsed: '',
@@ -150,13 +150,13 @@ export default {
       this.publicKey = null
       this.privateKey = null
       if (!setIndex) {
-        let mnemonicAccounts = this.$store.state.wallets.tokens.filter(
-          (o, i, self) =>
-            o.chain === this.chain.chain &&
-            o.origin === 'mnemonic' &&
-            self.findIndex((a) => a.key === o.key) === i
+        let mnemonicAccounts = this.setChains().find(a => a.chain === this.chain.chain).accounts.filter(
+          (o) =>
+
+            o.origin === 'mnemonic'
+
         )
-        this.index = mnemonicAccounts.length
+        this.indexAccount = mnemonicAccounts.length
       }
       const createAddress = (index) => {
         return HD.Wallet(this.chain.isEvm ? 'eth' : this.chain.chain, index)
@@ -165,8 +165,7 @@ export default {
       let fetch = true
       setTimeout(async () => {
         while (fetch) {
-          this.index++
-          let keys = await createAddress(this.index)
+          let keys = await createAddress(this.indexAccount)
           fetch = this.$store.state.wallets.tokens.find(
             (o) => o.key.toLowerCase() === keys.publicKey.toLowerCase()
           )
@@ -175,6 +174,7 @@ export default {
             this.privateKey = keys.privateKey
             fetch = false
           }
+          this.indexAccount++
           // return self.$configManager.saveWalletAndKey(name.label, self.vertoPassword, null, keys.publicKey, keys.privateKey, name.value, 'mnemonic')
         }
       }, 100)

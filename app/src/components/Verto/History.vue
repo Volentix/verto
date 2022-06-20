@@ -104,7 +104,7 @@
                               </q-tooltip>
                             </div>
                             <div class="text-grey" v-else>
-                              N/A
+                             <span v-if="transaction.failed" class="text-red">Failed</span>
                             </div>
 
                             </div>
@@ -197,7 +197,7 @@
                               </q-tooltip>
                             </div>
                             <div class="text-grey" v-else>
-                              N/A
+                              <span v-if="transaction.failed" class="text-red">Failed</span>
                             </div>
                             </div>
                           </div>
@@ -317,7 +317,7 @@
                               </q-tooltip>
                             </div>
                             <div class="text-grey" v-else>
-                              N/A
+                              <span v-if="transaction.failed" class="text-red">Failed</span>
                             </div>
                             </div>
                           </div>
@@ -490,11 +490,11 @@ export default {
         return
       }
       this.history = []
-      console.log(account, 'account')
+
       if (account.origin === 'metamask') {
         account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
       }
-      if (account.chain === 'eth') {
+      /*   if (account.chain === 'eth') {
         // Clear local data because of updated logic
         let item = localStorage.getItem('tx_list_' + account.key)
 
@@ -503,7 +503,7 @@ export default {
         }
 
         this.getEthWalletHistory(account)
-      } else if (account.chain === 'eos') {
+      } else */ if (account.chain === 'eos') {
         this.$axios.post('https://cpu.volentix.io/api/global/history', { name: account.name }).then(res => {
           res.data.forEach((d, i) => {
             res.data[i].data.map(h => {
@@ -537,7 +537,7 @@ export default {
       let element = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.key === account.key)
 
       let cacheData = localStorage.getItem('history_' + element.key)
-
+      console.log(cacheData, 'cacheData')
       /* let item = this.$store.state.wallets.history.find(o => o.key === element.key)
 
       if (item) {
@@ -546,9 +546,10 @@ export default {
         this.loading = false
 
       } else */
+      cacheData = cacheData ? JSON.parse(cacheData) : []
 
-      if (cacheData) {
-        this.history = JSON.parse(cacheData)
+      if (cacheData && cacheData.length) {
+        this.history = cacheData
         this.loading = false
       } else {
         let data = await this.$store.dispatch('investment/getETHTransactions', element.key)
@@ -609,21 +610,24 @@ export default {
     },
     normalize (transaction, chain) {
       const self = this
+      console.log(3, 'tx')
       let normalizer = {
 
         eth (transaction) {
+          console.log(1, 'tx')
           let tx = JSON.parse(JSON.stringify(transaction))
           tx.chain = 'eth'
           let date = (new Date(parseInt(transaction.timeStamp) * 1000))
           tx.explorerLink = 'https://etherscan.io/tx/' + transaction.hash
           tx.friendlyHash = transaction.hash.substring(0, 6) + '...' + transaction.hash.substr(transaction.hash.length - 5)
           tx.friendlyTo = transaction.destination.length ? transaction.destination.substring(0, 6) + '...' + transaction.destination.substr(transaction.destination.length - 5) : ''
+          console.log(3, 'tx')
           tx.friendlyFrom = transaction.from.substring(0, 6) + '...' + transaction.from.substr(transaction.from.length - 5)
           tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
           tx.image = self.getTokenImage(transaction.symbol)
           tx.active = false
-
           tx.gasTotal = tx.gas
+          console.log(2, 'tx')
           tx.dateFormatted = date.toISOString().split('T')[0]
           // self.getHistoricalData(transaction)
           tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
@@ -636,7 +640,7 @@ export default {
           if (tx.subTransactions.length === 2) {
             tx.subTransactions = [tx.subTransactions.find(o => o.type === 'outgoing'), tx.subTransactions.find(o => o.type === 'incoming')]
           }
-
+          console.log(5, 'tx')
           return tx
         },
         eos (transaction) {
@@ -699,7 +703,7 @@ export default {
         let day = dateObj.getUTCDate()
         let year = dateObj.getUTCFullYear()
         let index = this.history.findIndex(o => o.month === month && o.day === day && o.year === year)
-
+        console.log(1, '1')
         if (index > -1) {
           this.history[index].data.push(element)
         } else {
@@ -715,11 +719,13 @@ export default {
           // this.$store.commit('wallets/updateHistory', item)
         }
       })
+      console.log(2, '2')
       if (this.$store.state.investment.defaultAccount.chain === 'eth') {
         localStorage.setItem('history_' + this.$store.state.investment.defaultAccount.key, JSON.stringify(this.history))
         // this.$store.commit('wallets/setHistory', {key:this.$store.state.investment.defaultAccount.key, historythis.history)
       }
       this.loading = false
+      console.log(3, '3')
     },
     async getUsdPrice (transaction, synchronus = true) {
       return true

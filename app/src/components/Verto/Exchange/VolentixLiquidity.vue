@@ -844,7 +844,7 @@
        <q-icon
         v-if="depositCoin"
         class="option--avatar"
-        :name="`img:https://defibox.oss-accelerate.aliyuncs.com/eos/eosio.token-eos.png`"
+        :name="`img:https://defibox.s3.ap-northeast-1.amazonaws.com/eos/eosio.token-eos.png`"
        />
        <q-item-label caption class="text-bold text-center q-mt-sm">
         EOS</q-item-label
@@ -915,7 +915,7 @@ import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
 import TestnetPools from '../../../components/Verto/Defi/TestnetPools'
-import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/_Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
 import { EosRPC, EosAPI } from '@/util/EosInterac'

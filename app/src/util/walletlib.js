@@ -2,7 +2,7 @@ import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
 import * as solanaWeb3 from '@solana/web3.js'
-// import abiHex from '@/statics/abi/hex.json'
+import abiHex from '@/statics/abi/hex.json'
 import abiEnz from '@/statics/abi/enz.json'
 import {
   userError
@@ -11,14 +11,18 @@ import {
   date
 } from 'quasar'
 import abiArray from '@/statics/abi/erc20.json'
-import initWallet from './Wallets2Tokens'
+import initWallet from './_Wallets2Tokens'
+import { LCDClient, MsgSend, RawKey, Coins, MsgExecuteContract, isTxError } from '@terra-money/terra.js'
+import { toAmount } from '@terra.kitchen/utils'
 const Web3 = require('web3')
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 class Lib {
   constructor () {
-    // https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645
+    this.evms = this.getEvms()
+  }
+  getEvms () {
     let evms = [{
       name: 'Ethereum',
       chain: 'eth',
@@ -27,7 +31,8 @@ class Lib {
       provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
       explorer: 'https://etherscan.io/tx/',
       gas: 'https://ethgas.watch/api/gas',
-      network_id: 1
+      network_id: 1,
+      coinGeckoId: 'ethereum'
     }, {
       name: 'Binance Smart Chain',
       chain: 'bsc',
@@ -36,7 +41,8 @@ class Lib {
       provider: 'https://bsc-dataseed1.binance.org:443',
       explorer: 'https://bscscan.com/tx/',
       gas: 'https://api.bscscan.com/api?module=proxy&action=eth_gasPrice&apikey=JK2Z5XQYR1FMCAQFQDBFNS5FJM6XC7ETTB',
-      network_id: 56
+      network_id: 56,
+      coinGeckoId: 'binancecoin'
     }, {
       name: 'Polygon',
       chain: 'matic',
@@ -45,7 +51,8 @@ class Lib {
       provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
       explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
       gas: 'https://gasstation-mainnet.matic.network/',
-      network_id: 137
+      network_id: 137,
+      coinGeckoId: 'matic-network'
     }, {
       name: 'Avalanche C-Chain',
       chain: 'avaxc',
@@ -54,14 +61,15 @@ class Lib {
       provider: 'https://api.avax.network/ext/bc/C/rpc',
       explorer: 'https://cchain.explorer.avax.network/tx/',
       gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
-      network_id: 43114
+      network_id: 43114,
+      coinGeckoId: 'avalanche-2'
     }, {
       name: 'PulseChain',
       chain: 'tpls',
       nativeToken: 'tpls',
       icon: 'https://pbs.twimg.com/profile_images/1412839310106234882/Z4H3-LxW_400x400.jpg',
-      provider: 'https://rpc.v2.testnet.pulsechain.com',
-      explorer: 'https://scan.v2.testnet.pulsechain.com/tx/',
+      provider: 'https://rpc.v2b.testnet.pulsechain.com',
+      explorer: 'https://scan.v2b.testnet.pulsechain.com/tx/',
       gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
       network_id: 940,
       testnet: true
@@ -73,7 +81,8 @@ class Lib {
       provider: 'https://rpcapi.fantom.network/',
       explorer: 'https://ftmscan.com/tx/',
       gas: '', // FTM tokens are required to pay gas fees. The Covalent API response returns gas_* fields in fiat units
-      network_id: 250
+      network_id: 250,
+      coinGeckoId: 'fantom'
     // }, { // Commented until they go live
     //   name: 'Moonbeam Polkadot',
     //   chain: 'mbp',
@@ -88,24 +97,48 @@ class Lib {
     let localSettings = localStorage.getItem('chainSettings')
     if (localSettings) {
       localSettings = JSON.parse(localSettings)
-      this.evms = []
-      evms.forEach(e => {
+
+      evms.forEach((e, i) => {
         if (localSettings[e.chain] && localSettings[e.chain].provider) {
-          this.evms.push(localSettings[e.chain])
-        } else {
-          this.evms.push(e)
+          evms[i] = localSettings[e.chain]
         }
       })
-    } else {
-      this.evms = evms
     }
-    console.log(this.evms, ' this.evms')
+    return evms
+  }
+  async getEtherereumPriceGasPrices () {
+    let data = false
+    let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.gasprice.io/v1/estimates')
+    if (res && res.data && res.data.result) {
+      data = {
+        normal: {
+          gwei: res.data.result.eco.feeCap
+        },
+        fast: {
+          gwei: res.data.result.fast.feeCap
+        },
+        instant: {
+          gwei: res.data.result.instant.feeCap
+        }
+      }
+    }
+    return data
+  }
+  async getEtherereumPriceGas () {
+    let gas = null
+    let res = await this.getEtherereumPriceGasPrices()
+    if (res) {
+      gas = res.instant.gwei
+    } else {
+      alert('Error fetching gas price')
+    }
+    return gas
   }
   async hexStake (address) {
     let locked = 0
     let res = await axios.post('https://cpu.volentix.io/api/global/hexStats', { address: address })
     if (res.data.locked) {
-      locked = res.data.locked
+      locked = parseFloat(res.data.locked)
     }
     return locked
   }
@@ -115,23 +148,18 @@ class Lib {
     const Web3 = require('web3')
     const web3 = new Web3(this.getEvmData('tpls').provider)
     let hex = new web3.eth.Contract(compiledContractABI, add)
-    console.log(hex.methods, 'hex.methods')
+
     let data = await hex.methods.getCreator().call()
     console.log(data, 'data')
   }
-  async getHexStake (addr) {
-    let val = await this.hexStake(addr)
-    return val
-    /*
-    /* global BigInt
-    // addr = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
+  async getHexStakeData (addr) {
     const compiledContractABI = JSON.parse(abiHex.result)
     const hexAddr = '0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39'
     const Web3 = require('web3')
     const web3 = new Web3(this.getEvmData('eth').provider)
     let hex = new web3.eth.Contract(compiledContractABI, hexAddr)
     let stakeCount = await hex.methods.stakeCount(addr).call()
-
+    /* /* global BigInt
     const getLastDataDay = async (hex) => {
       let globalInfo = await hex.methods.globalInfo().call()
       const lastDay = globalInfo[4]
@@ -151,10 +179,13 @@ class Lib {
     }
 
     const HEARTS_UINT_SHIFT = 72n
-    const HEARTS_MASK = (1n << HEARTS_UINT_SHIFT) - 1n
+
     const SATS_UINT_SHIFT = 56n
     const SATS_MASK = (1n << SATS_UINT_SHIFT) - 1n
-    const decodeDailyData = (encDay) => {
+
+      const HEARTS_MASK = (1n << HEARTS_UINT_SHIFT) - 1n
+
+      const decodeDailyData = (encDay) => {
       let v = BigInt(encDay)
       let payout = v & HEARTS_MASK
       v = v >> HEARTS_UINT_SHIFT
@@ -163,6 +194,7 @@ class Lib {
       let sats = v & SATS_MASK
       return { payout, shares, sats }
     }
+
     const getStake = async (hex, addr, sid) => {
       let stakeCount = await hex.methods.stakeCount(addr).call()
       for (let i = 0; i < stakeCount; i++) {
@@ -176,6 +208,7 @@ class Lib {
       let stake = await hex.methods.stakeLists(addr, idx).call()
       return stake
     }
+
     const getInterestToDate = async (hex, addr, stakeId, stakeIndex, stake) => {
       let s
       if (stake !== undefined) {
@@ -201,30 +234,43 @@ class Lib {
     }
     const interestForRange = (dailyData, myShares) => {
       return dailyData.reduce((s, d) => s + interestForDay(d, myShares), 0n)
-    }
 
     const interestForDay = (dayObj, myShares) => {
       let i = myShares * dayObj.payout / dayObj.shares
-      console.log(Number(i), 'i')
+
       return i
     }
+    } */
 
-    let total = 0n
+    // let total = 0n
+    let stakeData = []
     for (let i = 0; i < stakeCount; i++) {
       let stake = await hex.methods.stakeLists(addr, i).call()
       // let interest = 0n
 
-      let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
-      console.log(Number(interest) / (10 ** 8), stake.stakedHearts / (10 ** 8))
-      total += (BigInt(stake.stakedHearts) + interest) / BigInt(10 ** 8)
-    }
-    total = Number(total)
+      // let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
+      // interest = Number((interest) / BigInt(10 ** 8))
 
-    return total
-    */
+      stakeData.push({
+        startDate: parseInt(stake.lockedDay) + 1,
+        endDate: parseInt(stake.lockedDay) + parseInt(stake.stakedDays) + 1,
+        principal: parseInt(stake.stakedHearts) / 10 ** 8,
+        stakeshares: stake.stakeShares,
+        //  interest: interest,
+        index: i,
+        stakeId: stake.stakeId
+      })
+    }
+    //  total = Number(total)
+
+    return stakeData
+  }
+  async getHexStake (addr) {
+    let val = await this.hexStake(addr)
+    return val
   }
   getDefaultToken (chain) {
-    let defaultImg = '/statics/empty-token.png'
+    let defaultImg = 'statics/empty-token.png'
     let values = {
       eos: 'https://defibox.s3.ap-northeast-1.amazonaws.com/defibox-eos-web/static/img/eos.png',
       eth: 'https://etherscan.io/images/main/empty-token.png'
@@ -237,24 +283,26 @@ class Lib {
   getWallets (chain = null) {
     let watchAccounts = localStorage.getItem('watchAccounts')
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-    return [...store.state.currentwallet.config.keys].concat(watchAccounts).filter(o => o.chain === chain || !chain)
+    return (store.state.currentwallet.config.keys ? [...store.state.currentwallet.config.keys] : []).concat(watchAccounts).filter(o => o.chain === chain || !chain)
   }
   async fetchNfts (address) {
-    /// address = '0x60e4d786628fea6478f785a6d7e704777c86a7c6'
-    let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88&newBalances=true'
-    let res = await axios.get(url)
     let nfts = []
-    if (res.data && res.data[address] && res.data[address].products.length) {
-      nfts = res.data[address].products[0].assets
-      nfts = nfts.map(n => {
-        if (n.tokens[0].assets[0] && n.tokens[0].assets[0].assetImg.length) { return n.tokens[0].assets[0] }
-      }).filter(o => o)
+    if (!address) {
+      let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=562eee97-e90e-42ac-8e7b-363cdff5cdaa&newBalances=true'
+      let res = await axios.get(url)
+
+      if (res.data && res.data[address] && res.data[address].products.length) {
+        nfts = res.data[address].products[0].assets
+        nfts = nfts.map(n => {
+          if (n.tokens[0].assets[0] && n.tokens[0].assets[0].assetImg.length) { return n.tokens[0].assets[0] }
+        }).filter(o => o)
+      }
     }
     return nfts
   }
   removePrivateData (data) {
     if (typeof data !== 'object' && !data.length) return data
-    return JSON.parse(JSON.stringify(data)).map(o => {
+    return Object.assign([], data).map(o => {
       o.privateKeyEncrypted = null
       delete o.privateKeyEncrypted
       o.privateKey = null
@@ -281,7 +329,7 @@ class Lib {
       }
     }
 
-    let web3Value = localWeb3.utils.toHex(value * 10 ** toToken.decimals)
+    let web3Value = localWeb3.utils.toHex(parseInt(value * 10 ** toToken.decimals).toString())
 
     let sendTo = to
     let data = null
@@ -349,7 +397,7 @@ class Lib {
         'value': coin.type,
         'contract': coin.contract,
         'precision': coin.precision,
-        'image': coin.chain === 'eos' ? 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + coin.contract + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
+        'image': coin.chain === 'eos' ? 'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' + coin.contract + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
         'dex': 'coinswitch',
         'amount': parseFloat(coin.amount),
         'amountUSD': coin.usd
@@ -373,15 +421,9 @@ class Lib {
     return direction
   }
 
-  removeExpiredData (days = 1) {
-    const keepData = [
-      'skin',
-      'hideEosSetup',
-      'disableIntro_defi',
-      'closewizard',
-      'disable_freeospopup',
-      'globalSettings',
-      'version'
+  removeExpiredData (days = 3) {
+    const removeData = [
+      'walletPublicDatav2'
     ]
     let date = localStorage.getItem('walletDataExpiration')
     let now = new Date()
@@ -392,15 +434,11 @@ class Lib {
     }
 
     if (!date || now.getTime() > saved.getTime()) {
-      let keys = Object.keys(localStorage),
-        i = keys.length
-
-      while (i--) {
-        if (!keepData.includes(keys[i])) {
-          localStorage.removeItem(keys[i])
-        }
-      }
+      removeData.forEach((key) => {
+        localStorage.removeItem(key)
+      })
     }
+
     localStorage.setItem('walletDataExpiration', now)
   }
   getCoingeckoChain (chain) {
@@ -609,37 +647,46 @@ class Lib {
               { auth: { username: 'ckey_a9e6f6ab90584877b86b151eef3' } }
             )
             .then(res => {
+              console.log(res.data, 'res.data')
               if (res.data.data.items) {
                 let transactions = []
                 res.data.data.items.filter(o => o.successful).forEach((a, index) => {
                   let tx = {}
-
+                  console.log(11, 'tx')
                   let date = new Date(a.block_signed_at)
                   tx.timeStamp = date.getTime() / 1000
                   tx.chain = token
+                  tx.failed = !a.successful
                   tx.friendlyHash = a.tx_hash.substring(0, 6) + '...' + a.tx_hash.substr(a.tx_hash.length - 5)
                   let decodedBlock = null
+                  console.log(13, 'tx')
                   if (a.log_events && a.value === '0') {
                     decodedBlock = a.log_events.find(o => o.decoded && o.decoded.name === 'Transfer')
                     if (decodedBlock) {
                       tx.to = decodedBlock.decoded.params.find(o => o.name === 'to').value
                       tx.amount = decodedBlock.decoded.params.find(o => o.name === 'value').value
-                      tx.amount = Web3.utils.fromWei(tx.amount.toString(), 'ether')
+                      tx.amount = tx.amount ? tx.amount : 0
+                      tx.amount = Web3.utils.fromWei(tx.amount?.toString(), 'ether')
                       tx.symbol = 'N/A'
-                      tx.image = ''
+                      tx.image = '/statics/empty-token.png'
                       if (store.state.tokens.evmTokens[chain]) {
                         let foundToken = store.state.tokens.evmTokens[chain].find(o => o.address === a.to_address)
                         tx.symbol = foundToken ? foundToken.symbol : tx.symbol
                         tx.image = foundToken ? foundToken.logoURI : tx.image
                       }
+                    } else {
+                      tx.symbol = 'ETH'
+                      tx.image = '/statics/empty-token.png'
                     }
                   }
+                  console.log(14, 'tx')
                   if (!decodedBlock) {
                     tx.to = a.to_address
-                    tx.amount = Web3.utils.fromWei(a.value.toString(), 'ether')
+                    tx.amount = Web3.utils.fromWei(a.value?.toString(), 'ether')
                     tx.symbol = evmData.nativeToken.toUpperCase()
                     tx.image = evmData.icon
                   }
+                  console.log(15, 'tx')
                   tx.hash = a.tx_hash
                   tx.explorerLink = evmData.explorer + '/' + tx.hash
                   tx.from = a.from_address
@@ -653,10 +700,10 @@ class Lib {
                   tx.dateFormatted = date.toISOString().split('T')[0]
                   tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
                   tx.active = false
-                  tx.gasTotal = tx.gas_spent
+                  tx.gasTotal = tx.gas_spent ? tx.gas_spent : 0
                   tx.dateFormatted = date.toISOString().split('T')[0]
                   tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
-
+                  console.log(15, 'tx')
                   transactions.push(tx)
                 })
                 resolve({
@@ -810,6 +857,7 @@ class Lib {
   balance = async (chain, key, token) => {
     const self = this
     const wallet = {
+
       async sol (key, token) {
         let connection = new solanaWeb3.Connection(
           solanaWeb3.clusterApiUrl('mainnet-beta'),
@@ -1015,8 +1063,8 @@ class Lib {
 
     return wallet ? wallet(key, token) : {}
   }
-  getEvmData (chain) {
-    return this.evms.find(o => o.chain === chain)
+  getEvmData (chainOrChainId) {
+    return this.getEvms().find(o => o[isNaN(chainOrChainId) ? 'chain' : 'network_id'] === chainOrChainId)
   }
   async checkEvmTxStatus (transactonHash, chain) {
     let web3 = this.getWeb3Instance(chain)
@@ -1052,18 +1100,38 @@ class Lib {
 
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
-      if (evmData.gas && evmData.gas.length) { response = await axios.get(process.env[store.state.settings.network].CACHE + evmData.gas) }
+      if (evmData.gas && evmData.gas.length) {
+        if (chain === 'eth') {
+          response = {
+            data: await this.getEtherereumPriceGasPrices()
+          }
+        } else {
+          response = await axios.get(process.env[store.state.settings.network].CACHE + evmData.gas)
+        }
+      }
+      let gas = gasLimit || 21000, gasPrice = null
+      if (transaction.gas) {
+        gas = transaction.gas
+      }
+      if (transaction.gasPrice) {
+        gasPrice = transaction.gasPrice
+      }
 
       gasData = {
-        gas: gasLimit || 21000,
-        gasPrice: null,
+        gas: gas,
+        gasPrice: gasPrice,
         label: 'Fee',
         value: 0, // USD Price
         nativeToken: evmData.nativeToken
       }
+
+      if (!tokenPrice) {
+        tokenPrice = await this.getCoinGeckoPrice(evmData.coinGeckoId)
+      }
     }
-    const convertGasPrice = (gasObj, nativeTokenPrice) => {
+    const convertGasPrice = (gasObj, nativeTokenPrice = tokenPrice) => {
       // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
+
       gasObj.isUsd = nativeTokenPrice || tokenPrice
       gasObj.value = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? gasObj.isUsd : 1)
       gasObj.requiredNativeAmount = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas
@@ -1084,7 +1152,7 @@ class Lib {
       },
       async tpls () {
         gasData.gasPrice = await web3.eth.getGasPrice()
-
+        transaction.value = 0
         if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
@@ -1132,13 +1200,13 @@ class Lib {
           let speed = ['normal', 'fast', 'instant']
           speed.forEach((option) => {
             let gasOption = Object.assign({}, gasData)
-            gasOption.gasPrice = gasStationData[option].gwei * 1000000000 // To wei
+            gasOption.gasPrice = parseInt(gasStationData[option].gwei * 1000000000) // To wei
             gasOption.label = option
             gasOption = convertGasPrice(gasOption, response.data.ethPrice)
             gasOptions.push(gasOption)
           })
         }
-        // console.log(gasOptions, 'gasOptions')
+        console.log(gasOptions, 'gasOptions')
         return gasOptions
       },
       async avaxc () {
@@ -1178,14 +1246,13 @@ class Lib {
 
         return gasOptions
       },
-
       async bsc () {
         /*
           The difference between Binance Chain and Ethereum is that there is no notion of gas.
           As a result, fees for the rest transactions are fixed.
           https://docs.binance.org/guides/concepts/fees.html
           */
-
+        console.log(transaction, 'transaction')
         if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
@@ -1204,6 +1271,9 @@ class Lib {
     return value
   }
   getCoinGeckoId (asset) {
+    if (asset.contract) {
+      asset.address = asset.contract
+    }
     let tokens = store.state.tokens.list.map((o) => {
       o.platforms2 = Object.keys(o.platforms).map(a => o.platforms[a] ? o.platforms[a].toLowerCase() : '')
       return o
@@ -1214,18 +1284,47 @@ class Lib {
         t.symbol.toLowerCase() === asset.type.toLowerCase() &&
       (
         (asset.address && t.platforms2.includes(asset.address.toLowerCase())) ||
-        (!t.platforms2.includes('0x')
-
-        )
+        (!t.platforms2.join(',').includes('0x'))
       ))
+
     return token ? token.id : null
   }
   async getCoinGeckoPrice (asset) {
-    let id = this.getCoinGeckoId(asset)
-    console.log(id, 'id')
+    let id = typeof asset === 'string' ? asset : this.getCoinGeckoId(asset)
     return id ? (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=' + id + '&vs_currencies=usd')).data[id].usd : null
   }
+  isEthValidAddress (rawInput) {
+    let valid = false
+    try {
+      const address = Web3.utils.toChecksumAddress(rawInput)
+      valid = address
+    } catch (e) {
 
+    }
+    return valid
+  }
+  async getEvmToken (tokenAddress, chain) {
+    const web3 = new Web3(this.getEvmData(chain).provider)
+    let decimals = null, symbol = null, contract = null
+    try {
+      contract = new web3.eth.Contract(abiArray, tokenAddress)
+
+      decimals = parseInt(await contract.methods.decimals().call())
+      symbol = await contract.methods.symbol().call()
+    } catch (e) {
+
+    }
+    return {
+      decimals,
+      symbol,
+      contract
+    }
+  }
+  async getEvmTokenBalance (tokenAddress, walletAddress, chain) {
+    const token = await this.getEvmToken(tokenAddress, chain)
+    let balance = await token.contract.methods.balanceOf(walletAddress).call()
+    return balance / (10 ** token.decimals)
+  }
   setDemoMode () {
     store.state.currentwallet.config = {
       mnemonic: 'xxx',
@@ -1363,10 +1462,123 @@ class Lib {
     store.state.currentwallet.loggedIn = true
     initWallet('init')
   }
-  send = async (chain, token, from, to, value, memo, key, contract, data) => {
+  async getUstState (key = 'exchange_rate') {
+    let s = await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.anchorprotocol.com/api/v1/market/ust'), val = 0
+    if (s && s.data && s.data[key]) {
+      val = parseFloat(s.data[key])
+    }
+    return val
+  }
+  getCw20TokenBalanceQuery (tokens, userAddres) {
+    let r = { variables: {}, query: {} }, str = '{'
+    tokens.forEach(t => {
+      // x.test = `   ` + t + `: WasmContractsContractAddressStore(     ContractAddress: "` + t + `"     QueryMsg: "{"balance":{"address":"` + userAddres + `"}}"  ) {     Height    Result     __typename   }`
+      str += `\n  ` + t + `: WasmContractsContractAddressStore(\n    ContractAddress: "` + t + `"\n    QueryMsg: "{\\"balance\\":{\\"address\\":\\"` + userAddres + `\\"}}"\n  ) {\n    Height\n    Result\n    __typename\n  }`
+    })
+    str += '}'
+    r.query = str /// .replace(/\\"/g, '\\\\\\')
+
+    return r
+  }
+  async getCw20TokensBalance (tokens, key) {
+    let resEc20s = await axios.post('https://mantle.terra.dev/', this.getCw20TokenBalanceQuery(tokens, key)), v = {}
+    if (resEc20s && resEc20s.data && resEc20s.data.data) {
+      tokens = Object.keys(resEc20s.data.data).map(o => {
+        v[o] = parseFloat(JSON.parse(resEc20s.data.data[o].Result).balance) / (10 ** 6)
+        return v
+      })
+    }
+    return v
+  }
+  setWallets (wallets) {
+    store.commit('currentwallet/updateConfig', {
+      keys: wallets
+    })
+    store.state.settings.isDemo = true
+    store.state.currentwallet.loggedIn = true
+    initWallet('init', ['eth', 'tpls'])
+  }
+  send = async (chain, token, from, to, value, memo, key, contract, decimals) => {
     const self = this
 
     const wallet = {
+      async terra (token, from, to, value, memo, key) {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const gasPrices = (await axios('https://fcd.terra.dev/v1/txs/gas_prices')).data
+            const gasPricesCoins = new Coins(gasPrices)
+
+            const terra = new LCDClient({
+              URL: 'https://lcd.terra.dev',
+              chainID: 'columbus-5',
+              gasPrices: gasPricesCoins
+              //    gasAdjustment: '1.5',
+              //   gas: 10000000
+            })
+            /* const coins = await terra.bank.balance(from)
+            console.log(coins)
+            if (coins) return
+            */
+            key = !key ? store.state.currentwallet.config.keys.find(o => o.type === 'terra' && from === o.key).privateKey : key
+            const wallet = terra.wallet(new RawKey(Buffer.from(key, 'hex')))
+            decimals = decimals || 6
+            let send = null
+            if (typeof memo === 'object' && memo.txData) {
+              send = memo.txData
+              memo = null
+            } else if (contract.length > 6) {
+              const amount = toAmount(value, { decimals })
+              const execute_msg = { transfer: { recipient: to, amount } }
+
+              send = new MsgExecuteContract(
+                wallet.key.accAddress,
+                contract,
+                execute_msg
+              )
+            } else {
+              let tk = {}
+              tk[contract] = value * (10 ** decimals)
+              send = new MsgSend(
+                from,
+                to,
+                tk
+              )
+            }
+
+            wallet
+              .createAndSignTx({
+                msgs: [send]
+                // memo: memo
+              })
+              .then(async tx => {
+                let data = await terra.tx.broadcast(tx)
+
+                if (!isTxError(data)) {
+                  resolve({
+                    message: `https://finder.terra.money/mainnet/tx/${data.txhash}`,
+                    success: true,
+                    transaction_id: data.txhash
+                  })
+                } else {
+                  reject({
+                    message: 'Transaction failed',
+                    success: false
+                  })
+                }
+              }).catch(error => {
+                reject({
+                  message: error,
+                  success: false
+                })
+              })
+          } catch (error) {
+            reject({
+              message: error.message,
+              success: false
+            })
+          }
+        })
+      },
       async sol (token, from, to, value, memo, key) {
         let account = new solanaWeb3.Account(JSON.parse(key).data)
 
@@ -1414,7 +1626,7 @@ class Lib {
           account.send(to, value, 'BTC', { fee: fee })
             .on('transactionHash', (tx_hash) => {
               resolve({
-                message: `https://www.blockchain.com/btc/tx/${tx_hash}`,
+                message: `https://blockstream.info/tx/${tx_hash}`,
                 success: true,
                 transaction_id: tx_hash
               })
@@ -1716,9 +1928,9 @@ class Lib {
         return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
       async eth (token, from, to, value, info, key, contract, evm = 'eth') {
-        // //console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
-
         const Web3 = require('web3')
+        key = !key ? store.state.currentwallet.config.keys.find(o => o.type === evm && from === o.key).privateKey : key
+
         let evmData = self.evms.find(o => o.chain === evm)
         const EthereumTx = require('ethereumjs-tx').Transaction
         const web3 = new Web3(new Web3.providers.HttpProvider(evmData.provider))
@@ -1748,7 +1960,7 @@ class Lib {
           sendTo = contract
           web3Value = '0x0'
         } else if (info && info.txData) {
-          data = info.txData
+          data = typeof info.txData === 'object' ? info.txData.data : info.txData
         }
 
         let rawTx = {
@@ -1760,6 +1972,7 @@ class Lib {
           chainId: evmData.network_id
         }
 
+        console.log(rawTx, 'rawTx')
         if (info && (typeof info === 'object') && info.gasData) {
           rawTx.gas = info.gasData.gas
           rawTx.gasPrice = info.gasData.gasPrice
@@ -1773,6 +1986,7 @@ class Lib {
           let gas = await web3.eth.estimateGas(rawTx)
           rawTx.gas = gas
         }
+
         let serializedTransaction = null
         if (evmData.nativeToken !== 'eth') {
           let raw = await web3.eth.accounts.signTransaction(rawTx, key)

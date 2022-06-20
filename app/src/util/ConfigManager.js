@@ -39,7 +39,17 @@ class ConfigManager {
 
   async saveDebugData () {
     const fileName = `support-verto-${(new Date()).getTime()}.debug`
-    return platformTools.downloadFile(localStorage.getItem('walletPublicDatav2'), fileName)
+    let data = Object.assign([], store.state.currentwallet.config.keys).map(o => {
+      delete o.privateKey
+      delete o.privateKeyEncrypted
+      return o
+    })
+    let cache = localStorage.getItem('walletPublicDatav2')
+    let accounts = {
+      public_keys: data,
+      cache: JSON.parse(cache)
+    }
+    return platformTools.downloadFile(JSON.stringify(accounts), fileName)
   }
 
   async restoreConfig (configData, password) {
