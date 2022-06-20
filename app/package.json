@@ -159,7 +159,7 @@
     "eslint-loader": "^2.1.2",
     "eslint-plugin-vue": "^5.2.2",
     "html-webpack-plugin": "^4.5.2",
-    "node-sass": "4.14.1",
+    "node-sass": "7.0.0",
     "sass-loader": "^8.0.0",
     "strip-ansi": "=3.0.1"
   },
